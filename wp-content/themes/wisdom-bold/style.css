@@ -1,0 +1,143 @@
+/*
+Theme Name:   Wisdom Bold
+Theme URI:    https://codevibrant.com/wpthemes/wisdom-bold/
+Author:       CodeVibrant
+Author URI:   https://codevibrant.com/
+Description:  Wisdom Bold is the child theme of Wisdom Blog which is Clean & Personal Blog Theme from CodeVibrant! Fully responsive design displays beautifully across desktop, mobile, and all devices. Easy installation allows you to start post blogs immediately after the activation. Theme supported Customizer which allows you to customize and change the design of your blog. Perfect choice for your personal blog, corporate blog, marketing blog, authority blog or any type of creative blog.
+Version:      1.0.1
+License:      GNU General Public License v3 or later
+License URI:  http://www.gnu.org/licenses/gpl-3.0.html
+Template:     wisdom-blog
+Text Domain:  wisdom-bold
+Tags:         blog, portfolio, one-column, two-columns, left-sidebar, right-sidebar, custom-background, custom-colors, custom-header, custom-logo, custom-menu, featured-image-header, threaded-comments, sticky-post, theme-options, translation-ready
+
+*/
+
+.boxed-layout #page {
+	overflow: hidden;
+}
+
+.archive-classic-post-wrapper .post-thumbnail img {
+	width: 100%;
+}
+
+.cv-menu-wrapper,
+#site-navigation ul.sub-menu, #site-navigation ul.children {
+	background: #333;
+}
+
+.cv-menu-wrapper {
+	float: none;
+	width: 100vw;
+	margin-left: -50vw;
+	margin-right: -100%;
+	position: relative;
+	left: 50%;
+}
+
+.is-sticky .cv-menu-wrapper {
+	margin-left: 0;
+	background: #333;
+}
+
+#site-navigation ul li a {
+	color: #fff;
+}
+
+#site-navigation ul li.current-menu-item > a, #site-navigation ul li:hover > a, #site-navigation ul li.current_page_ancestor > a, #site-navigation ul li.current_page_item > a{
+    color: #dfdfdf;
+}
+
+#secondary .widget .widget-title {
+	background: #333;
+	color: #fff;
+	padding: 8px 0;
+	font-size: 16px;
+}
+
+.site-info a {
+	color: #c6c6c6;
+}
+
+.entry-btn a {
+	background: #333;
+	color: #fff;
+	border: none;
+}
+
+.entry-btn a:hover{
+    color: #dfdfdf;
+}
+
+article .post-thumbnail::before {
+	background: rgba(0,0,0,0.5);
+	color: #fff;
+}
+
+.cv-search-icon {
+	color: #fff;
+}
+
+.cv-top-header-wrap {
+	background: #eaeaea;
+	padding: 10px 0 5px;
+}
+
+.cv-top-left-section {
+	float: left;
+	color: #666;
+	font-size: 13px;
+}
+
+.cv-top-right-section {
+	float: right;
+}
+
+.cv-top-left-section .date-section {
+	display: inline-block;
+}
+
+.cv-top-left-section .cv-top-header-social {
+	display: inline-block;
+	vertical-align: top;
+	margin-left: 12px;
+}
+
+.cv-top-left-section .cv-top-header-social a{
+    color: #666;
+}
+
+.cv-top-right-section #top-menu {
+	margin: 0;
+	list-style: none;
+}
+
+.cv-top-right-section #top-menu li {
+	display: inline-block;
+	margin-left: 15px;
+}
+
+.cv-top-right-section #top-menu li a {
+	color: #666;
+	font-size: 13px;
+}
+@media (max-width: 767px) {
+.cv-menu-wrapper {
+	float: right;
+	margin: 0;
+	left: auto;
+	background: none;
+	color: #333;
+	position: static;
+}
+#site-navigation {
+	background: #333;
+}
+.cv-search-icon {
+	color: #333;
+}
+.cv-top-left-section, .cv-top-right-section {
+	float: none;
+	text-align: center;
+}
+}
