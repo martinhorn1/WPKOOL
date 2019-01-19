@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'SimpleHtmlDom' => array($vendorDir . '/weglot/simplehtmldom/src'),
+    'WGSimpleHtmlDom' => array($vendorDir . '/weglot/simplehtmldom/src'),
 );

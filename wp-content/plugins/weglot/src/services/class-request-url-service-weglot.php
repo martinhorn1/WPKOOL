@@ -27,8 +27,9 @@ class Request_Url_Service_Weglot {
 	 * @since 2.0
 	 */
 	public function __construct() {
-		$this->option_services           = weglot_get_service( 'Option_Service_Weglot' );
-		$this->amp_services              = weglot_get_service( 'Amp_Service_Weglot' );
+		$this->option_services       = weglot_get_service( 'Option_Service_Weglot' );
+		$this->amp_services          = weglot_get_service( 'Amp_Service_Weglot' );
+		$this->language_services     = weglot_get_service( 'Language_Service_Weglot' );
 	}
 
 	/**
@@ -86,14 +87,28 @@ class Request_Url_Service_Weglot {
 		return $this->weglot_url;
 	}
 
+	public function is_rest() {
+		$prefix = rest_get_url_prefix( );
+		if (defined('REST_REQUEST') && REST_REQUEST // (#1)
+				|| isset($_GET['rest_route']) // (#2)
+					&& strpos( trim( $_GET['rest_route'], '\\/' ), $prefix, 0 ) === 0) {
+			return true;
+		}
+		// (#3)
+		$rest_url    = wp_parse_url( site_url( $prefix ) );
+		$current_url = wp_parse_url( add_query_arg( array( ) ) );
+		return strpos( $current_url['path'], $rest_url['path'], 0 ) === 0;
+	}
+
 	/**
 	 * Abstraction of \Weglot\Util\Url
 	 * @since 2.0
+	 * @version 2.4.0
 	 * @param boolean $with_filter
 	 * @return string
 	 */
 	public function get_current_language( $with_filter = true ) {
-		if ( wp_doing_ajax() && isset( $_SERVER['HTTP_REFERER'] ) ) { //phpcs:ignore
+		if ( ( wp_doing_ajax() || $this->is_rest() ) && isset( $_SERVER['HTTP_REFERER'] ) ) { //phpcs:ignore
 			$current_language = $this->create_url_object( $_SERVER['HTTP_REFERER'] )->detectCurrentLanguage(); //phpcs:ignore
 		} else {
 			$current_language = $this->get_weglot_url()->detectCurrentLanguage();
@@ -104,6 +119,14 @@ class Request_Url_Service_Weglot {
 		}
 
 		return $current_language;
+	}
+
+	/**
+	 * @since 2.4.0
+	 * @return LanguageEntry
+	 */
+	public function get_current_language_entry() {
+		return $this->language_services->get_current_language_entry_from_key( $this->get_current_language() );
 	}
 
 	/**

@@ -10,6 +10,14 @@ Simple fork of [simple_html_dom](http://simplehtmldom.sourceforge.net/) PHP libr
 
 ## Changelog
 
+## [0.5] - 2019-01-03
+### Changed
+- Update compatibility PHP 7.3
+
+## [0.4] - 2018-10-05
+### Changed
+- Change namespace for resolve conflict with other library Simple HTML DOM
+
 ## [0.3] - 2018-07-23
 ### Added
 - redo modifications previsouly done like max size for exemple
