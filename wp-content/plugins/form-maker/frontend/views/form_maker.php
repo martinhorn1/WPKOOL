@@ -1536,7 +1536,10 @@ class FMViewForm_maker {
             $rep = '';
             if ($row->gdpr_checkbox && $row->gdpr_checkbox_text) {
               $privacy_policy_page = WDW_FM_Library(self::PLUGIN)->get_privacy_policy_url();
-              $privacy_policy_link = ' <a href="' . $privacy_policy_page['url'] . '" target="_blank">' . $privacy_policy_page['title'] . '</a>';
+              $privacy_policy_link = $privacy_policy_page['title'];
+              if (!empty($privacy_policy_page['url'])) {
+                $privacy_policy_link = ' <a href="' . $privacy_policy_page['url'] . '" target="_blank">' . $privacy_policy_page['title'] . '</a>';
+              }
               $row->gdpr_checkbox_text = str_replace('{{privacy_policy}}', $privacy_policy_link, $row->gdpr_checkbox_text);
               $gdpr_checkbox_html = '<label for="fm_privacy_policy' . $form_id . '" class="wdform-label">
                                        <input id="fm_privacy_policy' . $form_id . '" name="fm_privacy_policy' . $form_id . '" class="wd-flex-row fm-gdpr-checkbox" onclick="' . ($disabled_submit ? '' : 'fm_privacy_policy_check(this)') . '" type="checkbox" value="1">'

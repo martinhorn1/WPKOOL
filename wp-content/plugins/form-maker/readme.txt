@@ -2,8 +2,8 @@
 Contributors: webdorado,10web,wdsupport,formmakersupport
 Tags:  form, forms, form builder, contact form, feedback, custom form, contact, web contact form, captcha, email, form manager, survey
 Requires at least: 4.6
-Tested up to: 4.9
-Stable tag: 1.12.41
+Tested up to: 5.0
+Stable tag: 1.12.42
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -451,6 +451,9 @@ Where **{{field_id}}** is the ID of the field you wish to prefill. Also, **{{par
 
 
 == Changelog ==
+
+= 1.12.42 =
+*  Fixed: Remove the link from "Privacy Policy" text in the form when there is no Privacy Policy page.
 
 = 1.12.41 =
 *  Added: WHERE selectors in "Options from database" (Select, Single and Multiple choice fields).
