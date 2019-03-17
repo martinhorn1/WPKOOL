@@ -20,14 +20,17 @@ class Translate_Service_Weglot {
 	 * @since 2.3.0
 	 */
 	public function __construct() {
-		$this->option_services                = weglot_get_service( 'Option_Service_Weglot' );
-		$this->request_url_services           = weglot_get_service( 'Request_Url_Service_Weglot' );
-		$this->replace_url_services           = weglot_get_service( 'Replace_Url_Service_Weglot' );
-		$this->replace_link_services          = weglot_get_service( 'Replace_Link_Service_Weglot' );
-		$this->parser_services                = weglot_get_service( 'Parser_Service_Weglot' );
-		$this->wc_active_services             = weglot_get_service( 'WC_Active_Weglot' );
-		$this->other_translate_services       = weglot_get_service( 'Other_Translate_Service_Weglot' );
-		$this->generate_switcher_service      = weglot_get_service( 'Generate_Switcher_Service_Weglot' );
+		$this->option_services                  = weglot_get_service( 'Option_Service_Weglot' );
+		$this->request_url_services             = weglot_get_service( 'Request_Url_Service_Weglot' );
+		$this->replace_url_services             = weglot_get_service( 'Replace_Url_Service_Weglot' );
+		$this->replace_link_services            = weglot_get_service( 'Replace_Link_Service_Weglot' );
+		$this->parser_services                  = weglot_get_service( 'Parser_Service_Weglot' );
+		$this->wc_active_services               = weglot_get_service( 'WC_Active_Weglot' );
+		$this->ninja_active_services            = weglot_get_service( 'Ninja_Active_Weglot' );
+		$this->caldera_active_services          = weglot_get_service( 'Caldera_Active' );
+		$this->other_translate_services         = weglot_get_service( 'Other_Translate_Service_Weglot' );
+		$this->translate_json_service           = weglot_get_service( 'Translate_Json_Service' );
+		$this->generate_switcher_service        = weglot_get_service( 'Generate_Switcher_Service_Weglot' );
 	}
 
 
@@ -95,18 +98,24 @@ class Translate_Service_Weglot {
 			switch ( $type ) {
 				case 'json':
 					$json       = \json_decode( $content, true );
-					$content    = $this->translate_array( $json );
-					$content    = $this->replace_link_array( $content );
+					$content    = $this->translate_json_service->translate_json( $json );
 					$content    = apply_filters( 'weglot_json_treat_page', $content );
 
 					return wp_json_encode( $content );
 				case 'html':
-					$content            = $this->fix_menu_link( $content );
 					$translated_content = $parser->translate( $content, $this->original_language, $this->current_language ); // phpcs:ignore
 
 					if ( $this->wc_active_services->is_active() ) {
 						// Improve this with multiple service
 						$translated_content = weglot_get_service( 'WC_Translate_Weglot' )->translate_words( $translated_content );
+					}
+					if ( $this->ninja_active_services->is_active() ) {
+						// Improve this with multiple service
+						$translated_content = weglot_get_service( 'Ninja_Translate_Json_Weglot' )->translate_words( $translated_content );
+					}
+					if ( $this->caldera_active_services->is_active() ) {
+						// Improve this with multiple service
+						$translated_content = weglot_get_service( 'Caldera_Translate' )->translate_words( $translated_content );
 					}
 
 					$translated_content = $this->other_translate_services->translate_words( $translated_content );
@@ -169,61 +178,6 @@ class Translate_Service_Weglot {
 			}
 		}
 		return $array;
-	}
-
-	/**
-	 * Replace links for JSON translate
-	 *
-	 * @since 2.3.0
-	 *
-	 * @param array $array
-	 * @return array
-	 */
-	public function replace_link_array( $array ) {
-		$array_not_ajax_html = apply_filters( 'weglot_array_not_ajax_html', [ 'redirecturl', 'url' ] );
-
-		foreach ( $array as $key => $val ) {
-			if ( is_array( $val ) ) {
-				$array[ $key ] = $this->replace_link_array( $val );
-			} else {
-				if ( $this->is_ajax_html( $val ) ) {
-					$array[ $key ] = $this->replace_url_services->replace_link_in_dom( $val );
-				}
-			}
-		}
-
-		return $array;
-	}
-
-	/**
-	 * @since 2.3.0
-	 *
-	 * @param string $string
-	 * @return boolean
-	 */
-	protected function is_ajax_html( $string ) {
-		$preg_match_ajax_html = apply_filters( 'weglot_is_ajax_html_regex',  '/<(a|div|span|p|i|aside|input|textarea|select|h1|h2|h3|h4|meta|button|form|li|strong|ul|option)/' );
-		$result               = preg_match_all( $preg_match_ajax_html, $string, $m, PREG_PATTERN_ORDER );
-
-		if ( isset( $string[0] ) && '{' !== $string[0] && $result && $result >= 1 ) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-
-	/**
-	 * @since 2.3.0.2
-	 *
-	 * Check if there are Weglot menu links and make sure there is the data-wg-notranslate
-	 * @param string $content
-	 * @return string
-	 */
-	public function fix_menu_link( $content ) {
-		$content = preg_replace( '#<a([^\>]+?)?href="(http|https):\/\/\[weglot_#', '<a$1 data-wg-notranslate="true" href="$2://[weglot_', $content );
-
-		return $content;
 	}
 
 

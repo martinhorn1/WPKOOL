@@ -7,4 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'WGSimpleHtmlDom' => array($vendorDir . '/weglot/simplehtmldom/src'),
+    'Utilities\\' => array($vendorDir . '/galbar/jsonpath/src/Galbar'),
+    'JsonPath\\' => array($vendorDir . '/galbar/jsonpath/src/Galbar'),
 );

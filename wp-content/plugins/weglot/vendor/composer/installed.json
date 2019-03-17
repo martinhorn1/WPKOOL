@@ -1,5 +1,55 @@
 [
     {
+        "name": "galbar/jsonpath",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Galbar/JsonPath-PHP.git",
+            "reference": "ea104b4f835388018f4bd529a2dace88617d5be6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Galbar/JsonPath-PHP/zipball/ea104b4f835388018f4bd529a2dace88617d5be6",
+            "reference": "ea104b4f835388018f4bd529a2dace88617d5be6",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.0",
+            "sami/sami": ">=3.3.0",
+            "satooshi/php-coveralls": ">=1.0.1"
+        },
+        "time": "2018-12-11T15:07:59+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "JsonPath\\": "src/Galbar/",
+                "Utilities\\": "src/Galbar/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Alessio Linares",
+                "email": "alessio@alessio.cc",
+                "role": "Software Engineer"
+            }
+        ],
+        "description": "JSONPath implementation for querying and updating JSON objects",
+        "keywords": [
+            "json",
+            "jsonpath",
+            "path"
+        ]
+    },
+    {
         "name": "psr/cache",
         "version": "1.0.1",
         "version_normalized": "1.0.1.0",
@@ -96,17 +146,17 @@
     },
     {
         "name": "weglot/weglot-php",
-        "version": "0.5.19",
-        "version_normalized": "0.5.19.0",
+        "version": "0.5.20",
+        "version_normalized": "0.5.20.0",
         "source": {
             "type": "git",
             "url": "https://github.com/weglot/weglot-php.git",
-            "reference": "ca5ad3c9fa889bdba5a17ef074f9feb8e852a23a"
+            "reference": "6728f001f1bc393d95b1042e75af7fb0ff7434c1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/weglot/weglot-php/zipball/ca5ad3c9fa889bdba5a17ef074f9feb8e852a23a",
-            "reference": "ca5ad3c9fa889bdba5a17ef074f9feb8e852a23a",
+            "url": "https://api.github.com/repos/weglot/weglot-php/zipball/6728f001f1bc393d95b1042e75af7fb0ff7434c1",
+            "reference": "6728f001f1bc393d95b1042e75af7fb0ff7434c1",
             "shasum": ""
         },
         "require": {
@@ -118,7 +168,7 @@
             "codeception/codeception": "^2.4",
             "vlucas/phpdotenv": "^2.4"
         },
-        "time": "2019-01-08T08:29:05+00:00",
+        "time": "2019-01-16T13:05:58+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
