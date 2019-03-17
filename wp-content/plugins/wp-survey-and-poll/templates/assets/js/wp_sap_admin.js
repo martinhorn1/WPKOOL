@@ -7,6 +7,7 @@ jQuery(window).load(function() {
 	var buttonspan_global = "";
 	var active_survey;
 	var played_question = 0;
+	var myChart = new Array();
 	surveysystem(function() {
 	surveysystem("#wp_sap_tabs").tabs();
 	surveysystem('.open-tab').click(function (event) {
@@ -41,7 +42,7 @@ jQuery(window).load(function() {
 })();
  
  
-   	function parallaxScroll(){
+   	function parallaxScroll() {
    		var scrolledY = surveysystem(window).scrollTop();
 		if (surveysystem('#survey .survey_element').length) {
 		if (surveysystem('#'+active_survey+' .display_style').val()=="center") var pos = "top";
@@ -58,27 +59,24 @@ jQuery(window).load(function() {
 		lastScrollTop = surveysystem(window).scrollTop();
    	}
 
-	function toHex(n) 
-	{
+	function toHex( n ) {
 		n = parseInt(n,10);
 		if (isNaN(n)) return "00";
 		n = Math.max(0,Math.min(n,255));
 		return "0123456789ABCDEF".charAt((n-n%16)/16) + "0123456789ABCDEF".charAt(n%16);
 	}
 
-	function rgbToHex(RGB) 
-	{ 
+	function rgbToHex( RGB ) { 
 		var rgb_colors = RGB.replace("rgb(","").replace(")","").split(",");
 		return "#"+toHex(rgb_colors[0])+toHex(rgb_colors[1])+toHex(rgb_colors[2]);
 	}
 	
-	function initialize_sliders()
-	{
+	function initialize_sliders() {
 	initialize_tooltips();
-	surveysystem("#wp_sap_accordion .wp_sap_line_height").each(function( index ) {
-	var survey_id = surveysystem(this).parent().parent().parent().attr("id");
-	initialize_question_accordions(survey_id);
-	jQuery('#'+survey_id+' .datepicker').datetimepicker({
+	surveysystem( "#wp_sap_accordion .wp_sap_line_height" ).each( function( index ) {
+	var survey_id = surveysystem( this ).parent().parent().parent().attr( "id" );
+	initialize_question_accordions( survey_id );
+	jQuery( '#' + survey_id + ' .datepicker' ).datetimepicker({
 			dateFormat: 'dd-mm-yy',
 			minDate: getFormattedDate( new Date() )
 		});
@@ -667,19 +665,19 @@ function add_survey()
 }
 function initialize_question_accordions(survey_id)
 {
-	surveysystem( "#"+survey_id+" #new_questions" ).accordion({
+	surveysystem( "#" + survey_id + " #new_questions" ).accordion({
       collapsible: true,
 	  heightStyle: "content",
 	  header: "> div > h3",
 	  beforeActivate: function( event, ui ) {
-		if (surveysystem(ui.newHeader).attr("id")!=undefined) {
-			var canvas = document.getElementById("wp_sap_pro_graph_"+survey_id+'_'+(parseInt(surveysystem(ui.newHeader).attr("id").replace("ui-accordion-new_questions-header-",""))+1));
+		if ( surveysystem( ui.newHeader ).attr( "id" ) != undefined ) {
+			var canvas = document.getElementById( "wp_sap_pro_graph_" + survey_id + '_' + ( parseInt( surveysystem( ui.newHeader ).attr( "aria-controls" ).replace( "question_section", "" ) ) ) );
 		}
 	  },
 	  activate: function( event, ui ) {
-		if (surveysystem(ui.newHeader).attr("id")!=undefined) {
-			var canvas = document.getElementById("wp_sap_pro_graph_"+survey_id+'_'+(parseInt(surveysystem(ui.newHeader).attr("id").replace("ui-accordion-new_questions-header-",""))+1));
-			create_graph(survey_id,(parseInt(surveysystem(ui.newHeader).attr("id").replace("ui-accordion-new_questions-header-",""))+1));
+		if (surveysystem( ui.newHeader ).attr( "id" ) != undefined ) {
+			var canvas = document.getElementById( "wp_sap_pro_graph_" + survey_id + '_' + ( parseInt( surveysystem( ui.newHeader ).attr( "aria-controls" ).replace( "question_section", "" ) ) ) );
+			create_graph( survey_id, ( parseInt( surveysystem( ui.newHeader ).attr( "aria-controls" ).replace( "question_section", "" ) ) ) );
 		}
 	  }
     }).sortable({
@@ -723,14 +721,14 @@ function initialize_question_accordions(survey_id)
 	surveysystem("#answer_element_"+answer_area.replace("answers_","")+"_"+answer_num+" input").focus();
 	});
   	surveysystem("body").on( "click", ".add_question",function() {
-		var answer_area = surveysystem(this).parent().parent().attr("id");
-		var question_num = (surveysystem("#"+answer_area+" .question_text").length+1);
+		var answer_area = surveysystem( this ).parent().parent().attr( "id" );
+		var question_num = ( surveysystem( "#" + answer_area + " .question_text" ).length + 1 );
 		surveysystem("#"+answer_area+" #new_questions").append('<div class="group"><h3>'+question_num+'. question<span class="question-subheader"></span></h3><div class="one_question" id="question_section'+question_num+'"><div class="left_half"><div id="question_'+question_num+'" class="questions_block"><p>Question:&nbsp; <textarea name="question[]" id="question'+question_num+'" style="width: 75%;" class="question_text"></textarea><a class="delete_question"><img class="remove_question modal_survey_tooltip" title="Remove Question" id="remove_question_'+answer_area+'_'+question_num+'" src="'+sspa_params.plugin_url+'/templates/assets/img/delete.svg"></a></p><span><p>1. answer: <input type="text" name="answer[]" class="answer" id="answer1" style="width: 50%;" value="Yes" placeholder="Yes" /><span id="answer_count1" class="answer_count">0 - 0%</span></p><p>2. answer: <input type="text" name="answer[]" class="answer" id="answer2" style="width: 50%;" value="No" placeholder="No" /><span id="answer_count2" class="answer_count">0 - 0%</span><a class="add_answer"><img class="modal_survey_tooltip" title="Add New Answer" src="'+sspa_params.plugin_url+'/templates/assets/img/add.svg"></a></p></span></div></div><div id="chart'+question_num+'" class="right_half"></div></div>');
-		surveysystem("#"+answer_area+" #chart"+question_num).html('<canvas id="modal_survey_pro_graph_'+answer_area+'_'+question_num+'" class="canvas_graph" height="250" width="250"></canvas>');
+		surveysystem("#"+answer_area+" #chart"+question_num).html('<canvas id="wp_sap_pro_graph_'+answer_area+'_'+question_num+'" class="canvas_graph" height="250" width="250"></canvas>');
 		surveysystem("#"+answer_area+" .left_half "+"#question_"+question_num+">span").attr("id","answers_"+answer_area);
-		create_graph(answer_area,question_num,"true");
 		surveysystem( "#"+answer_area+" #new_questions" ).accordion("refresh" );
 		surveysystem( "#"+answer_area+" #new_questions" ).accordion({ active: question_num-1 });
+		create_graph(answer_area,question_num,"true");
 		var demo_questions = ["Was this information helpful?","Do you like this website?","Did you find this website easily?","Did you find this website through Search Engine?","Did you already bookmark this website?","Do you like this survey?","Do you visit this website first time?","Are you employed?"];
 		initialize_tooltips();
 		var random_question = Math.floor( Math.random() * demo_questions.length );
@@ -957,14 +955,13 @@ function remove_survey() {
 		});
 }
 	
-function create_graph(survey_id,question_id)
-{
-					var options = {
-					tooltips: {
-						fontSize: '75.4%'
-					}
-				};
-	element = [];
+function create_graph( survey_id, question_id ) {
+	var options = {
+		tooltips: {
+			fontSize: '75.4%'
+		}
+	};
+	var param1 = new Array(), param2 = new Array(), param3 = new Array(), param4 = new Array();
 	var answer_counter = 0;
 		surveysystem( "#"+survey_id+" #question_"+question_id+" .answer" ).each(function( index ) {
 		var thisid = surveysystem(this).attr("id").replace("answer","");
@@ -972,34 +969,41 @@ function create_graph(survey_id,question_id)
 		answer_counter += parseInt(thisval[1].replace("%","").trim());
 	})
 
-	surveysystem( "#"+survey_id+" #question_"+question_id+" .answer" ).each(function( index ) {
-	var parameters = {};
-	if (answer_counter==0) parameters.value = 100/surveysystem( "#"+survey_id+" #question_"+question_id+" .answer" ).length;
-	else
-	{
-		var thisid = surveysystem(this).attr("id").replace("answer","");
-		var thisval = surveysystem("#"+survey_id+" #question_"+question_id+" #answer_count"+thisid).text().split("-");
-		parameters.value = parseInt(thisval[1].replace("%","").trim());
+	surveysystem( "#" + survey_id + " #question_" + question_id + " .answer" ).each( function( index ) {
+	if ( answer_counter == 0 ) {
+		param1.push( ( 100 / surveysystem( "#" + survey_id + " #question_" + question_id + " .answer" ).length ).toFixed( 2 ) );
 	}
-	parameters.color = get_random_color();
-	parameters.label = index+1;
-	parameters.labelColor = "rgb(0,0,0)";
-	parameters.labelFontSize = "175%";
-	parameters.labelAlign = "center";
-	element.push(parameters);
+	else {
+		var thisid = surveysystem( this ).attr( "id" ).replace( "answer","" );
+		var thisval = surveysystem( "#" + survey_id + " #question_" + question_id + " #answer_count" + thisid ).text().split( "-" );
+		param1.push( ( parseInt( thisval[ 1 ].replace( "%", "" ).trim() ) ).toFixed( 2 ) );
+	}
+	param2.push( hexToRgbA( get_random_color() ) );
+	param3.push( surveysystem( this ).val() );
 	})
-	if (document.getElementById("wp_sap_pro_graph_"+survey_id+'_'+question_id)!=undefined)
-	{
-					var myChart = new Chart(document.getElementById("wp_sap_pro_graph_"+survey_id+'_'+question_id).getContext("2d"), options);
-					var myPie = myChart.Pie(element, {
-						animationEasing: 'easeOutBounce'
-					});
-	}		
-			
-	}		
+	if ( document.getElementById( "wp_sap_pro_graph_" + survey_id + '_' + question_id ) != undefined ) {
+					var chartconfig = {
+						type: 'pie',
+						data: {
+								datasets: [{
+									data: param1,
+									backgroundColor: param2
+								}],
+								labels: param3
+							},
+							options: {
+								responsive: true,
+								legend: false
+							}
+					}
+					if ( typeof myChart[ survey_id + "-" + question_id ] != "undefined" ) {
+						myChart[ survey_id + "-" + question_id ].chart.destroy();
+					}
+					myChart[ survey_id + "-" + question_id ] = new Chart( document.getElementById( "wp_sap_pro_graph_" + survey_id + '_' + question_id ).getContext( "2d" ), chartconfig );
+	}
+	}
 	
-		function initialize_tooltips()
-	{
+	function initialize_tooltips() {
 		surveysystem(".wp_sap_tooltip").tooltip({
 			  content: function () {
 				  return jQuery(this).prop('title');
@@ -1016,5 +1020,17 @@ function create_graph(survey_id,question_id)
         color += letters[Math.round(Math.random() * 15)];
     }
     return color;
+}
+function hexToRgbA(hex){
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',1)';
+    }
+    throw new Error('Bad Hex');
 }
 });

@@ -104,6 +104,13 @@ Initial Release
 
 == Changelog ==
 
+= 1.5.8.1 =
+* removed external jQuery UI
+* updated ChartJS
+
+= 1.5.8 =
+* fixed security issue
+
 = 1.5.7.8 =
 * improved admin CSS
 * fixed question subheader in case or reordering questions

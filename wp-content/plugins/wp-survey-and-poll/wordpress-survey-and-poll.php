@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) OR exit;
  * Plugin URI: http://modalsurvey.pantherius.com
  * Description: Add simple surveys to your website
  * Author: Pantherius
- * Version: 1.5.7.9
+ * Version: 1.5.8.1
  * Author URI: http://pantherius.com
  */
  
@@ -157,8 +157,17 @@ if ( ! class_exists( 'wp_sap' ) ) {
 					$sql = "SELECT *,msq.id as question_id FROM " . $wpdb->prefix . "wp_sap_surveys mss LEFT JOIN " . $wpdb->prefix . "wp_sap_questions msq on mss.id = msq.survey_id WHERE (`expiry_time`>'" . current_time( 'mysql' ) . "' OR `expiry_time`='0000-00-00 00:00:00') AND (`start_time`<'" . current_time( 'mysql' ) . "' OR `start_time`='0000-00-00 00:00:00') AND mss.id='" . $args[ 'id' ] . "' ORDER BY msq.id ASC";
 					}
 					else {
-						if ( isset( $_COOKIE[ 'wp_sap' ] ) ) {
-							$survey_viewed = json_decode( stripslashes( $_COOKIE[ 'wp_sap' ] ) );
+						$cookie_wpsap = json_decode( stripslashes( $_COOKIE[ 'wp_sap' ] ) );
+						$illegal_char = false;
+						if ( is_array( $cookie_wpsap ) ) {
+							foreach( $cookie_wpsap as $cwp ) {
+								if( preg_match( '/[^A-Za-z0-9]/', $cwp ) ) {
+									$illegal_char = true;
+								}
+							}
+							if ( isset( $_COOKIE[ 'wp_sap' ] ) && ! $illegal_char ) {
+									$survey_viewed = json_decode( stripslashes( $_COOKIE[ 'wp_sap' ] ) );
+							}
 						}
 						if ( ! empty( $survey_viewed ) ) {
 							$sv = implode( $survey_viewed );
@@ -216,14 +225,22 @@ if ( ! class_exists( 'wp_sap' ) ) {
 				$survey_viewed = array();
 				$sv = '';
 				$sv_condition = '';
-					if ( isset( $_COOKIE[ 'wp_sap' ] ) ) {
+				$cookie_wpsap = json_decode( stripslashes( $_COOKIE[ 'wp_sap' ] ) );
+				$illegal_char = false;
+				if ( is_array( $cookie_wpsap ) ) {
+					foreach( $cookie_wpsap as $cwp ) {
+						if( preg_match( '/[^A-Za-z0-9]/', $cwp ) ) {
+							$illegal_char = true;
+						}
+					}
+					if ( isset( $_COOKIE[ 'wp_sap' ] ) && ! $illegal_char ) {
 						$survey_viewed = json_decode( stripslashes( $_COOKIE[ 'wp_sap' ] ) );
 					}
-					if ( ! empty( $survey_viewed ) ) {
-						$sv = implode( $survey_viewed );
-						$sv_condition = "AND (mss.id NOT IN ('" . $sv . "'))";
-					}
-
+				}
+				if ( ! empty( $survey_viewed ) ) {
+					$sv = implode( $survey_viewed );
+					$sv_condition = "AND (mss.id NOT IN ('" . $sv . "'))";
+				}
 			$sql = "SELECT *,msq.id as question_id FROM " . $wpdb->prefix . "wp_sap_surveys mss LEFT JOIN " . $wpdb->prefix . "wp_sap_questions msq on mss.id = msq.survey_id WHERE global = 1 AND (`expiry_time`>'" . current_time( 'mysql' ) . "' OR `expiry_time`='0000-00-00 00:00:00') AND (`start_time`<'" . current_time( 'mysql' ) . "' OR `start_time`='0000-00-00 00:00:00') " . $sv_condition . " ORDER BY msq.id ASC";
 			$questions_sql = $wpdb->get_results( $sql );
 			if ( ! empty( $questions_sql ) ) {
