@@ -1,22 +1,22 @@
 <?php
 
-namespace WPForms\Admin;
+namespace WPForms\Forms;
 
 /**
- * Class Loader gives ability to track/load all admin modules.
+ * Class Loader gives ability to track/load all forms modules.
  *
- * @package    WPForms\Admin
+ * @package    WPForms\Forms
  * @author     WPForms
- * @since      1.5.0
+ * @since      1.5.1
  * @license    GPL-2.0+
- * @copyright  Copyright (c) 2018, WPForms LLC
+ * @copyright  Copyright (c) 2019, WPForms LLC
  */
 class Loader {
 
 	/**
 	 * Get the instance of a class and store it in itself.
 	 *
-	 * @since 1.5.0
+	 * @since 1.5.1
 	 */
 	public static function get_instance() {
 
@@ -32,18 +32,15 @@ class Loader {
 	/**
 	 * Loader constructor.
 	 *
-	 * @since 1.5.0
+	 * @since 1.5.1
 	 */
 	public function __construct() {
 
 		$core_class_names = array(
-			'DashboardWidget',
-			'Challenge',
-			'Builder\Education',
-			'Entries\PrintPreview',
+			'Preview',
 		);
 
-		$class_names = \apply_filters( 'wpforms_admin_classes_available', $core_class_names );
+		$class_names = \apply_filters( 'wpforms_forms_classes_available', $core_class_names );
 
 		foreach ( $class_names as $class_name ) {
 			$this->register_class( $class_name );
@@ -53,7 +50,7 @@ class Loader {
 	/**
 	 * Register a new class.
 	 *
-	 * @since 1.5.0
+	 * @since 1.5.1
 	 *
 	 * @param string $class_name Class name to register.
 	 */
@@ -62,15 +59,15 @@ class Loader {
 		$class_name = \sanitize_text_field( $class_name );
 
 		// Load Lite class if exists.
-		if ( ! \wpforms()->pro && \class_exists( 'WPForms\Lite\Admin\\' . $class_name ) ) {
-			$class_name = 'WPForms\Lite\Admin\\' . $class_name;
+		if ( ! \wpforms()->pro && \class_exists( 'WPForms\Lite\Forms\\' . $class_name ) ) {
+			$class_name = 'WPForms\Lite\Forms\\' . $class_name;
 			new $class_name();
 			return;
 		}
 
 		// Load Pro class if exists.
-		if ( \wpforms()->pro && \class_exists( 'WPForms\Pro\Admin\\' . $class_name ) ) {
-			$class_name = 'WPForms\Pro\Admin\\' . $class_name;
+		if ( \wpforms()->pro && \class_exists( 'WPForms\Pro\Forms\\' . $class_name ) ) {
+			$class_name = 'WPForms\Pro\Forms\\' . $class_name;
 			new $class_name();
 			return;
 		}

@@ -47,6 +47,7 @@ class WPForms_Smart_Tags {
 			'user_first_name'     => esc_html__( 'User First Name', 'wpforms-lite' ),
 			'user_last_name'      => esc_html__( 'User Last Name', 'wpforms-lite' ),
 			'user_email'          => esc_html__( 'User Email', 'wpforms-lite' ),
+			'user_meta key=""'    => esc_html__( 'User Meta', 'wpforms-lite' ),
 			'author_id'           => esc_html__( 'Author ID', 'wpforms-lite' ),
 			'author_display'      => esc_html__( 'Author Name', 'wpforms-lite' ),
 			'author_email'        => esc_html__( 'Author Email', 'wpforms-lite' ),
@@ -257,8 +258,7 @@ class WPForms_Smart_Tags {
 		if ( ! empty( $query_vars[1] ) ) {
 
 			foreach ( $query_vars[1] as $key => $query_var ) {
-
-				$value   = ! empty( $_GET[ $query_var ] ) ? sanitize_text_field( $_GET[ $query_var ] ) : '';
+				$value   = ! empty( $_GET[ $query_var ] ) ? wp_unslash( sanitize_text_field( $_GET[ $query_var ] ) ) : ''; // phpcs:ignore
 				$content = str_replace( $query_vars[0][ $key ], $value, $content );
 			}
 		}
@@ -275,13 +275,24 @@ class WPForms_Smart_Tags {
 			}
 		}
 
+
+		// User meta smart tags.
+		preg_match_all( "/\{user_meta key=\"(.+?)\"\}/", $content, $user_metas );
+
+		if ( ! empty( $user_metas[1] ) ) {
+
+			foreach ( $user_metas[1] as $key => $user_meta ) {
+
+				$value = is_user_logged_in() ? get_user_meta( get_current_user_id(), sanitize_text_field( $user_meta ), true )  : '';
+				$content = str_replace( $user_metas[0][ $key ], $value, $content );
+			}
+		}
+
 		// Field smart tags (settings, etc).
 		preg_match_all( "/\{field_id=\"(.+?)\"\}/", $content, $ids );
 
 		// We can only process field smart tags if we have $fields
 		if ( ! empty( $ids[1] ) && ! empty( $fields ) ) {
-
-
 
 			foreach ( $ids[1] as $key => $parts ) {
 				$field_parts = explode( '|', $parts );
