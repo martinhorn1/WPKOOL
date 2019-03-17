@@ -174,7 +174,7 @@ class Settings extends Settings_Page {
 		add_submenu_page(
 			self::PAGE_ID,
 			'',
-			__( 'Knowledge Base', 'elementor' ),
+			__( 'Get Help', 'elementor' ),
 			'manage_options',
 			'go_knowledge_base_site',
 			[ $this, 'handle_external_redirects' ]
@@ -254,7 +254,7 @@ class Settings extends Settings_Page {
 							<a href="<?php echo esc_url( Utils::get_create_new_post_url( $create_new_cpt ) ); ?>" class="button button-primary button-hero"><?php echo esc_html( $create_new_label ); ?></a>
 							<?php endif; ?>
 
-							<a href="https://go.elementor.com/getting-started/" target="_blank" class="button button-secondary button-hero"><?php echo __( 'Read the Full Article', 'elementor' ); ?></a>
+							<a href="https://go.elementor.com/getting-started/" target="_blank" class="button button-secondary button-hero"><?php echo __( 'Get the Full Guide', 'elementor' ); ?></a>
 						</div>
 					</div>
 				</div>
@@ -299,7 +299,7 @@ class Settings extends Settings_Page {
 				<i class="eicon-nerd-chuckle"></i>
 				<h2><?php echo __( 'Get Popup Builder', 'elementor' ); ?></h2>
 				<p><?php echo __( 'Popup Builder lets you take advantage of all the amazing features in Elementor, so you can build beautiful & highly converting popups. Go pro and start designing your popups today.', 'elementor' ); ?></p>
-				<a class="elementor-button elementor-button-default elementor-button-go-pro" target="_blank" href="<?php echo Utils::get_pro_link( 'https://elementor.com/pro/?utm_source=popup-templates&utm_campaign=gopro&utm_medium=wp-dash' ); ?>"><?php echo __( 'Go Pro', 'elementor' ); ?></a>
+				<a class="elementor-button elementor-button-default elementor-button-go-pro" target="_blank" href="<?php echo Utils::get_pro_link( 'https://elementor.com/popup-builder/?utm_source=popup-templates&utm_campaign=gopro&utm_medium=wp-dash' ); ?>"><?php echo __( 'Go Pro', 'elementor' ); ?></a>
 			</div>
 		</div><!-- /.wrap -->
 		<?php
@@ -320,7 +320,7 @@ class Settings extends Settings_Page {
 				<i class="eicon-nerd-chuckle"></i>
 				<h2><?php echo __( 'Get Theme Builder', 'elementor' ); ?></h2>
 				<p><?php echo __( 'Theme Builder is the industry leading all-in-one solution that lets you customize every part of your WordPress theme visually: Header, Footer, Single, Archive & WooCommerce.', 'elementor' ); ?></p>
-				<a class="elementor-button elementor-button-default elementor-button-go-pro" target="_blank" href="<?php echo Utils::get_pro_link( 'https://elementor.com/pro/?utm_source=theme-templates&utm_campaign=gopro&utm_medium=wp-dash' ); ?>"><?php echo __( 'Go Pro', 'elementor' ); ?></a>
+				<a class="elementor-button elementor-button-default elementor-button-go-pro" target="_blank" href="<?php echo Utils::get_pro_link( 'https://elementor.com/theme-builder/?utm_source=theme-templates&utm_campaign=gopro&utm_medium=wp-dash' ); ?>"><?php echo __( 'Go Pro', 'elementor' ); ?></a>
 			</div>
 		</div><!-- /.wrap -->
 		<?php
@@ -406,9 +406,7 @@ class Settings extends Settings_Page {
 								'field_args' => [
 									'type' => 'hidden',
 								],
-								'setting_args' => [
-									'sanitize_callback' => 'time',
-								],
+								'setting_args' => [ $validations_class_name, 'current_time' ],
 							],
 							'cpt_support' => [
 								'label' => __( 'Post Types', 'elementor' ),
@@ -701,7 +699,7 @@ class Settings extends Settings_Page {
 
 		foreach ( Responsive::get_editable_breakpoints() as $breakpoint_key => $breakpoint ) {
 			foreach ( [ 'add', 'update' ] as $action ) {
-				add_action( "{$action}_option_elementor_viewport_{$breakpoint_key}", [ 'Elementor\Responsive', 'compile_stylesheet_templates' ] );
+				add_action( "{$action}_option_elementor_viewport_{$breakpoint_key}", [ 'Elementor\Core\Responsive\Responsive', 'compile_stylesheet_templates' ] );
 			}
 		}
 	}
