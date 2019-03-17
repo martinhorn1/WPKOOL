@@ -24,8 +24,8 @@ When you're done, push your changes into a forked version of the repository and 
 
 * [Plugin Page](https://wordpress.org/plugins/dark-mode/)
 * [Trac Ticket](https://core.trac.wordpress.org/ticket/41928)
-* [GitHub Repository](https://github.com/danieltj27/Dark-Mode)
-* [Project Wiki](https://github.com/danieltj27/Dark-Mode/wiki)
+* [GitHub Repository](https://github.com/dgwyer/Dark-Mode)
+* [Project Wiki](https://github.com/dgwyer/Dark-Mode/wiki)
 
 ## Forgotten
 

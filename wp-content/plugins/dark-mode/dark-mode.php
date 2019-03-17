@@ -3,10 +3,10 @@
  * Plugin Name: Dark Mode
  * Plugin URI: https://wordpress.org/plugins/dark-mode/
  * Description: Lets your users make the WordPress admin dashboard darker.
- * Author: Daniel James
- * Author URI: https://www.danieltj.co.uk/
+ * Author: David Gwyer
+ * Author URI: https://www.wpgoplugins.com/
  * Text Domain: dark-mode
- * Version: 3.1
+ * Version: 3.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

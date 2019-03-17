@@ -14,6 +14,7 @@ Thank you to the list of people below for helping with the project. Should you b
 
 | Name                  | WordPress.org Username |
 |---------------------- |----------------------- |
+| David Gwyer           | dgwyer                 |
 | Daniel James          | danieltj               |
 | munyagu               | munyagu                |
 | Mel Choyce            | melchoyce              |

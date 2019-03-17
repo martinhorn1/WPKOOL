@@ -7,12 +7,6 @@
  * @since 3.0
  */
 class Dark_Mode {
-	/**
-	 * Plugin version constant.
-	 *
-	 * @since 3.0
-	 */
-	const PLUGIN_VERSION = '3.1';
 
 	/**
 	 * Make WordPress Dark.
@@ -129,7 +123,8 @@ class Dark_Mode {
 			$css_url = apply_filters( 'dark_mode_css', plugins_url( 'dark-mode' ) . '/dark-mode.css' );
 
 			// Enqueue the stylesheet.
-			wp_enqueue_style( 'dark_mode', $css_url, array(), self::PLUGIN_VERSION );
+			$ver = get_plugin_data( dirname(__FILE__) . '/dark-mode.php' )['Version'];
+			wp_enqueue_style( 'dark_mode', $css_url, array(), $ver );
 		}
 	}
 
@@ -233,7 +228,7 @@ class Dark_Mode {
 		// Check Dark Mode is the next plugin.
 		if ( 'dark-mode/dark-mode.php' === $file ) {
 			// Create the feedback link.
-			$feedback_link = '<a href="https://github.com/danieltj27/Dark-Mode/issues" target="_blank">' . __( 'Feedback', 'dark-mode' ) . '</a>';
+			$feedback_link = '<a href="https://github.com/dgwyer/Dark-Mode/issues" target="_blank">' . __( 'Feedback', 'dark-mode' ) . '</a>';
 
 			// Add the feedback link.
 			array_unshift( $links, $feedback_link );

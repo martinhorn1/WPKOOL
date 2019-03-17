@@ -1,9 +1,9 @@
 === Dark Mode ===
-Contributors: danieltj, munyagu, travel_girl, melchoyce, afercia, hedgefield, megane9988, presskopp, willrad, loumray, bueltge, dingo_bastard, yuanhao, leetaylor5455
+Contributors: dgwyer, danieltj, munyagu, travel_girl, melchoyce, afercia, hedgefield, megane9988, presskopp, willrad, loumray, bueltge, dingo_bastard, yuanhao, leetaylor5455
 Tags: dark, style, admin, dashboard, profile
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 3.1
+Stable tag: 3.2
 Requires PHP: 5.4
 License: GNU GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,13 +16,13 @@ This is a beta plugin that might one day be part of the WordPress core. Please d
 
 Using technology at night time can have a negative effect on your eyesight. Dark Mode will darken the colors of your admin dashboard making it easier for you to work at night.
 
-For information on the progress of this plugin, please refer to the [Trac ticket](https://core.trac.wordpress.org/ticket/41928) or you can get involved on the [GitHub repository](https://github.com/danieltj27/Dark-Mode).
+For information on the progress of this plugin, please refer to the [Trac ticket](https://core.trac.wordpress.org/ticket/41928) or you can get involved on the [GitHub repository](https://github.com/dgwyer/Dark-Mode).
 
 = Developers =
 
-There are many hooks and filters available within the Dark Mode plugin which allow you to extend it's capabilities with small amounts of code. Please see the [GitHub wiki](https://github.com/danieltj27/Dark-Mode/wiki) pages for more information.
+There are many hooks and filters available within the Dark Mode plugin which allow you to extend it's capabilities with small amounts of code. Please see the [GitHub wiki](https://github.com/dgwyer/Dark-Mode/wiki) pages for more information.
 
-To learn how you can make your own plugins compatible with Dark Mode, please read the [compatibility guide](https://github.com/danieltj27/Dark-Mode/wiki/Help:-Plugin-Compatibility-Guide) located on the GitHub Repository.
+To learn how you can make your own plugins compatible with Dark Mode, please read the [compatibility guide](https://github.com/dgwyer/Dark-Mode/wiki/Help:-Plugin-Compatibility-Guide) located on the GitHub Repository.
 
 = Translators =
 
@@ -58,7 +58,7 @@ A lot more work was needed to ensure that it is stable, and it didn't fit in wit
 
 = Can I contribute to this plugin? =
 
-Yes, you can follow the [Trac ticket](https://core.trac.wordpress.org/ticket/41928) for updates and get involved on [GitHub](https://github.com/danieltj27/Dark-Mode) with suggestions, feedback and code contributions.
+Yes, you can please open an [issue](https://github.com/dgwyer/Dark-Mode/issues) or submit a [pull request](https://github.com/dgwyer/Dark-Mode/pulls). All suggestions, feedback and code contributions are most welcome!
 
 == Screenshots ==
 
@@ -69,6 +69,13 @@ Yes, you can follow the [Trac ticket](https://core.trac.wordpress.org/ticket/419
 
 == Changelog ==
 
+= Latest Changes =
+
+Refer to the [GitHub commit logs](https://github.com/dgwyer/Dark-Mode/commits) for more information regarding the latest changes.
+
 = Version History =
 
-Refer to the [GitHub commit logs](https://github.com/danieltj27/Dark-Mode/commits) for more information regarding the latest changes.
+= 3.2 - March 15, 2019 =
+
+* Updated author and GitHub links.
+* Removed PLUGIN_VERSION constant. The plugin version is now derived dynamically so you don't have to update manually.
