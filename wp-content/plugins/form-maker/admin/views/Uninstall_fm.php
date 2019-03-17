@@ -45,8 +45,8 @@ class FMViewUninstall_fm extends FMAdminView {
     ?>
     <div class="goodbye-text">
       <?php
-      $support_team = '<a href="https://web-dorado.com/support/contact-us.html" target="_blank">' . __('support team', WDFMInstance(self::PLUGIN)->prefix) . '</a>';
-      $contact_us = '<a href="https://web-dorado.com/support/contact-us.html" target="_blank">' . __('Contact us', WDFMInstance(self::PLUGIN)->prefix) . '</a>';
+      $support_team = '<a href="https://help.10web.io/hc/en-us/requests/new" target="_blank">' . __('support team', WDFMInstance(self::PLUGIN)->prefix) . '</a>';
+      $contact_us = '<a href="https://help.10web.io/hc/en-us/requests/new" target="_blank">' . __('Contact us', WDFMInstance(self::PLUGIN)->prefix) . '</a>';
       echo sprintf(__("Before uninstalling the plugin, please Contact our %s. We'll do our best to help you out with your issue. We value each and every user and value what's right for our users in everything we do.<br />
       However, if anyway you have made a decision to uninstall the plugin, please take a minute to %s and tell what you didn't like for our plugins further improvement and development. Thank you !!!", WDFMInstance(self::PLUGIN)->prefix), $support_team, $contact_us); ?>
     </div>
@@ -73,18 +73,6 @@ class FMViewUninstall_fm extends FMAdminView {
             ?>
             <p><?php echo $table; ?></p>
             <?php
-          }
-          foreach ( $params['addons'] as $addon => $addon_name ) {
-            if ( defined($addon) && is_plugin_active(constant($addon)) ) {
-              if ( is_array($addon_name) ) {
-                foreach ( $addon_name as $ad_name ) {
-                  echo '<p>' . WDFMInstance(self::PLUGIN)->prefix . 'formmaker_' . $ad_name . '</p>';
-                }
-              }
-              else {
-                echo '<p>' . WDFMInstance(self::PLUGIN)->prefix . 'formmaker_' . $addon_name . '</p>';
-              }
-            }
           }
           ?>
         </td>

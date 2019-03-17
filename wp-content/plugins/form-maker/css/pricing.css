@@ -444,12 +444,12 @@
 .fm-topbar-container * {
   box-sizing: border-box;
 }
-.fm-topbar {
+.fm-topbar-container .fm-topbar {
   background-color: #FFFFFF;
   border: 1px solid #D0D0D080;
   border-radius: 7px;
   color: #000000;
-  padding: 5px;
+  padding: 10px;
 }
 .fm-topbar-content {
   display: flex;
@@ -701,13 +701,13 @@
   height: 100%;
   text-align: center;
 }
-.fm-limitation-alert span.dashicons-no-alt {
+.fm-limitation-alert span.fm-ico-delete {
   cursor: pointer;
   position: absolute;
   top: 10px;
   right: 10px;
   color: #000000;
-  font-size: 20px;
+  font-size: 10px;
   opacity: 0.3;
 }
 .fm-hidden {
@@ -733,7 +733,7 @@
   line-height: 26px;
 }
 /* Limitations alert end */
-/* Add-ons start */
+/* Extensions start */
 .fm-add-ons {
 	display: flex;
 	flex-wrap: wrap;
@@ -857,4 +857,4 @@
 .fm-add-ons .fm-add-on .fm-add-on-learn-more:hover {
 	color: rgba(0, 115, 170, 0.8);
 }
-/* Add-ons end */
+/* Extensions end */

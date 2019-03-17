@@ -1,11 +1,11 @@
-var editor = CodeMirror.fromTextArea(document.getElementById("source"), {
-	lineNumbers: true,
-	lineWrapping: true,
-	mode: "htmlmixed",
-	value: form_front
-});
-jQuery(document).ready(function () {
-	
+var editor;
+jQuery(document).on('fm_tab_layout_loaded', function () {
+  editor = CodeMirror.fromTextArea(document.getElementById("source"), {
+    lineNumbers: true,
+    lineWrapping: true,
+    mode: "htmlmixed",
+    value: form_front
+  });
 	if (custom_front == '') {
 		custom_front = form_front;
 	}

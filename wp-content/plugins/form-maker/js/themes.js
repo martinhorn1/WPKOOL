@@ -1,8 +1,8 @@
 jQuery(document).ready(function() {
   jQuery(".fm-themes-tabs li a").on("click", function(){
-    jQuery(".fm-themes-tabs-container .fm-themes-container").hide();
+    jQuery(".fm-themes-tabs-container .fm-themes-container").addClass('fm-hide');
     jQuery(".fm-themes-tabs li a").removeClass("fm-theme-active-tab");
-    jQuery("#"+jQuery(this).attr("id")+'-content').show();
+    jQuery("#"+jQuery(this).attr("id")+'-content').removeClass('fm-hide');
     jQuery(this).addClass("fm-theme-active-tab");
     jQuery("#active_tab").val(jQuery(this).attr("id"));
     return false;
@@ -29,7 +29,7 @@ jQuery(document).ready(function() {
     if (jQuery(window).width() > 768 && jQuery(this).scrollTop() > fm_form_example_pos - 32) {
       jQuery('.form-example-preview').css({
         'position': 'fixed',
-        'top': '32px',
+        'bottom': '75px',
         'z-index': '10000',
         'width': jQuery(".form-example-preview").outerWidth() + 'px'
       });

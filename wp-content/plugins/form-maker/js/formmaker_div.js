@@ -342,7 +342,6 @@ function right_row(id) {
 	
 	
 	sortable_columns();
-	remove_empty_columns();
 }
 
 function left_row(id) {
@@ -364,7 +363,6 @@ function left_row(id) {
 //		wdform_section.removeChild(wdform_column);
 	
 	sortable_columns();
-	remove_empty_columns();
 }
 
 function page_up(id) {
@@ -2818,31 +2816,44 @@ function go_to_type_date(new_id)
 ///////////  el_page_break   //////////////////
 ///////////////////////////////////////////////
 
-function remove_section_break(id)
-{
-	var wdform_section_break=document.getElementById( "wdform_field"+id).parentNode;
-	
+function remove_section_break(id) {
+  var wdform_section_break = jQuery("#wdform_field" + id).parent();
+  var move = wdform_section_break.next();
+  var to = wdform_section_break.prev();
 
-	move=wdform_section_break.nextSibling;
-	to=wdform_section_break.previousSibling;
-	
-	
-	l=move.childNodes.length;
-	for(k=0;k<l;k++)
-	{
-		if(to.childNodes[k])
-		{
-			while(move.childNodes[k].firstChild)
-				to.childNodes[k].appendChild(move.childNodes[k].firstChild);
+	move.find('.wdform_column').each(function(col_index, column) {
+		var to_col = to.children().eq(col_index);
+		if (!to_col || to_col.hasClass('wdform_column_empty')) {
+			to.find('.wdform_column_empty').before(column);
 		}
-		else
-			to.appendChild(move.childNodes[k]);			
-	}
-	
-	wdform_section_break.parentNode.removeChild(wdform_section_break.nextSibling);
-		
-	wdform_section_break.parentNode.removeChild(wdform_section_break);
-	
+		else {
+			jQuery(column).find('.wdform_row').each(function(row_index, row) {
+				to_col.append(row);
+			});
+		}
+	});
+  wdform_section_break.remove();
+  move.remove();
+}
+
+function fm_remove_section(remove_childs) {
+  var section = jQuery('.fm-row-deleting').first().closest('.wdform_section');
+  var wdform_section_break = section.prev('.wdform_tr_section_break');
+
+  if (!remove_childs) {
+    var to = section.prevAll('.wdform_section:first');
+    if (!to.length) {
+    	to = section.nextAll('.wdform_section:first');
+		}
+		if (!to.length) {
+    	return;
+		}
+    section.find('.wdform_column').each(function(col_index, column) {
+      to.append(column);
+    });
+  }
+  wdform_section_break.remove();
+  section.remove();
 }
 
 function remove_row(id)
@@ -2870,11 +2881,11 @@ function show_or_hide(id) {
 }
 
 function show_form_view(id) {
-	jQuery("#form_id_tempform_view"+id).show('medium');
+	jQuery("#form_id_tempform_view"+id).show();
 }
 
 function hide_form_view(id) {
-	jQuery("#form_id_tempform_view"+id).hide('medium');
+	jQuery("#form_id_tempform_view"+id).hide();
 }
 
 function generate_buttons(id) {
@@ -2989,6 +3000,31 @@ function remove_page(id) {
   fm_popup_toggle('fm_delete_page_popup_container');
 }
 
+function remove_field(id, e) {
+  jQuery('#fm_delete_field_id').val(id);
+  fm_popup_toggle('fm_delete_field_popup_container');
+  if ( typeof e != "undefined" ) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}
+
+function fm_remove_column_popup(that) {
+  jQuery('.wdform_column').removeClass('fm-column-deleting');
+	jQuery(that).closest('.wdform_column').addClass('fm-column-deleting');
+  fm_popup_toggle('fm_delete_column_popup_container');
+}
+
+function fm_remove_row_popup(that) {
+  jQuery('.wdform_section').removeClass('fm-row-deleting');
+	jQuery(that).closest('.wdform_section').addClass('fm-row-deleting');
+  fm_popup_toggle('fm_delete_row_popup_container');
+}
+
+function fm_remove_column() {
+  jQuery('.fm-column-deleting').remove();
+}
+
 function remove_page_only() {
   id = jQuery('#fm_delete_page_id').val();
   refresh_pages_without_deleting(id);
@@ -3054,164 +3090,46 @@ function refresh_pages(id) {
   form_view_count = 0;
   destroyChildren(document.getElementById("pages"));
   var form_view_count = jQuery(".wdform-page-and-images").length;
+  generate_page_bar();
   if (form_view_count > 1) {
-      jQuery( ".wdform-page-and-images" ).each(function() {
-        var index = jQuery(this).find('.form_id_tempform_view_img').attr('id').split("form_id_tempform_view_img");
-        i = index[1];
-        page_number = document.createElement('span');
-        page_number.setAttribute('id', 'page_' + i);
-        page_number.setAttribute('class', 'page_deactive');
-        page_number.innerHTML = (temp);
-        temp++;
-        document.getElementById("pages").appendChild(page_number);
-      });
+    jQuery('#page_bar').removeClass('form_view_hide');
   }
   else {
-    destroyChildren(document.getElementById("edit_page_navigation"));
-    jQuery( ".wdform-page-and-images" ).each(function() {
-      jQuery(this).find('.wdform_page').show();
-      var index = jQuery(this).find('.form_id_tempform_view_img').attr('id').split("form_id_tempform_view_img");
-      i = index[1];
-      document.getElementById('form_id_tempform_view' + i).parentNode.style.borderWidth = "0px";
-      document.getElementById("form_id_temppage_nav" + i).innerHTML = "";
-      form_view = i;
-      return;
-    });
+		destroyChildren(document.getElementById("edit_page_navigation"));
+		jQuery('#page_bar').addClass('form_view_hide');
+		jQuery(".wdform_page").removeAttr('style');
   }
 }
 
 function refresh_pages_without_deleting(id) {
-  form_view_count = 0;
-  form_view_elemet = document.getElementById("form_id_tempform_view" + id);
-  wdform_row = form_view_elemet.getElementsByClassName('wdform_row');
+  var form_view_elemet = jQuery("#form_id_tempform_view" + id);
+  var wdform_row = form_view_elemet.find('.wdform_row');
   var form_view_count = jQuery(".wdform-page-and-images").length;
   if (form_view_count == 2) {
     jQuery(".form_id_tempform_view_img").removeClass('form_view_show').addClass('form_view_hide');
     jQuery('*[id*=form_id_temppage_nav]').empty();
   }
 
-  if (form_view_count == 1) {
-    form_view_elemet.innerHTML = '';
-    tbody = form_view_elemet;
-
-    tr = document.createElement('div');
-    tr.setAttribute('class', 'wdform_section');
-    tr.style.display = "table-row";
-
-    tr_page_nav = document.createElement('div');
-    tr_page_nav.setAttribute('valign', 'top');
-    tr_page_nav.setAttribute('class', 'wdform_footer');
-    tr_page_nav.style.width = "100%";
-
-    td_page_nav = document.createElement('div');
-    td_page_nav.style.width = "100%";
-
-    table_min_page_nav = document.createElement('div');
-    table_min_page_nav.style.width = "100%";
-    table_min_page_nav.style.display = "table";
-
-    tbody_min_page_nav = document.createElement('div');
-    tbody_min_page_nav.style.display = "table-row-group";
-    tr_min_page_nav = document.createElement('div');
-    tr_min_page_nav.setAttribute('id', 'form_id_temppage_nav' + form_view);
-    tr_min_page_nav.style.display = "table-row";
-
-    table_min = document.createElement('div');
-    table_min.setAttribute('class', 'wdform_column');
-
-    tr.appendChild(table_min);
-
-    tbody_min_page_nav.appendChild(tr_min_page_nav);
-    table_min_page_nav.appendChild(tbody_min_page_nav);
-    td_page_nav.appendChild(table_min_page_nav);
-    tr_page_nav.appendChild(td_page_nav);
-    tbody.appendChild(tr);
-    tbody.appendChild(tr_page_nav);
-
+  var table = form_view_elemet.parent();
+  var to = table.prevAll('.wdform-page-and-images:first');
+  if (!to.length) {
+    to = table.nextAll('.wdform-page-and-images:first');
+  }
+  if (!to.length) {
     return;
   }
-
-  table = form_view_elemet.parentNode.previousSibling;
-
-  while (table) {
-    if (table.tagName == "DIV") {
-      break;
+  table.find('.wdform_section').each(function (col_index, column) {
+    var to_col = to.find('.wdform_section').eq(col_index);
+    if (!to_col.length) {
+      to.find('.wdform_row_empty').before(column);
     }
     else {
-      table = table.previousSibling;
+      jQuery(column).find('.wdform_column:not(:empty)').each(function (row_index, row) {
+        to_col.append(row);
+      });
     }
-  }
-
-  if (!table) {
-    table = form_view_elemet.parentNode.nextSibling;
-    while (table) {
-      if (table.tagName == "DIV") {
-        break;
-      }
-      else {
-        table = table.nextSibling;
-      }
-    }
-  }
-
-  if (wdform_row.length > 0) {
-    table_form_view = table.getElementsByClassName("wdform_page")[0];
-    i = gen;
-    gen++;
-
-    var wdform_row = document.createElement('div');
-    wdform_row.setAttribute("wdid", i);
-    wdform_row.setAttribute("type", "type_section_break");
-    wdform_row.setAttribute("class", "wdform_tr_section_break");
-
-    var wdform_field = document.createElement('div');
-    wdform_field.setAttribute("id", "wdform_field" + i);
-    wdform_field.setAttribute("type", "type_section_break");
-    wdform_field.setAttribute("class", "wdform_field_section_break");
-
-    var wdform_arrows = document.createElement('div');
-    wdform_arrows.setAttribute("id", "wdform_arrows" + i);
-    wdform_arrows.setAttribute("class", "wdform_arrows");
-    wdform_arrows.style.display = 'none';
-    wdform_field.appendChild(wdform_arrows);
-    wdform_row.appendChild(wdform_field);
-    var option = document.createElement('div');
-    option.setAttribute("id", i + "_element_labelform_id_temp");
-    option.style.color = 'red';
-    option.innerHTML = "Section Break";
-    wdform_row.appendChild(option);
-    wdform_page = document.getElementById('form_id_tempform_view' + form_view);
-
-    var arrows_body = '<span class="wdform_arrows_basic wdform_arrows_container">' +
-												'<span id="edit_' + i + '" valign="middle" class="element_toolbar">' +
-													'<span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' + i + '&quot;)"></span>' +
-												'</span>' +
-												'<span id="duplicate_' + i + '" valign="middle" class="element_toolbar">' +
-													'<span title="Duplicate the field" class="page_toolbar dashicons dashicons-admin-page" onclick="duplicate(&quot;' + i + '&quot;)"></span>' +
-												'</span>' +
-												'<span id="X_' + i + '" valign="middle" align="right" class="element_toolbar">' +
-													'<span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_section_break(&quot;' + i + '&quot;)"></span>' +
-												'</span>' +
-											'</span>';
-    wdform_arrows.innerHTML = arrows_body;
-    var in_editor = document.createElement("div");
-    in_editor.setAttribute("id", i + "_element_sectionform_id_temp");
-    in_editor.setAttribute("align", 'left');
-    in_editor.setAttribute("class", 'wdform_section_break');
-
-    in_editor.innerHTML = "<div class='wdform-section-break-div' style='min-width: 300px; border-top:1px solid'></div>";
-    wdform_field.appendChild(in_editor);
-
-    beforeTr = table_form_view.lastChild;
-    table_form_view.insertBefore(wdform_row, beforeTr);
-
-    while (form_view_elemet.childNodes[1]) {
-      beforeTr = table_form_view.lastChild;
-      table_form_view.insertBefore(form_view_elemet.firstChild, beforeTr);
-    }
-  }
-  form_view_table = form_view_elemet.parentNode;
-  document.getElementById("take").removeChild(form_view_table);
+  });
+  table.remove();
 
   refresh_pages(id);
   all_sortable_events();
@@ -3307,7 +3225,6 @@ function make_page_percentage_front() {
 function make_page_none_front() {
   var no_pagbar = document.createElement('div');
   no_pagbar.innerHTML = "NO PAGE BAR";
-  no_pagbar.style.cssText = 'width:100px; padding:10px; border:1px solid #ccc;';
 
   jQuery('#pages').empty();
   jQuery('#pages').append(no_pagbar);
@@ -3343,7 +3260,8 @@ function remove_add_(id)
 			}
 }
 
-function duplicate(id) {
+function duplicate(id, e) {
+	jQuery("#wdform_field"+id).closest(".wdform_column").after("<div id='cur_column' class='wdform_column'></div>");
   //document.getElementById('pos_end').checked = true;
 	type=document.getElementById("wdform_field"+id).getAttribute('type');
 	//////////////////////////////parameter take
@@ -4622,7 +4540,9 @@ function duplicate(id) {
 	
 	need_enable=false;
 		add(0, false);
-		need_enable=true;	
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		need_enable=true;
+  if ( typeof e != "undefined" ) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
 }

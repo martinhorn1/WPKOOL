@@ -501,9 +501,9 @@ class FMModelForm_maker {
           }
         }
       }
-      $css_content .= '.fm-form-container.fm-theme' . $theme_id . ' .fm-action-buttons {' .
+      $css_content .= '.fm-form-container.fm-theme' . $theme_id . ' .fm-action-buttons * {' .
         (!empty( $form_theme[ 'CBPFontWeight' ] ) ? 'font-weight:' . $form_theme[ 'CBPFontWeight' ] . ';' : '') .
-        (!empty( $form_theme[ 'CBPFontSize' ] ) ? 'font-size:' . $form_theme[ 'CBPFontSize' ] . 'px;' : '') .
+        (!empty( $form_theme[ 'CBPFontSize' ] ) ? 'font-size:' . $form_theme[ 'CBPFontSize' ] . 'px !important;' : '') .
         (!empty( $form_theme[ 'CBPColor' ] ) ? 'color:' . $form_theme[ 'CBPColor' ] . ';' : '') .
         '}';
       $css_content .= '.fm-form-container.fm-theme' . $theme_id . ' .closing-form,
@@ -1219,7 +1219,7 @@ class FMModelForm_maker {
         }
         else {
           $result_temp = $this->save_db( $id_for_old );
-          // Enqueue any message from an add-on to display.
+          // Enqueue any message from an extension to display.
           if ( isset( $result_temp[ 'message' ] ) ) {
             $_SESSION['massage_after_submit' . $id] = $result_temp['message'];
             $_SESSION['error_or_no' . $id ] = 0;
@@ -1419,7 +1419,6 @@ class FMModelForm_maker {
       $missing_required_field = FALSE;
       $invalid_email_address = FALSE;
       $required = (isset($params[$i]) && strpos($params[$i], '*:*yes*:*w_required*:*') !== FALSE ? 1 : 0);
-
       if ( !in_array( $i, $disabled_fields ) ) {
         switch ( $type ) {
           case 'type_text':
@@ -1432,14 +1431,14 @@ class FMModelForm_maker {
           case "type_textarea":
           case "type_send_copy":
           case "type_spinner": {
-            $value = isset( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ? esc_html( $_POST[ 'wdform_' . $i . "_element" . $id ] ) : "";
-            if ( $required && !isset( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ) {
+            $value = isset( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ? trim( esc_html( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ) : "";
+			if ( $required && empty( $value ) ) {
               $missing_required_field = TRUE;
             }
             break;
           }
           case "type_submitter_mail": {
-            $value = isset( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ? esc_html( $_POST[ 'wdform_' . $i . "_element" . $id ] ) : "";
+            $value = isset( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ? trim( esc_html( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ) : "";
             if ( $required && !isset( $_POST[ 'wdform_' . $i . "_element" . $id ] ) ) {
               $missing_required_field = TRUE;
             }
@@ -1515,8 +1514,8 @@ class FMModelForm_maker {
             break;
           }
           case "type_name": {
-            $value0 = isset( $_POST[ 'wdform_' . $i . "_element_first" . $id ] ) ? esc_html( $_POST[ 'wdform_' . $i . "_element_first" . $id ] ) : "";
-            $value1 = isset( $_POST[ 'wdform_' . $i . "_element_last" . $id ] ) ? esc_html( $_POST[ 'wdform_' . $i . "_element_last" . $id ] ) : "";
+            $value0 = isset( $_POST[ 'wdform_' . $i . "_element_first" . $id ] ) ? trim( esc_html( $_POST[ 'wdform_' . $i . "_element_first" . $id ] ) ) : "";
+            $value1 = isset( $_POST[ 'wdform_' . $i . "_element_last" . $id ] ) ? trim( esc_html( $_POST[ 'wdform_' . $i . "_element_last" . $id ] ) ) : "";
             $value2 = isset( $_POST[ 'wdform_' . $i . "_element_title" . $id ] ) ? esc_html( $_POST[ 'wdform_' . $i . "_element_title" . $id ] ) : "";
             $value3 = isset( $_POST[ 'wdform_' . $i . "_element_middle" . $id ] ) ? esc_html( $_POST[ 'wdform_' . $i . "_element_middle" . $id ] ) : "";
 
@@ -1527,7 +1526,7 @@ class FMModelForm_maker {
             if ( $value3 ) {
               $value .= '@@@' . $value3;
             }
-            if ( $required && ( !isset( $_POST[ 'wdform_' . $i . "_element_first" . $id ] ) || !isset( $_POST[ 'wdform_' . $i . "_element_last" . $id ] ) ) ) {
+            if ( $required && ( empty($value0) || empty($value1) ) ) {
               $missing_required_field = TRUE;
             }
             break;
@@ -1546,7 +1545,7 @@ class FMModelForm_maker {
                 $upload_dir = wp_upload_dir();
                 $files = isset( $_FILES[ 'wdform_' . $i . '_file' . $id ] ) ? $_FILES[ 'wdform_' . $i . '_file' . $id ] : array();
                 if ( !empty($files) ) {
-			          	foreach ( $files[ 'name' ] as $file_key => $file_name ) {
+				   foreach ( $files[ 'name' ] as $file_key => $file_name ) {
                     if ( $file_name ) {
                       $untilupload = $form->form_fields;
                       $untilupload = substr( $untilupload, strpos( $untilupload, $i . '*:*id*:*type_file_upload' ), -1 );
@@ -2176,7 +2175,6 @@ class FMModelForm_maker {
         $fvals[ '{' . $i . '}' ] = '';
       }
     }
-
     $user_fields = array(
       "subid" => $group_id,
       "ip" => $ip,
@@ -2416,13 +2414,13 @@ class FMModelForm_maker {
       do_action( 'fm_addon_frontend_init', $frontend_parmas );
     }
     $return_value = array( 'group_id' => $group_id, 'all_files' => $all_files, 'redirect_url' => $str );
-    // Get output from add-ons.
+    // Get output from extensions.
     $return_value = $this->get_output_from_add_ons( $return_value );
     return $return_value;
   }
 
   /**
-   * Get output from add-ons.
+   * Get output from extensions.
    *
    * @param array $params
    * @return array $$outputs
@@ -3233,7 +3231,7 @@ class FMModelForm_maker {
     $header_arr['cc'] = $row->mail_cc_user;
     $header_arr['bcc'] = $row->mail_bcc_user;
 
-    // PDF output for add-on.
+    // PDF output for extension.
     $pdf_data = array('attach_to_admin' => 0, 'attach_to_user' => 0, 'pdf_url' => '');
     if ( WDFMInstance(self::PLUGIN)->is_free != 2 ) {
       $pdf_data = apply_filters( 'fm_pdf_data_frontend', $pdf_data, array( 'custom_fields' => $this->custom_fields, 'form_id' => $id ) );
@@ -3413,7 +3411,7 @@ class FMModelForm_maker {
       }
     }
 
-    // Add-on conditional email.
+    // Extension conditional email.
     if ( has_action('fm_set_params_frontend_init') && WDFMInstance(self::PLUGIN)->is_free != 2 ) {
       $fm_email_params = $row->sendemail ? array(
         'admin_body' => $admin_body,
@@ -3458,8 +3456,8 @@ class FMModelForm_maker {
     }
 
     if ( $row->submit_text_type != 4 || $row->url == '' ) {
-      // This ensures that no message is enqueued by an add-on.
-      if ( !$_SESSION[ 'massage_after_submit' . $id ] ) {
+      // This ensures that no message is enqueued by an extension.
+      if ( !isset($_SESSION[ 'massage_after_submit' . $id ]) || !$_SESSION[ 'massage_after_submit' . $id ] ) {
         $_SESSION[ 'massage_after_submit' . $id ] = $msg;
       }
       if ( $row->type == 'popover' || $row->type == 'topbar' || $row->type == 'scrollbox' ) {

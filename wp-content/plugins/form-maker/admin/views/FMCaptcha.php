@@ -54,7 +54,7 @@ class FMViewFormmakerwdcaptcha extends FMAdminView {
 			for ($c = 0; $c < 150; $c++) {
 				$x = rand(0, $cap_width - 1);
 				$y = rand(0, 29);
-				$col = '0x' . rand(0, 9) . '0' . rand(0, 9) . '0' . rand(0, 9) . '0';
+        $col = intval( '0x' . rand(0, 9) . '0' . rand(0, 9) . '0' . rand(0, 9) . '0' );
 				imagesetpixel($canvas, $x, $y, $col);
 			}
 			

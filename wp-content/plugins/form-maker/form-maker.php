@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Form Maker
- * Plugin URI: https://web-dorado.com/products/form-maker-wordpress.html
+ * Plugin URI: https://10web.io/plugins/wordpress-form-maker/
  * Description: This plugin is a modern and advanced tool for easy and fast creating of a WordPress Form. The backend interface is intuitive and user friendly which allows users far from scripting and programming to create WordPress Forms.
- * Version: 1.12.42
- * Author: WebDorado Form Builder Team
- * Author URI: https://web-dorado.com/wordpress-plugins-bundle.html
+ * Version: 1.13.2
+ * Author: Form Builder Team
+ * Author URI: https://10web.io/pricing/
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
@@ -95,8 +95,8 @@ final class WDFM {
     $this->plugin_url = plugins_url(plugin_basename(dirname(__FILE__)));
     $this->front_urls = $this->get_front_urls();
     $this->main_file = plugin_basename(__FILE__);
-    $this->plugin_version = '1.12.42';
-    $this->db_version = '2.12.42';
+    $this->plugin_version = '1.13.2';
+    $this->db_version = '2.13.2';
     $this->menu_postfix = ($this->is_free == 2 ? '_fmc' : '_fm');
     $this->plugin_postfix = ($this->is_free == 2 ? '_fmc' : '');
     $this->menu_slug = 'manage' . $this->menu_postfix;
@@ -174,7 +174,8 @@ final class WDFM {
       add_shortcode('email_verification' . $this->plugin_postfix, array($this, 'fm_email_verification_shortcode'));
     }
     // Action to display not emedded type forms.
-    if (!is_admin() && !in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'))) {
+    global $pagenow;
+    if (!is_admin() || !in_array($pagenow, array('wp-login.php', 'wp-register.php'))) {
       add_action('wp_footer', array($this, 'FM_front_end_main'));
     }
 
@@ -197,7 +198,7 @@ final class WDFM {
     // Set per_page option for submissions.
     add_filter('set-screen-option', array($this, 'set_option_submissions'), 10, 3);
 
-    // Check add-ons versions.
+    // Check extensions versions.
     if ( $this->is_free != 2 && isset( $_GET[ 'page' ] ) && strpos( esc_html( $_GET[ 'page' ] ), '_' . $this->handle_prefix ) !== FALSE ) {
       add_action('admin_notices', array($this, 'fm_check_addons_compatibility'));
     }
@@ -227,7 +228,7 @@ final class WDFM {
   }
 
   public function enqueue_editor_styles() {
-    wp_enqueue_style('twbb-editor-styles', $this->plugin_url . '/css/fm_elementor_icon/fm_elementor_icon.css', array(), '1.0.0');
+    wp_enqueue_style($this->handle_prefix . '-icons', $this->plugin_url . '/fonts/style.css', array(), '1.0.0');
   }
 
   /**
@@ -245,8 +246,8 @@ final class WDFM {
    * @param $elements_manager
    */
   public function register_widget_category( $elements_manager ) {
-    $elements_manager->add_category('tenweb-widgets', array(
-      'title' => __('10WEB', 'tenweb-builder'),
+    $elements_manager->add_category('tenweb-plugins-widgets', array(
+      'title' => __('10WEB Plugins', 'tenweb-builder'),
       'icon' => 'fa fa-plug',
     ));
   }
@@ -392,7 +393,7 @@ final class WDFM {
       require_once($this->plugin_dir . '/WDFM.php');
     }
 
-    // Initialize add-ons.
+    // Initialize extensions.
     if ($this->is_free != 2) {
       do_action('fm_init_addons');
     }
@@ -416,11 +417,7 @@ final class WDFM {
     add_submenu_page(null, __('Blocked IPs', $this->prefix), __('Blocked IPs', $this->prefix), 'manage_options', 'blocked_ips' . $this->menu_postfix, array($this, 'form_maker'));
     add_submenu_page($parent_slug, __('Themes', $this->prefix), __('Themes', $this->prefix), 'manage_options', 'themes' . $this->menu_postfix, array($this, 'form_maker'));
     add_submenu_page($parent_slug, __('Options', $this->prefix), __('Options', $this->prefix), 'manage_options', 'options' . $this->menu_postfix, array($this, 'form_maker'));
-    if ( $this->is_free ) {
-      add_submenu_page($parent_slug, __('Premium Version', $this->prefix), __('Premium Version', $this->prefix), 'manage_options', 'pricing' . $this->menu_postfix, array($this, 'form_maker'));
-    }
     add_submenu_page(null, __('Uninstall', $this->prefix), __('Uninstall', $this->prefix), 'manage_options', 'uninstall' . $this->menu_postfix, array($this, 'form_maker'));
-	  add_submenu_page($parent_slug, __('Add-ons', $this->prefix), __('Add-ons', $this->prefix), 'manage_options', 'addons' . $this->menu_postfix, array($this , 'form_maker'));
   }
 
   /**
@@ -503,17 +500,21 @@ final class WDFM {
       die('Access Denied');
     }
     $page = WDW_FM_Library(self::PLUGIN)->get('page');
-    if (($page != '') && (($page == 'manage' . $this->menu_postfix) || ($page == 'options' . $this->menu_postfix) || ($page == 'submissions' . $this->menu_postfix) || ($page == 'blocked_ips' . $this->menu_postfix) || ($page == 'themes' . $this->menu_postfix) || ($page == 'uninstall' . $this->menu_postfix) || ($page == 'addons' . $this->menu_postfix) || ($this->is_free && $page == 'pricing' . $this->menu_postfix))) {
+    if (($page != '') && (($page == 'manage' . $this->menu_postfix) || ($page == 'options' . $this->menu_postfix) || ($page == 'submissions' . $this->menu_postfix) || ($page == 'blocked_ips' . $this->menu_postfix) || ($page == 'themes' . $this->menu_postfix) || ($page == 'uninstall' . $this->menu_postfix))) {
       $page = ucfirst(substr($page, 0, strlen($page) - strlen($this->menu_postfix)));
-      // This ugly span is here to hide admin output while css files are not loaded. Temporary.
-      // todo: Remove span somehow.
       echo '<div id="fm_loading"></div>';
-      echo '<span id="fm_admin_container" class="fm-form-container hidden">';
-      require_once ($this->plugin_dir . '/admin/controllers/' . $page . '_fm.php');
-      $controller_class = 'FMController' . $page . $this->menu_postfix;
-      $controller = new $controller_class();
-      $controller->execute();
-      echo '</span>';
+      echo '<div id="fm_admin_container" class="fm-form-container" style="display: none;">';
+      try {
+        require_once ($this->plugin_dir . '/admin/controllers/' . $page . '_fm.php');
+        $controller_class = 'FMController' . $page . $this->menu_postfix;
+        $controller = new $controller_class();
+        $controller->execute();
+      } catch (Exception $e) {
+        ob_start();
+        debug_print_backtrace();
+        error_log(ob_get_clean());
+      }
+      echo '</div>';
     }
   }
 
@@ -552,18 +553,26 @@ final class WDFM {
 
     wp_register_script($this->handle_prefix . '-phone_field', $this->plugin_url . '/js/intlTelInput.js', array(), '11.0.0');
 
+    // For drag and drop on mobiles.
+    wp_register_script($this->handle_prefix . '_jquery.ui.touch-punch.min', $this->plugin_url . '/js/jquery.ui.touch-punch.min.js', array('jquery'), '0.2.3');
+
     wp_register_script($this->handle_prefix . '-admin', $this->plugin_url . '/js/form_maker_admin.js', array(), $this->plugin_version);
     wp_register_script($this->handle_prefix . '-manage', $this->plugin_url . '/js/form_maker_manage.js', array(), $this->plugin_version);
     wp_register_script($this->handle_prefix . '-manage-edit', $this->plugin_url . '/js/form_maker_manage_edit.js', array(), $this->plugin_version);
     wp_register_script($this->handle_prefix . '-formmaker_div', $this->plugin_url . '/js/formmaker_div.js', array(), $this->plugin_version);
     wp_register_script($this->handle_prefix . '-form-options', $this->plugin_url . '/js/form_maker_form_options.js', array(), $this->plugin_version);
-    wp_localize_script($this->handle_prefix . '-form-options', 'form_maker', array(
+    wp_localize_script($this->handle_prefix . '-form-options', 'form_maker_options', array(
       'not_valid_value' => __('Enter a valid value.', $this->prefix),
       'required_field' => __('Field is required.', $this->prefix),
       'not_valid_email' => __('Enter a valid email address.', $this->prefix),
     ));
     wp_register_script($this->handle_prefix . '-form-advanced-layout', $this->plugin_url . '/js/form_maker_form_advanced_layout.js', array(), $this->plugin_version);
     wp_register_script($this->handle_prefix . '-add-fields', $this->plugin_url . '/js/add_field.js', array($this->handle_prefix . '-formmaker_div'), $this->plugin_version);
+    wp_localize_script($this->handle_prefix . '-manage', 'form_maker_manage', array(
+      'add_new_field' => __('Add Field', $this->prefix),
+      'add_column' => __('Add Column', $this->prefix),
+      'add_row' => __('Add Section', $this->prefix),
+    ));
     wp_localize_script($this->handle_prefix . '-add-fields', 'form_maker', array(
       'countries' => WDW_FM_Library(self::PLUGIN)->get_countries(),
       'states' => WDW_FM_Library(self::PLUGIN)->get_states(),
@@ -660,10 +669,11 @@ final class WDFM {
         "prefix" => "fm" ,
         "deactivate_class" => 'fm_deactivate_link',
         "email" => $admin_data->data->user_email,
-        "plugin_wd_url" => "https://web-dorado.com/files/fromFormMaker.php",
+        "plugin_wd_url" => "https://10web.io/plugins/wordpress-form-maker/?utm_source=form_maker&utm_medium=free_plugin",
       ));
     }
     wp_register_style($this->handle_prefix . '-pricing', $this->plugin_url . '/css/pricing.css', array(), $this->plugin_version);
+    wp_register_style($this->handle_prefix . '-icons', $this->plugin_url . '/fonts/style.css', array(), '1.0.0');
   }
 
   /**
@@ -1023,12 +1033,12 @@ final class WDFM {
     }
     $version = get_option("wd_form_maker_version");
     $new_version = $this->db_version;
-	$option_key = ($this->is_free == 2 ? 'fmc_settings' : 'fm_settings');
+	  $option_key = ($this->is_free == 2 ? 'fmc_settings' : 'fm_settings');
     require_once $this->plugin_dir . "/form_maker_insert.php";
     if (!$version) {
       if ($wpdb->get_var("SHOW TABLES LIKE '" . $wpdb->prefix . "formmaker'") == $wpdb->prefix . "formmaker") {
         deactivate_plugins($this->main_file);
-        wp_die(__("Oops! Seems like you installed the update over a quite old version of Form Maker. Unfortunately, this version is deprecated.<br />Please contact Web-Dorado support team at support@web-dorado.com. We will take care of this issue as soon as possible.", $this->prefix));
+        wp_die(__("Oops! Seems like you installed the update over a quite old version of Form Maker. Unfortunately, this version is deprecated.<br />Please contact 10Web support team at support@10web.io. We will take care of this issue as soon as possible.", $this->prefix));
       }
       else {
         add_option("wd_form_maker_version", $new_version, '', 'no');
@@ -1092,13 +1102,15 @@ final class WDFM {
    */
   public function fm_overview() {
     if (is_admin() && !isset($_REQUEST['ajax'])) {
-      if (!class_exists("DoradoWeb")) {
-        require_once($this->plugin_dir . '/wd/start.php');
+      if (!class_exists("TenWebLib")) {
+        $plugin_dir = apply_filters('tenweb_free_users_lib_path', array('version' => '1.1.1', 'path' => $this->plugin_dir));
+        require_once($plugin_dir['path'] . '/wd/start.php');
       }
       global $fm_options;
       $fm_options = array(
         "prefix" => ($this->is_free == 2 ? 'cfm' : 'fm'),
         "wd_plugin_id" => ($this->is_free == 2 ? 183 : 31),
+	"plugin_id" => ($this->is_free == 2 ? 95 : 95),
         "plugin_title" => ($this->is_free == 2 ? 'Contact Form Maker' : 'Form Maker'),
         "plugin_wordpress_slug" => ($this->is_free == 2 ? 'contact-form-maker' : 'form-maker'),
         "plugin_dir" => $this->plugin_dir,
@@ -1176,10 +1188,11 @@ final class WDFM {
           ),
         ),
         "video_youtube_id" => "tN3_c6MhqFk",  // e.g. https://www.youtube.com/watch?v=acaexefeP7o youtube id is the acaexefeP7o
-        "plugin_wd_url" => "https://web-dorado.com/files/fromFormMaker.php",
-        "plugin_wd_demo_link" => "http://wpdemo.web-dorado.com",
-        "plugin_wd_addons_link" => "https://web-dorado.com/products/wordpress-form/add-ons.html",
-        "after_subscribe" => admin_url('admin.php?page=overview_' . ($this->is_free == 2 ? 'cfm' : 'fm')), // this can be plagin overview page or set up page
+        "plugin_wd_url" => "https://10web.io/plugins/wordpress-form-maker/?utm_source=form_maker&utm_medium=free_plugin",
+        "plugin_wd_demo_link" => "https://demo.10web.io/form-maker",
+        "plugin_wd_addons_link" => "https://demo.10web.io/form-maker#plugin_extensions",
+        "plugin_wd_docs_link" => "https://help.10web.io/hc/en-us/sections/360002133951-Form-Maker-Documentation/",
+        "after_subscribe" => admin_url('admin.php?page=manage_' . ($this->is_free == 2 ? 'cfm' : 'fm')), // this can be plagin overview page or set up page
         "plugin_wizard_link" => '',
         "plugin_menu_title" => $this->nicename,
         "plugin_menu_icon" => $this->plugin_url . '/images/FormMakerLogo-16.png',
@@ -1187,9 +1200,10 @@ final class WDFM {
         "subscribe" => ($this->is_free ? true : false),
         "custom_post" => 'manage' . $this->menu_postfix,
         "menu_position" => null,
+        "display_overview" => false,
       );
 
-      dorado_web_init($fm_options);
+      ten_web_lib_init($fm_options);
     }
   }
 
@@ -1223,41 +1237,41 @@ final class WDFM {
 
 
   /**
-   * Check add-ones version compatibility with FM.
+   * Check extensions version compatibility with FM.
    *
    */
   function  fm_check_addons_compatibility() {
-    // Last version not supported.
+    // Extension last version(version which is compatible with current version of form maker).
     $add_ons = array(
+      'form-maker-calculator' => array('version' => '1.1.2', 'file' => 'fm_calculator.php'),
+      'form-maker-conditional-emails' => array('version' => '1.1.6', 'file' => 'fm_conditional_emails.php'),
+      'form-maker-dropbox-integration' => array('version' => '1.2.5', 'file' => 'fm_dropbox_integration.php'),
       'form-maker-export-import' => array('version' => '2.0.7', 'file' => 'fm_exp_imp.php'),
-      'form-maker-save-progress' => array('version' => '1.0.1', 'file' => 'fm_save.php'),
-      'form-maker-conditional-emails' => array('version' => '1.1.4', 'file' => 'fm_conditional_emails.php'),
-      'form-maker-pushover' => array('version' => '1.0.2', 'file' => 'fm_pushover.php'),
-      'form-maker-mailchimp' => array('version' => '1.0.2', 'file' => 'fm_mailchimp.php'),
-      'form-maker-reg' => array('version' => '1.2.2', 'file' => 'fm_reg.php'),
-      'form-maker-post-generation' => array('version' => '1.1.2', 'file' => 'fm_post_generation.php'),
-      'form-maker-dropbox-integration' => array('version' => '1.1.1', 'file' => 'fm_dropbox_integration.php'),
-      'form-maker-gdrive-integration' => array('version' => '1.0.0', 'file' => 'fm_gdrive_integration.php'),
-      'form-maker-pdf-integration' => array('version' => '1.1.3', 'file' => 'fm_pdf_integration.php'),
-      'form-maker-stripe' => array('version' => '1.1.5', 'file' => 'fm_stripe.php'),
-      'form-maker-calculator' => array('version' => '1.0.3', 'file' => 'fm_calculator.php'),
+      'form-maker-gdrive-integration' => array('version' => '1.1.2', 'file' => 'fm_gdrive_integration.php'),
+      'form-maker-mailchimp' => array('version' => '1.1.6', 'file' => 'fm_mailchimp.php'),
+      'form-maker-pdf-integration' => array('version' => '1.1.7', 'file' => 'fm_pdf_integration.php'),
+      'form-maker-post-generation' => array('version' => '1.1.5', 'file' => 'fm_post_generation.php'),
+      'form-maker-pushover' => array('version' => '1.1.4', 'file' => 'fm_pushover.php'),
+      'form-maker-reg' => array('version' => '1.2.5', 'file' => 'fm_reg.php'),
+      'form-maker-save-progress' => array('version' => '1.1.6', 'file' => 'fm_save.php'),
+      'form-maker-stripe' => array('version' => '1.1.6', 'file' => 'fm_stripe.php'),
     );
 
     $add_ons_notice = array();
     include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
-    foreach ($add_ons as $add_on_key => $add_on_value) {
-      $addon_path = plugin_dir_path( dirname(__FILE__) ) . $add_on_key . '/' . $add_on_value['file'];
-      if (is_plugin_active($add_on_key . '/' . $add_on_value['file'])) {
+    foreach ( $add_ons as $add_on_key => $add_on_value ) {
+      $addon_path = plugin_dir_path(dirname(__FILE__)) . $add_on_key . '/' . $add_on_value['file'];
+      if ( is_plugin_active($add_on_key . '/' . $add_on_value['file']) ) {
         $addon = get_plugin_data($addon_path); // array
-        if (version_compare($addon['Version'], $add_on_value['version'], '<=')) {   //compare versions
-		  // deactivate_plugins($addon_path);
+        if ( version_compare($addon['Version'], $add_on_value['version'], '<') ) {
+          // deactivate_plugins($addon_path);
           array_push($add_ons_notice, $addon['Name']);
         }
       }
     }
 
-    if (!empty($add_ons_notice)) {
+    if ( !empty($add_ons_notice) ) {
       $this->fm_addons_compatibility_notice($add_ons_notice);
     }
   }
@@ -1270,8 +1284,8 @@ final class WDFM {
   function fm_addons_compatibility_notice($add_ons_notice) {
     $addon_names = implode($add_ons_notice, ', ');
     $count = count($add_ons_notice);
-    $single = __('The current version of %s add-on is not compatible with Form Maker. Some functions may not work correctly. Please update the add-on to fully use its features.', $this->prefix);
-    $plural = __('The current version of %s add-ons are not compatible with Form Maker. Some functions may not work correctly. Please update the add-ons to fully use its features.', $this->prefix);
+    $single = __('The current version of %s extension is not compatible with Form Maker. Some functions may not work correctly. Please update the extension to fully use its features.', $this->prefix);
+    $plural = __('The current version of %s extensions are not compatible with Form Maker. Some functions may not work correctly. Please update the extensions to fully use its features.', $this->prefix);
     echo '<div class="error"><p>' . sprintf( _n($single, $plural, $count, $this->prefix), $addon_names ) .'</p></div>';
   }
 
@@ -1354,7 +1368,7 @@ function fm_bp_install_notice() {
     $dismiss_url = add_query_arg(array( 'action' => 'wd_bp_dismiss' ), admin_url('admin-ajax.php'));
     $install_url = esc_url(wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=backup-wd'), 'install-plugin_backup-wd'));
     ?>
-    <div class="notice notice-info" id="wd_bp_notice_cont">
+    <div class="notice notice-info wd-notice" id="wd_bp_notice_cont">
       <p>
         <img id="wd_bp_logo_notice" src="<?php echo $url . '/images/logo.png'; ?>" />
         <?php echo sprintf(__("%s advises: Install brand new FREE %s plugin to keep your forms and website safe.", $prefix), $nicename, '<a href="https://wordpress.org/plugins/backup-wd/" title="' . __("More details", $prefix) . '" target="_blank">' .  __("Backup WD", $prefix) . '</a>'); ?>

@@ -47,6 +47,9 @@ class FMViewForm_maker {
     $current_url = htmlentities($_SERVER['REQUEST_URI']);
 
     $row = $result[0];
+    if ( !isset($row->header_hide) ) {
+      $row->header_hide = 1;
+    }
     $form_theme = $result[4];
 
     $theme_id = WDW_FM_Library(self::PLUGIN)->get('test_theme', $row->theme);
@@ -139,39 +142,42 @@ class FMViewForm_maker {
     $form_maker_front_end .= '<input type="hidden" id="fm_empty_field_validation' . $form_id . '" value="" name="fm_empty_field_validation' . $form_id . '" data-value="'. md5( WDFMInstance(self::PLUGIN)->prefix .''. $form_id) .'" />';
 
     if ( !$fm_hide_form_after_submit ) {
-      // Form header.
-      $image_pos = isset($form_theme['HIPAlign']) && ($form_theme['HIPAlign'] == 'left' || $form_theme['HIPAlign'] == 'right') ? 'image_left_right' : '';
-      $image_width = isset($form_theme['HIPWidth']) && $form_theme['HIPWidth'] ? 'width="' . $form_theme['HIPWidth'] . 'px"' : '';
-      $image_height = isset($form_theme['HIPHeight']) && $form_theme['HIPHeight'] ? 'height="' . $form_theme['HIPHeight'] . 'px"' : '';
-      $hide_header_image_class = wp_is_mobile() && $row->header_hide_image ? 'fm_hide_mobile' : '';
-      $header_image_animation = $formType == 'embedded' ? $row->header_image_animation : '';
-      if ( !isset($form_theme['HPAlign']) || ($form_theme['HPAlign'] == 'left' || $form_theme['HPAlign'] == 'top') ) {
-        if ( $row->header_title || $row->header_description || $row->header_image_url ) {
-          $form_maker_front_end .= '<div class="fm-header-bg"><div class="fm-header ' . $image_pos . '">';
-          if ( !isset($form_theme['HIPAlign']) || $form_theme['HIPAlign'] == 'left' || $form_theme['HIPAlign'] == 'top' ) {
-            if ( $row->header_image_url ) {
-              $form_maker_front_end .= '<div class="fm-header-img ' . $hide_header_image_class . ' fm-animated ' . $header_image_animation . '"><img src="' . $row->header_image_url . '" ' . $image_width . ' ' . $image_height . '/></div>';
+      if( $row->header_hide ) {
+        // Form header.
+        $image_pos = isset($form_theme['HIPAlign']) && ($form_theme['HIPAlign'] == 'left' || $form_theme['HIPAlign'] == 'right') ? 'image_left_right' : '';
+        $image_width = isset($form_theme['HIPWidth']) && $form_theme['HIPWidth'] ? 'width="' . $form_theme['HIPWidth'] . 'px"' : '';
+        $image_height = isset($form_theme['HIPHeight']) && $form_theme['HIPHeight'] ? 'height="' . $form_theme['HIPHeight'] . 'px"' : '';
+        $hide_header_image_class = wp_is_mobile() && $row->header_hide_image ? 'fm_hide_mobile' : '';
+        $header_image_animation = $formType == 'embedded' ? $row->header_image_animation : '';
+        if ( !isset($form_theme['HPAlign']) || ($form_theme['HPAlign'] == 'left' || $form_theme['HPAlign'] == 'top') ) {
+          if ( $row->header_title || $row->header_description || $row->header_image_url ) {
+            $form_maker_front_end .= '<div class="fm-header-bg"><div class="fm-header ' . $image_pos . '">';
+            if ( !isset($form_theme['HIPAlign']) || $form_theme['HIPAlign'] == 'left' || $form_theme['HIPAlign'] == 'top' ) {
+              if ( $row->header_image_url ) {
+                $form_maker_front_end .= '<div class="fm-header-img ' . $hide_header_image_class . ' fm-animated ' . $header_image_animation . '"><img src="' . $row->header_image_url . '" ' . $image_width . ' ' . $image_height . '/></div>';
+              }
             }
-          }
-          if ( $row->header_title || $row->header_description ) {
-            $form_maker_front_end .= '<div class="fm-header-text">
-            <div class="fm-header-title">
-              ' . $row->header_title . '
-            </div>
-            <div class="fm-header-description">
-              ' . $row->header_description . '
-            </div>
-          </div>';
-          }
-          if ( isset($form_theme['HIPAlign']) && ($form_theme['HIPAlign'] == 'right' || $form_theme['HIPAlign'] == 'bottom') ) {
-            if ( $row->header_image_url ) {
-              $form_maker_front_end .= '<div class="fm-header-img"><img src="' . $row->header_image_url . '" ' . $image_width . ' ' . $image_height . '/></div>';
+            if ( $row->header_title || $row->header_description ) {
+              $form_maker_front_end .= '<div class="fm-header-text">
+          <div class="fm-header-title">
+            ' . $row->header_title . '
+          </div>
+          <div class="fm-header-description">
+            ' . $row->header_description . '
+          </div>
+        </div>';
             }
+            if ( isset($form_theme['HIPAlign']) && ($form_theme['HIPAlign'] == 'right' || $form_theme['HIPAlign'] == 'bottom') ) {
+              if ( $row->header_image_url ) {
+                $form_maker_front_end .= '<div class="fm-header-img"><img src="' . $row->header_image_url . '" ' . $image_width . ' ' . $image_height . '/></div>';
+              }
+            }
+            $form_maker_front_end .= '</div></div>';
           }
-          $form_maker_front_end .= '</div></div>';
         }
       }
     }
+
 
     $is_type = array();
     $id1s = array();
@@ -193,7 +199,7 @@ class FMViewForm_maker {
     $symbol_begin = array();
     $symbol_end = array();
 
-    // Get Add-on Calculator data.
+    // Get extension Calculator data.
     $calculator_data = array();
     if (WDFMInstance(self::PLUGIN)->is_free != 2) {
       $calculator_data = apply_filters('fm_calculator_get_data_init', $calculator_data, $form_id);
@@ -362,6 +368,25 @@ class FMViewForm_maker {
                 'w_readonly',
               );
             }
+            if ( strpos($temp, 'w_class') > -1 ) {
+              $params_names = array(
+                'w_field_label_size',
+                'w_field_label_pos',
+                'w_hide_label',
+                'w_size',
+                'w_first_val',
+                'w_title',
+                'w_required',
+                'w_regExp_status',
+                'w_regExp_value',
+                'w_regExp_common',
+                'w_regExp_arg',
+                'w_regExp_alert',
+                'w_unique',
+                'w_readonly',
+                'w_class',
+              );
+            }
             foreach ( $params_names as $params_name ) {
               $temp = explode('*:*' . $params_name . '*:*', $temp);
               $param[$params_name] = $temp[0];
@@ -377,8 +402,9 @@ class FMViewForm_maker {
             $param['w_first_val'] = (isset($_POST['wdform_' . $id1 . '_element' . $form_id]) ? esc_html(stripslashes($_POST['wdform_' . $id1 . '_element' . $form_id])) : $param['w_first_val']);
             $param['w_regExp_status'] = (isset($param['w_regExp_status']) ? $param['w_regExp_status'] : "no");
             $readonly = (isset($param['w_readonly']) && $param['w_readonly'] == "yes" ? "readonly='readonly'" : '');
+            $param['w_class'] = (isset($param['w_class']) ? $param['w_class'] : "");
             $param['id'] = $id1;
-            $param['w_class'] = ' wd-flex-row wd-align-items-center';
+            $param['w_class'] .= ' wd-flex-row wd-align-items-center';
 
             $html = '';
             if ( isset($symbol_begin[$id1]) ) {
@@ -1534,10 +1560,10 @@ class FMViewForm_maker {
             }
 
             $rep = '';
-            if ($row->gdpr_checkbox && $row->gdpr_checkbox_text) {
+            if ( $row->gdpr_checkbox && $row->gdpr_checkbox_text ) {
               $privacy_policy_page = WDW_FM_Library(self::PLUGIN)->get_privacy_policy_url();
               $privacy_policy_link = $privacy_policy_page['title'];
-              if (!empty($privacy_policy_page['url'])) {
+              if ( !empty($privacy_policy_page['url']) ) {
                 $privacy_policy_link = ' <a href="' . $privacy_policy_page['url'] . '" target="_blank">' . $privacy_policy_page['title'] . '</a>';
               }
               $row->gdpr_checkbox_text = str_replace('{{privacy_policy}}', $privacy_policy_link, $row->gdpr_checkbox_text);
@@ -1625,7 +1651,7 @@ class FMViewForm_maker {
             break;
           }
           case 'type_stripe': {
-            /* get stripe add-on form */
+            /* get stripe extension form */
             $stripe_data = array('form_view' => $this, 'form' => $row, 'attributes' => $params, 'input_index' => $id1, 'form_id' => $form_id, 'html' => '');
             if ( WDFMInstance(self::PLUGIN)->is_free != 2 && $row->paypal_mode == 2 ) {
               $stripe_data = apply_filters('fm_addon_stripe_form_init', $stripe_data);
@@ -1644,7 +1670,7 @@ class FMViewForm_maker {
     if ( !$fm_hide_form_after_submit ) {
       $form_maker_front_end .= $form;
       if ( isset($form_theme['HPAlign']) && ($form_theme['HPAlign'] == 'right' || $form_theme['HPAlign'] == 'bottom') ) {
-        if ( $row->header_title || $row->header_description || $row->header_image_url ) {
+        if ( $row->header_hide && $row->header_title || $row->header_description || $row->header_image_url ) {
           $form_maker_front_end .= '<div class="fm-header-bg"><div class="fm-header ' . $image_pos . '">';
           if ( $form_theme['HIPAlign'] == 'left' || $form_theme['HIPAlign'] == 'top' ) {
             if ( $row->header_image_url ) {

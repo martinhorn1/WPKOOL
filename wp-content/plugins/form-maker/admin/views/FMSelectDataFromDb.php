@@ -234,7 +234,7 @@ class FMViewSelect_data_from_db extends FMAdminView {
       $cond .= '<option>' . $col->Field . '</option>';
     }
     $cond .= '</select>';
-    $cond .= '<select id="op_condid" style="width: 110px"><option value="=" selected="selected">=</option><option value="!=">!=</option><option value=">">&gt;</option><option value="<">&lt;</option><option value=">=">&gt;=</option><option value="<=">&lt;=</option><option value="%..%">Like</option><option value="%..">Starts with</option><option value="..%">Ends with</option></select>';
+    $cond .= '<select id="op_condid" style="width: 110px"><option value="=" selected="selected">=</option><option value="!=">!=</option><option value=">">&gt;</option><option value="<">&lt;</option><option value=">=">&gt;=</option><option value="<=">&lt;=</option><option value="%..%">Like</option><option value="..%">Starts with</option><option value="%..">Ends with</option></select>';
 	$cond .= '<input id="val_condid" type="text" class="fm-where-input" />';
 	$cond .= '<select id="andor_condid" style="visibility: hidden; width:70px;"><option value="AND">AND</option><option value="OR">OR</option></select><img src="' . WDFMInstance(self::PLUGIN)->plugin_url . '/images/delete.png?ver=' . WDFMInstance(self::PLUGIN)->plugin_version . '" onclick="delete_cond(&quot;condid&quot;)" style="vertical-align: middle;"></div>';
     ?>
@@ -322,209 +322,212 @@ class FMViewSelect_data_from_db extends FMAdminView {
 			jQuery('#' + id).remove();
 			update_vis();
 		}
+
 		function save_query() {
-        str = '';
-        plugin_url = '<?php echo WDFMInstance(self::PLUGIN)->plugin_url; ?>';
-        plugin_version = '<?php echo WDFMInstance(self::PLUGIN)->plugin_version; ?>';
-        product_name = jQuery('#product_name').val();
-        product_price = jQuery('#product_price').val();
-        con_type = jQuery('input[name=con_type]:checked').val();
-        table = jQuery('#tables').val();
-        host = jQuery('#host_rem').val();
-        port = jQuery('#port_rem').val();
-        username = jQuery('#username_rem').val();
-        password = jQuery('#password_rem').val();
-        database = jQuery('#database_rem').val();
-        if (con_type == 'remote') {
-          str += host + "@@@wdfhostwdf@@@" + port + "@@@wdfportwdf@@@" + username + "@@@wdfusernamewdf@@@" + password + "@@@wdfpasswordwdf@@@" + database + "@@@wdfdatabasewdf@@@";
-        }
-        gen_query();
-        var where = jQuery('#where').val();
-        var order = jQuery('#order').val();
-        var value_disabled = jQuery('#value_disabled').val();
-        var num = jQuery("#form_field_id").val();
-        var field_type = jQuery("#field_type").val();
-        if (product_name || product_price) {
-          jQuery('.c1').html('<div class="fm-loading-container"><div class="fm-loading-content"></div></div>');
-          var max_value = 0;
-          window.parent.jQuery('.change_pos').each(function () {
-            var value = jQuery(this)[0].id;
-            max_value = (value > max_value) ? value : max_value;
-          });
-          max_value = parseInt(max_value) + 1;
-          if (field_type == "checkbox" || field_type == "radio") {
-            var attr_table = window.parent.jQuery('#' + 'choices');
-            var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
-              '<div class="fm-table-col fm-width-40">' +
-              '<input type="text" class="fm-field-choice" id="el_choices' + max_value + '" value="[' + table + ':' + product_name + ']" disabled="disabled" onKeyUp="change_label(\'' + num + '_label_element' + max_value + '\', this.value); change_in_value(\'' + num + '_elementform_id_temp' + max_value + '\', this.value)" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-40">' +
-              '<input type="text" class="fm-field-choice" id="el_option_value' + max_value + '" value="' + (value_disabled == 'no' ? '[' + table + ':' + product_name + ']' : '[' + table + ':' + product_price + ']') + '" disabled="disabled" onKeyUp="change_label_value(\'' + num + '_elementform_id_temp' + max_value + '\', this.value)" />' +
-              '</div>' +
-              '<input type="hidden" id="el_option_params' + max_value + '" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']" />' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_choices' + max_value + '_remove" onClick="remove_choise(' + max_value + ',' + num + ',\'' + field_type + '\')"></span>' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
-              '</div>' +
-              '</div>');
-            attr_table.append(attr);
-            window.parent["refresh_rowcol"](num, field_type);
-            if (field_type == 'checkbox') {
-              window.parent["refresh_attr"](num, 'type_checkbox');
-            }
-            if (field_type == 'radio') {
-              window.parent["refresh_attr"](num, 'type_radio');
-            }
-          }
-          if (field_type == "select") {
-            var select_ = window.parent.jQuery('#' + num + '_elementform_id_temp');
-            var option = jQuery('<option id="' + num + '_option' + max_value + '" onselect="set_select(\'' + num + '_option' + max_value + '\')" where="' + where + '" order_by="' + order + '" db_info="[' + str + ']"' + (value_disabled == 'no' ? ' value="[' + table + ':' + product_name + ']"' : ' value="[' + table + ':' + product_price + ']"') + '>[' + table + ':' + product_name + ']</option>');
-            select_.append(option);
-            var attr_table = window.parent.jQuery('#' + 'choices');
-            var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
-              '<div class="fm-table-col fm-width-30">' +
-              '<input type="text" class="fm-field-choice" id="el_option' + max_value + '" value="[' + table + ':' + product_name + ']" onKeyUp="change_label_name(' + max_value + ', \'' + num + '_option' + max_value + '\',  this.value, \'select\')" disabled="disabled" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-30">' +
-              '<input type="text" class="fm-field-choice el_option_value" id="el_option_value' + max_value + '" value="' + (value_disabled == 'no' ? '[' + table + ':' + product_name + ']' : '[' + table + ':' + product_price + ']') + '" onKeyUp="change_label_value(\'' + num + '_option' + max_value + '\',  this.value)" disabled="disabled" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-20">' +
-              '<input type="checkbox" title="Empty value" class="el_option_dis" id="el_option' + max_value + '_dis" onClick="dis_option(\'' + num + '_option' + max_value + '\', this.checked, ' + max_value + ')"' + (value_disabled == 'yes' ? 'disabled="disabled"' : '') + ' />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_option(' + max_value + ', ' + num + ')"></span>' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
-              '</div>' +
-              '<input type="hidden" id="el_option_params' +  max_value + '" class="el_option_params" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']"></div>');
-            attr_table.append(attr);
-          }
-          if (field_type == 'paypal_select') {
-            var select_ = window.parent.document.getElementById(num + '_elementform_id_temp');
-            var option = document.createElement('option');
-            option.setAttribute("id", num + "_option" + max_value);
-            option.setAttribute("onselect", "set_select('" + num + "_option" + max_value + "')");
-            option.setAttribute("where", where);
-            option.setAttribute("order_by", order);
-            option.setAttribute("db_info", '[' + str + ']');
-            option.innerHTML = '[' + table + ':' + product_name + ']';
-            option.setAttribute("value", '[' + table + ':' + product_price + ']');
-            select_.appendChild(option);
+			str = '';
+			plugin_url = '<?php echo WDFMInstance(self::PLUGIN)->plugin_url; ?>';
+			plugin_version = '<?php echo WDFMInstance(self::PLUGIN)->plugin_version; ?>';
+			product_name = jQuery('#product_name').val();
+			product_price = jQuery('#product_price').val();
+			con_type = jQuery('input[name=con_type]:checked').val();
+			table = jQuery('#tables').val();
+			host = jQuery('#host_rem').val();
+			port = jQuery('#port_rem').val();
+			username = jQuery('#username_rem').val();
+			password = jQuery('#password_rem').val();
+			database = jQuery('#database_rem').val();
+			if (con_type == 'remote') {
+			  str += host + "@@@wdfhostwdf@@@" + port + "@@@wdfportwdf@@@" + username + "@@@wdfusernamewdf@@@" + password + "@@@wdfpasswordwdf@@@" + database + "@@@wdfdatabasewdf@@@";
+			}
+			gen_query();
+			var where = jQuery('#where').val();
+			var order = jQuery('#order').val();
+			var value_disabled = jQuery('#value_disabled').val();
+			var num = jQuery("#form_field_id").val();
+			var field_type = jQuery("#field_type").val();
+			if (product_name || product_price) {
+			  jQuery('.c1').html('<div class="fm-loading-container"><div class="fm-loading-content"></div></div>');
+			  var max_value = 0;
+			  window.parent.jQuery('.change_pos').each(function () {
+				var value = jQuery(this)[0].id;
+				max_value = (value > max_value) ? value : max_value;
+			  });
+			  max_value = parseInt(max_value) + 1;
+			  if (field_type == "checkbox" || field_type == "radio") {
+				var attr_table = window.parent.jQuery('#' + 'choices');
+				var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
+				  '<div class="fm-table-col fm-width-40">' +
+				  '<input type="text" class="fm-field-choice" id="el_choices' + max_value + '" value="[' + table + ':' + product_name + ']" disabled="disabled" onKeyUp="change_label(\'' + num + '_label_element' + max_value + '\', this.value); change_in_value(\'' + num + '_elementform_id_temp' + max_value + '\', this.value)" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-40">' +
+				  '<input type="text" class="fm-field-choice" id="el_option_value' + max_value + '" value="' + (value_disabled == 'no' ? '[' + table + ':' + product_name + ']' : '[' + table + ':' + product_price + ']') + '" disabled="disabled" onKeyUp="change_label_value(\'' + num + '_elementform_id_temp' + max_value + '\', this.value)" />' +
+				  '</div>' +
+				  '<input type="hidden" id="el_option_params' + max_value + '" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']" />' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_choices' + max_value + '_remove" onClick="remove_choise(' + max_value + ',' + num + ',\'' + field_type + '\')"></span>' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+				  '</div>' +
+				  '</div>');
+				attr_table.append(attr);
+				window.parent["refresh_rowcol"](num, field_type);
+				if (field_type == 'checkbox') {
+				  window.parent["refresh_attr"](num, 'type_checkbox');
+				}
+				if (field_type == 'radio') {
+				  window.parent["refresh_attr"](num, 'type_radio');
+				}
+			  }
+			  if (field_type == "select") {
+				var select_ = window.parent.jQuery('#' + num + '_elementform_id_temp');
+				var option = jQuery('<option id="' + num + '_option' + max_value + '" onselect="set_select(\'' + num + '_option' + max_value + '\')" where="' + where + '" order_by="' + order + '" db_info="[' + str + ']"' + (value_disabled == 'no' ? ' value="[' + table + ':' + product_name + ']"' : ' value="[' + table + ':' + product_price + ']"') + '>[' + table + ':' + product_name + ']</option>');
+				select_.append(option);
+				var attr_table = window.parent.jQuery('#' + 'choices');
+				var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
+				  '<div class="fm-table-col fm-width-30">' +
+				  '<input type="text" class="fm-field-choice" id="el_option' + max_value + '" value="[' + table + ':' + product_name + ']" onKeyUp="change_label_name(' + max_value + ', \'' + num + '_option' + max_value + '\',  this.value, \'select\')" disabled="disabled" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-30">' +
+				  '<input type="text" class="fm-field-choice el_option_value" id="el_option_value' + max_value + '" value="' + (value_disabled == 'no' ? '[' + table + ':' + product_name + ']' : '[' + table + ':' + product_price + ']') + '" onKeyUp="change_label_value(\'' + num + '_option' + max_value + '\',  this.value)" disabled="disabled" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-20">' +
+				  '<input type="checkbox" title="Empty value" class="el_option_dis" id="el_option' + max_value + '_dis" onClick="dis_option(\'' + num + '_option' + max_value + '\', this.checked, ' + max_value + ')"' + (value_disabled == 'yes' ? 'disabled="disabled"' : '') + ' />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_option(' + max_value + ', ' + num + ')"></span>' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+				  '</div>' +
+				  '<input type="hidden" id="el_option_params' +  max_value + '" class="el_option_params" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']"></div>');
+				attr_table.append(attr);
+			  }
+			  if (field_type == 'paypal_select') {
+				var select_ = window.parent.document.getElementById(num + '_elementform_id_temp');
+				var option = document.createElement('option');
+				option.setAttribute("id", num + "_option" + max_value);
+				option.setAttribute("onselect", "set_select('" + num + "_option" + max_value + "')");
+				option.setAttribute("where", where);
+				option.setAttribute("order_by", order);
+				option.setAttribute("db_info", '[' + str + ']');
+				option.innerHTML = '[' + table + ':' + product_name + ']';
+				option.setAttribute("value", '[' + table + ':' + product_price + ']');
+				select_.appendChild(option);
 
-            var attr_table = window.parent.jQuery('#' + 'choices');
-            var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
-              '<div class="fm-table-col fm-width-40">' +
-              '<input type="text" class="fm-field-choice" id="el_option' + max_value + '" value="[' + table + ':' + product_name + ']" disabled="disabled" onKeyUp="change_label_price(\'' + num + '_option' + max_value + '\', this.value)" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-20">' +
-              '<input type="text" class="fm-field-choice" id="el_option_price' + max_value + '" value="[' + table + ':' + product_price + ']" disabled="disabled" onKeyPress="return check_isnum_point(event)" onKeyUp="change_value_price(\'' + num + '_option' + max_value + '\', this.value)" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-20">' +
-              '<input type="hidden" id="el_option_params' + max_value + '" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']" />' +
-              '<input type="checkbox" title="Empty value" class="el_option_dis" disabled="disabled" id="el_option' + max_value + '_dis" onClick="dis_option_price(' + num + ',' + max_value + ', this.checked)" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_option_price(' + max_value + ',' + num + ')"></span>' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
-              '</div>' +
-              '</div>');
-            attr_table.append(attr);
-          }
-          if (field_type == 'paypal_radio' || field_type == 'paypal_checkbox' || field_type == 'paypal_shipping') {
-            if (field_type == 'paypal_shipping') {
-              field_type = 'paypal_radio';
-            }
-            var c_table = window.parent.document.getElementById(num + '_table_little');
-            var tr = document.createElement('div');
-            tr.setAttribute("id", num + "_element_tr" + max_value);
-            tr.style.display = "table-row";
-            var td = document.createElement('div');
-            td.setAttribute("valign", "top");
-            td.setAttribute("id", num + "_td_little" + max_value);
-            td.setAttribute("idi", max_value);
-            td.style.display = "table-cell";
-            var adding = document.createElement('input');
-            adding.setAttribute("type", field_type.replace('paypal_', ''));
-            adding.setAttribute("value", '[' + table + ':' + product_price + ']');
-            adding.setAttribute("id", num + "_elementform_id_temp" + max_value);
-            if (field_type == 'paypal_checkbox') {
-              adding.setAttribute("onClick", "set_checked('" + num + "','" + max_value + "','form_id_temp')");
-              adding.setAttribute("name", num + "_elementform_id_temp" + max_value);
-            }
-            if (field_type == 'paypal_radio') {
-              adding.setAttribute("onClick", "set_default('" + num + "','" + max_value + "','form_id_temp')");
-              adding.setAttribute("name", num + "_elementform_id_temp");
-            }
-            var label_adding = document.createElement('label');
-            label_adding.setAttribute("id", num + "_label_element" + max_value);
-            label_adding.setAttribute("class", "ch-rad-label");
-            label_adding.setAttribute("for", num + "_elementform_id_temp" + max_value);
-            label_adding.innerHTML = '[' + table + ':' + product_name + ']';
-            label_adding.setAttribute("where", where);
-            label_adding.setAttribute("order_by", order);
-            label_adding.setAttribute("db_info", '[' + str + ']');
-            var adding_ch_label = document.createElement('input');
-            adding_ch_label.setAttribute("type", "hidden");
-            adding_ch_label.setAttribute("id", num + "_elementlabel_form_id_temp" + max_value);
-            adding_ch_label.setAttribute("name", num + "_elementform_id_temp" + max_value + "_label");
-            adding_ch_label.setAttribute("value", '[' + table + ':' + product_name + ']');
-            td.appendChild(adding);
-            td.appendChild(label_adding);
-            td.appendChild(adding_ch_label);
-            tr.appendChild(td);
-            c_table.appendChild(tr);
+				var attr_table = window.parent.jQuery('#' + 'choices');
+				var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
+				  '<div class="fm-table-col fm-width-40">' +
+				  '<input type="text" class="fm-field-choice" id="el_option' + max_value + '" value="[' + table + ':' + product_name + ']" disabled="disabled" onKeyUp="change_label_price(\'' + num + '_option' + max_value + '\', this.value)" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-20">' +
+				  '<input type="text" class="fm-field-choice" id="el_option_price' + max_value + '" value="[' + table + ':' + product_price + ']" disabled="disabled" onKeyPress="return check_isnum_point(event)" onKeyUp="change_value_price(\'' + num + '_option' + max_value + '\', this.value)" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-20">' +
+				  '<input type="hidden" id="el_option_params' + max_value + '" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']" />' +
+				  '<input type="checkbox" title="Empty value" class="el_option_dis" disabled="disabled" id="el_option' + max_value + '_dis" onClick="dis_option_price(' + num + ',' + max_value + ', this.checked)" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_option_price(' + max_value + ',' + num + ')"></span>' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+				  '</div>' +
+				  '</div>');
+				attr_table.append(attr);
+			  }
+			  if (field_type == 'paypal_radio' || field_type == 'paypal_checkbox' || field_type == 'paypal_shipping') {
+				if (field_type == 'paypal_shipping') {
+				  field_type = 'paypal_radio';
+				}
+				var c_table = window.parent.document.getElementById(num + '_table_little');
+				var tr = document.createElement('div');
+				tr.setAttribute("id", num + "_element_tr" + max_value);
+				tr.style.display = "table-row";
+				var td = document.createElement('div');
+				td.setAttribute("valign", "top");
+				td.setAttribute("id", num + "_td_little" + max_value);
+				td.setAttribute("idi", max_value);
+				td.style.display = "table-cell";
+				var adding = document.createElement('input');
+				adding.setAttribute("type", field_type.replace('paypal_', ''));
+				adding.setAttribute("value", '[' + table + ':' + product_price + ']');
+				adding.setAttribute("id", num + "_elementform_id_temp" + max_value);
+				if (field_type == 'paypal_checkbox') {
+				  adding.setAttribute("onClick", "set_checked('" + num + "','" + max_value + "','form_id_temp')");
+				  adding.setAttribute("name", num + "_elementform_id_temp" + max_value);
+				}
+				if (field_type == 'paypal_radio') {
+				  adding.setAttribute("onClick", "set_default('" + num + "','" + max_value + "','form_id_temp')");
+				  adding.setAttribute("name", num + "_elementform_id_temp");
+				}
+				var label_adding = document.createElement('label');
+				label_adding.setAttribute("id", num + "_label_element" + max_value);
+				label_adding.setAttribute("class", "ch-rad-label");
+				label_adding.setAttribute("for", num + "_elementform_id_temp" + max_value);
+				label_adding.innerHTML = '[' + table + ':' + product_name + ']';
+				label_adding.setAttribute("where", where);
+				label_adding.setAttribute("order_by", order);
+				label_adding.setAttribute("db_info", '[' + str + ']');
+				var adding_ch_label = document.createElement('input');
+				adding_ch_label.setAttribute("type", "hidden");
+				adding_ch_label.setAttribute("id", num + "_elementlabel_form_id_temp" + max_value);
+				adding_ch_label.setAttribute("name", num + "_elementform_id_temp" + max_value + "_label");
+				adding_ch_label.setAttribute("value", '[' + table + ':' + product_name + ']');
+				td.appendChild(adding);
+				td.appendChild(label_adding);
+				td.appendChild(adding_ch_label);
+				tr.appendChild(td);
+				c_table.appendChild(tr);
 
-            var attr_table = window.parent.jQuery('#' + 'choices');
-            var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
-              '<div class="fm-table-col fm-width-60">' +
-              '<input type="text" class="fm-field-choice" id="el_choices' + max_value + '" value="[' + table + ':' + product_name + ']" disabled="disabled" onKeyUp="change_label(\'' + num + '_label_element' + max_value + '\', this.value); change_label_1(\'' + num + '_elementlabel_form_id_temp' + max_value + '\', this.value);" />' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-20">' +
-              '<input type="text" class="fm-field-choice" id="el_option_price' + max_value + '" value="[' + table + ':' + product_price + ']" disabled="disabled" onKeyPress="return check_isnum_point(event)" onKeyUp="change_value_price(\'' + num + '_elementform_id_temp' + max_value + '\', this.value)" />' +
-              '</div>' +
-              '<input type="hidden" id="el_option_params' + max_value + '" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']" />' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_choise_price(' + max_value + ',' + num + ')"></span>' +
-              '</div>' +
-              '<div class="fm-table-col fm-width-10">' +
-              '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
-              '</div>' +
-              '</div>');
-            attr_table.append(attr);
-            window.parent["refresh_attr"](num, 'type_checkbox');
-          }
-          window.parent.tb_remove();
-        }
-        else {
-          if (field_type == "checkbox" || field_type == "radio" || field_type == "select") {
-            alert('Select an option(s).');
-          }
-          else {
-            alert('Select a product name or product price.');
-          }
-        }
-        return false;
-      }
-		function gen_query() {
-        query = "";
-        query_price = "";
-        where = "";
+				var attr_table = window.parent.jQuery('#' + 'choices');
+				var attr = jQuery('<div id="' + max_value + '" class="change_pos fm-width-100">' +
+				  '<div class="fm-table-col fm-width-60">' +
+				  '<input type="text" class="fm-field-choice" id="el_choices' + max_value + '" value="[' + table + ':' + product_name + ']" disabled="disabled" onKeyUp="change_label(\'' + num + '_label_element' + max_value + '\', this.value); change_label_1(\'' + num + '_elementlabel_form_id_temp' + max_value + '\', this.value);" />' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-20">' +
+				  '<input type="text" class="fm-field-choice" id="el_option_price' + max_value + '" value="[' + table + ':' + product_price + ']" disabled="disabled" onKeyPress="return check_isnum_point(event)" onKeyUp="change_value_price(\'' + num + '_elementform_id_temp' + max_value + '\', this.value)" />' +
+				  '</div>' +
+				  '<input type="hidden" id="el_option_params' + max_value + '" value="' + where + '[where_order_by]' + order + '[db_info]' + '[' + str + ']" />' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_choise_price(' + max_value + ',' + num + ')"></span>' +
+				  '</div>' +
+				  '<div class="fm-table-col fm-width-10">' +
+				  '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+				  '</div>' +
+				  '</div>');
+				attr_table.append(attr);
+				window.parent["refresh_attr"](num, 'type_checkbox');
+			  }
+			  window.parent.tb_remove();
+			}
+			else {
+			  if (field_type == "checkbox" || field_type == "radio" || field_type == "select") {
+				alert('Select an option(s).');
+			  }
+			  else {
+				alert('Select a product name or product price.');
+			  }
+			}
+			return false;
+		}
+
+	function gen_query() {
+        query = '';
+        query_price = '';
+        where = '';
         previous = '';
+        op_val = '';
         for (i = 1; i < cond_id; i++) {
-          if (jQuery('#' + i).html()) {
+          if ( jQuery('#' + i).html() ) {
             if (jQuery('#op_' + i).val() == "%..%") {
-              op_val = ' LIKE "%' + jQuery('#val_' + i).val() + '%"';
+              op_val = ' LIKE \'%' + jQuery('#val_' + i).val() + '%\'';
+            }
+		    else if (jQuery('#op_' + i).val() == "..%") {
+              op_val = ' LIKE \'' + jQuery('#val_' + i).val() + '%\'';
             }
             else if (jQuery('#op_' + i).val() == "%..") {
-              op_val = ' LIKE "%' + jQuery('#val_' + i).val() + '"';
-            }
-            else if (jQuery('#op_' + i).val() == "..%") {
-              op_val = ' LIKE "' + jQuery('#val_' + i).val() + '%"';
+              op_val = ' LIKE \'%' + jQuery('#val_' + i).val() + '\'';
             }
             else {
               op_val = ' ' + jQuery('#op_' + i).val() + ' \'' + jQuery('#val_' + i).val() + '\'';
@@ -537,7 +540,7 @@ class FMViewSelect_data_from_db extends FMAdminView {
         query_price = '[' + (jQuery('#order_by').val() ? '`' + jQuery('#order_by').val() + '`' + ' ' + jQuery('#order_by_asc').val() : jQuery('#product_name').val() ? '`' + jQuery('#product_name').val() + '`' + ' ' + jQuery('#order_by_asc').val() : jQuery('#product_price').val() ? '`' + jQuery('#product_price').val() + '`' + ' ' + jQuery('#order_by_asc').val() : '' ) + ']';
         jQuery('#where').val(query);
         jQuery('#order').val(query_price);
-      }
+	}
     </script>
     <?php if ( $table_struct ): ?>
       <div class="cols">

@@ -31,7 +31,7 @@ msgstr ""
 
 #: admin/controllers/Addons_fm.php:68
 msgid ""
-"This add-on is an integration of the Form Maker with MailChimp which allows "
+"This extension is an integration of the Form Maker with MailChimp which allows "
 "to add contacts to your subscription lists just from submitted forms."
 msgstr ""
 
@@ -41,7 +41,7 @@ msgstr ""
 
 #: admin/controllers/Addons_fm.php:76
 msgid ""
-"User Registration add-on integrates with Form maker forms allowing users to "
+"User Registration extension integrates with Form maker forms allowing users to "
 "create accounts at your website."
 msgstr ""
 

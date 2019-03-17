@@ -1,6 +1,16 @@
-jQuery(document).ready(function () {
+jQuery(document).on('ready fm_tab_loaded, ready fm_tab_email_loaded', function () {
+  fm_admin_ready();
+});
+jQuery(window).on('load', function () {
   jQuery('#fm_loading').hide();
-  jQuery('#fm_admin_container').removeClass('hidden');
+  jQuery('#fm_admin_container').show();
+  if ( typeof add_scroll_width == 'function' ) {
+    add_scroll_width();
+  }
+  set_no_items();
+});
+
+function fm_admin_ready() {
   // Set click action to add new buttons.
   jQuery(".wd-header a").on("click", function () {
     jQuery("input[name='task']").val("add");
@@ -14,10 +24,10 @@ jQuery(document).ready(function () {
     jQuery(this).datepicker();
     jQuery(this).datepicker("option", "dateFormat", jQuery(this).data("format"));
   });
-  
-   // Open/close section container on its header click.
+
+  // Open/close section container on its header click.
   jQuery(".hndle:not(.readonly), .handlediv").each(function () {
-    jQuery(this).on("click", function () {
+    jQuery(this).off('click').on("click", function () {
       fm_toggle_postbox(this);
     });
   });
@@ -33,7 +43,7 @@ jQuery(document).ready(function () {
 
   fm_disabled_uninstall_btn();
   jQuery('.fm-uninstall-form #check_yes').on("click", function () {
-	  fm_disabled_uninstall_btn();
+    fm_disabled_uninstall_btn();
   });
 
   /* Add tooltip to elements with "wd-info" class. */
@@ -80,7 +90,7 @@ jQuery(document).ready(function () {
       }
     });
   }
-});
+}
 
 function wd_insert_placeholder(id, placeholder) {
   var field = document.getElementById(id);
@@ -678,7 +688,7 @@ function fm_toggle_pages(that) {
 
 function fm_apply_options(task) {
   fm_set_input_value('task', task);
-  document.getElementById('adminForm').submit();
+  document.getElementById('manage_form').submit();
 }
 
 function pp_live_search(input, delay, full_content) {
@@ -1001,7 +1011,6 @@ function show_stats() {
 			error: function (err) {},
 			success: function (response) {
 				jQuery('.fm-div_stats-loading').removeClass('is-active');
-				console.log(response.html);
 				if(response.html){
 					jQuery('#div_stats').html(response.html);
 				}
@@ -1018,6 +1027,10 @@ function fm_loading_show() {
 }
 function fm_loading_hide() {
 	jQuery('#fm_loading').hide();
+	if ( typeof add_scroll_width == 'function' ) {
+    add_scroll_width();
+  }
+  set_no_items();
 }
 
 /**

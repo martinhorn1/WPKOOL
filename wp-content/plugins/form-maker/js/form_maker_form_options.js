@@ -1,29 +1,36 @@
- jQuery(document).ready(function () {
-	jQuery('.filed_label').each(function() {
-		if(document.getElementById("frontend_submit_fields").value == document.getElementById("all_fields").value)
-			document.getElementById("all_fields").checked = true;
-		if(inArray(this.value, document.getElementById("frontend_submit_fields").value.split(","))) {
-			this.checked = true;
-		}
-	});
+jQuery(document).on('fm_tab_loaded', function () {
+  fm_options_ready();
+  fm_document_ready();
+});
+jQuery(document).on('fm_tab_email_loaded', function () {
+  fm_email_options_ready();
+});
 
-	jQuery('.stats_filed_label').each(function() {
-		if(document.getElementById("frontend_submit_stat_fields").value == document.getElementById("all_stats_fields").value)
-			document.getElementById("all_stats_fields").checked = true;
-		if(inArray(this.value, document.getElementById("frontend_submit_stat_fields").value.split(","))) {
-			this.checked = true;
-		}
-	});
+function fm_options_ready() {
+  jQuery('.filed_label').each(function() {
+    if(document.getElementById("frontend_submit_fields").value == document.getElementById("all_fields").value)
+      document.getElementById("all_fields").checked = true;
+    if(inArray(this.value, document.getElementById("frontend_submit_fields").value.split(","))) {
+      this.checked = true;
+    }
+  });
 
-	jQuery(document).on('change','input[name="all_fields"]',function() {
-		jQuery('.filed_label').prop("checked" , this.checked);
-	});
+  jQuery('.stats_filed_label').each(function() {
+    if(document.getElementById("frontend_submit_stat_fields").value == document.getElementById("all_stats_fields").value)
+      document.getElementById("all_stats_fields").checked = true;
+    if(inArray(this.value, document.getElementById("frontend_submit_stat_fields").value.split(","))) {
+      this.checked = true;
+    }
+  });
 
-	jQuery(document).on('change','input[name="all_stats_fields"]',function() {
-		jQuery('.stats_filed_label').prop("checked" , this.checked);
-	});
-   fm_toggle_options('.fm_email_options', jQuery('input[name=sendemail]:checked').val() == '1' ? true : false);
-   fm_toggle_options('#div_gdpr_checkbox_text', jQuery('input[name=gdpr_checkbox]:checked').val() == '1' ? true : false);
+  jQuery(document).on('change','input[name="all_fields"]',function() {
+    jQuery('.filed_label').prop("checked" , this.checked);
+  });
+
+  jQuery(document).on('change','input[name="all_stats_fields"]',function() {
+    jQuery('.stats_filed_label').prop("checked" , this.checked);
+  });
+  fm_toggle_options('#div_gdpr_checkbox_text', jQuery('input[name=gdpr_checkbox]:checked').val() == '1' ? true : false);
 
   // Bind filter action on entering search key and when the user cancel the input.
   jQuery(".placeholders-filter").on("keyup input", function() { filter_placeholders(this); });
@@ -37,19 +44,37 @@
       }
     }
   });
-	fm_remove_validate_error_message();
-});
+  fm_remove_validate_error_message();
+}
 
-jQuery(window).on('load', function () {
-	var fieldset_id = jQuery("#fieldset_id").val();
-	form_maker_options_tabs(fieldset_id);
+function fm_email_options_ready() {
+  fm_toggle_options('.fm_email_options', jQuery('input[name=sendemail]:checked').val() == '1' ? true : false);
+
+  // Bind filter action on entering search key and when the user cancel the input.
+  jQuery(".placeholders-filter").on("keyup input", function() { filter_placeholders(this); });
+  jQuery('#placeholders_overlay').on("click", function() { fm_placeholders_popup_close(); });
+
+  // Close popup on escape.
+  jQuery(document).on('keydown', function (e) {
+    if (e.keyCode === 27) { /* Esc.*/
+      if (jQuery("#placeholders_overlay").is(":visible")) {
+        fm_placeholders_popup_close();
+      }
+    }
+  });
+  fm_remove_validate_error_message();
+}
+
+function fm_document_ready() {
+  var fieldset_id = jQuery("#fieldset_id").val();
+  form_maker_options_tabs(fieldset_id);
   fm_change_payment_method(jQuery('input[name=paypal_mode]:checked').val());
-	if ( fieldset_id == 'javascript' ) {
-		codemirror_for_javascript();
-	}
+  if ( fieldset_id == 'javascript' ) {
+    codemirror_for_javascript();
+  }
 
-	fm_popup();
-});
+  fm_popup();
+}
 
 /**
  * Filter placeholders.
@@ -85,16 +110,21 @@ function filter_placeholders(that) {
   }
 }
 
-function wd_fm_apply_options(task) {
+function wd_fm_apply_options() {
+  var tabs_loaded = JSON.parse(jQuery('#fm_tabs_loaded').val());
+  if ( !inArray('form_options_tab', tabs_loaded) && !inArray('form_email_options_tab', tabs_loaded)) {
+    return true;
+  }
+
 	var success = true;
 	jQuery(".fm-validate").each(function() {
 		var type = jQuery(this).attr("data-type");
-		var message = form_maker.not_valid_value;
+		var message = form_maker_options.not_valid_value;
 		if ( type == 'required' ) {
-		  message = form_maker.required_field;
+		  message = form_maker_options.required_field;
     }
     else if ( type == 'email' ) {
-		  message = form_maker.not_valid_email;
+		  message = form_maker_options.not_valid_email;
     }
     message = "<p class='description fm-validate-description'>" + message + "</p>";
 		var callback = jQuery(this).attr("data-callback");
@@ -104,14 +134,23 @@ function wd_fm_apply_options(task) {
 		var value = jQuery(this).val();
 
 		if ( typeof window[callback] == "function" && !window[callback](value, callbackParameter ) ) { /* Check validation.*/
-			/* Remove active class from all tabs.*/
-			jQuery(".fm_fieldset_active").addClass("fm_fieldset_deactive").removeClass("fm_fieldset_active");
-			jQuery(".fm_fieldset_tab").removeClass("active");
-			/* Add active class to required tab.*/
-			jQuery("#" + contentId).removeClass("fm_fieldset_deactive").addClass("fm_fieldset_active");
-			jQuery("#" + tabId).addClass("active");
-			jQuery("#fieldset_id").val(tabId);
-			/* Add error message to the field.*/
+			/* Change to tab with error in it.*/
+      var active_tab = jQuery("#" + contentId).closest(".ui-tabs-panel");
+      jQuery("#fm-tabs").tabs({
+        active: jQuery(".ui-tabs-panel").index(active_tab)
+      });
+
+      if ( jQuery(".fm_fieldset_active:visible").length !== 0 ) {
+        /* Remove active class from all subtabs.*/
+        jQuery(".fm_fieldset_active").addClass("fm_fieldset_deactive").removeClass("fm_fieldset_active");
+        jQuery(".fm_fieldset_tab").removeClass("active");
+        /* Add active class to required subtab.*/
+        jQuery("#" + contentId).removeClass("fm_fieldset_deactive").addClass("fm_fieldset_active");
+        jQuery("#" + tabId).addClass("active");
+        /* Change to subtab with error in it.*/
+        jQuery("#fieldset_id").val(tabId);
+      }
+      /* Add error message to the field.*/
 			if ( jQuery(this).parent().find(".fm-validate-description").length === 0 ) {
 			  var description_container = jQuery(this).parent().find(".description");
 			  if ( description_container.length ) {
@@ -134,9 +173,7 @@ function wd_fm_apply_options(task) {
 
 	if ( success ) {
     set_condition();
-    fm_set_input_value('task', task);
   }
-
   return success;
 }
 
@@ -176,7 +213,7 @@ function fm_validate_email(value, obj) {
 function fm_add_inline_email_validation_message(obj) {
   var value = jQuery(obj).val();
   if ( !fm_validate_email(value, '') ) {
-    jQuery(obj).after("<p class='description fm-validate-description'>" + form_maker.not_valid_value + "</p>");
+    jQuery(obj).after("<p class='description fm-validate-description'>" + form_maker_options.not_valid_value + "</p>");
     jQuery(obj).addClass("fm-validate-field");
     jQuery('html, body').animate({
       scrollTop: jQuery(this).offset().top - 200
@@ -222,6 +259,7 @@ function set_condition() {
 			field_condition+=document.getElementById("fields"+i).value+"*:*field_label*:*";
 			field_condition+=document.getElementById("all_any"+i).value+"*:*all_any*:*";
 			for(k=0;k<500;k++) {
+
 				if(document.getElementById("condition_div"+i+"_"+k)) {
 					conditions+=document.getElementById("field_labels"+i+"_"+k).value+"***";
 					conditions+=document.getElementById("is_select"+i+"_"+k).value+"***";
@@ -248,7 +286,11 @@ function set_condition() {
 			field_condition+="*:*new_condition*:*";
 		}
 	}
-	document.getElementById('condition').value = field_condition;
+
+  if ( jQuery('#condition').length ) {
+    document.getElementById('condition').value = field_condition;
+  }
+
 }
 
 function show_verify_options(s){

@@ -30,6 +30,12 @@
   vertical-align: top !important;
 }
 
+div[type="type_submit_reset"],
+div[type="type_button"] {
+  height: 100%;
+  justify-content: flex-end;
+}
+
 div[type="type_captcha"] .wdform-element-section * {
   vertical-align: middle;
 }
@@ -766,6 +772,10 @@ div[type="type_file_upload"] .wdform-element-section {
 	font-size: 20px;
 }
 
+.rtl .fm-form .wd-calendar-button {
+	margin: 0 -25px 0 0;
+}
+
 input[type=number].wd-type-number::-webkit-inner-spin-button,
 input[type=number].wd-type-number::-webkit-outer-spin-button {
 	-webkit-appearance: none;
@@ -1038,4 +1048,71 @@ div[type="type_slider"] .label {
 .fm-form-container .fm-form .fm-gdpr-checkbox {
 	display: initial !important;
 	margin-right: 5px;
+}
+
+.fm-form-builder .wdform_page {
+	display: flex;
+}
+.fm-form-builder .wdform_section {
+	flex-direction: column;
+	flex: 1;
+}
+.fm-form-builder .wdform_row {
+	flex: 1;
+}
+.wdform_column {
+	display: flex;
+	flex-direction: column;
+}
+.fm-form-builder .wdform_column {
+  width: initial !important;
+	flex-direction: row;
+}
+.fm-form-builder .wdform_section {
+	display: inline-block;
+	flex-wrap: unset;
+  vertical-align: top;
+}
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(1) {
+  width: 100%;
+}
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(2),
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(2) ~ .wdform_section {
+  width: 100%;
+}
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(3),
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(3) ~ .wdform_section {
+  width: 50%;
+}
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(4),
+.fm-form .fm-form-builder .wdform_section:first-child:nth-last-child(4) ~ .wdform_section {
+  width: 33.33%;
+}
+
+@media screen  and (max-width: 768px) {
+  .fm-form .fm-form-builder .wdform_section,
+  .fm-form .fm-form-builder .wdform_column {
+    width: 100% !important;
+  }
+  .fm-form-container .fm-form-builder .fm-form .wdform-label-section,
+  .fm-form-container .fm-form-builder .fm-form .wdform-element-section {
+    width: 100%;
+  }
+}
+
+.fm-col-1 {
+	flex: 0 1 100% !important;;
+	width: 100% !important;;
+}
+.fm-col-2 {
+	flex: 0 1 50% !important;;
+	width: 50% !important;;
+}
+.fm-col-3 {
+	flex: 0 1 33.33% !important;;
+	width: 33.33% !important;;
+}
+.fm-col-4 {
+	flex: 0 1 25% !important;
+	width: 25% !important;;
 }

@@ -2534,7 +2534,7 @@ msgid "Support Forum"
 msgstr ""
 
 #: admin/views/view.php:424 form-maker.php:253
-msgid "Add-ons"
+msgid "Extensions"
 msgstr ""
 
 #: admin/views/view.php:428 form-maker.php:250
@@ -3338,7 +3338,7 @@ msgstr ""
 
 #: form-maker.php:1050
 #, php-format
-msgid "Please update the %s add-ons to start using."
+msgid "Please update the %s extensions to start using."
 msgstr ""
 
 #: form-maker.php:1110

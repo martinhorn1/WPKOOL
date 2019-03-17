@@ -15,7 +15,7 @@ jQuery(window).on('load', function () {
       }
       else {
         // Do not move.
-        var scrollToTop = 15;
+        var scrollToTop = 10;
       }
       jQuery("#add_field_cont").css("top", scrollToTop);
     }
@@ -181,7 +181,7 @@ function enable2() {
   jQuery("#field_container").addClass('field_container_full');
 }
 
-function edit(id) {
+function edit(id, e) {
   if (need_enable) {
     enable2();
   }
@@ -279,7 +279,7 @@ function edit(id) {
       w_attr_value = atrs[1];
       w_readonly = document.getElementById(id + "_readonlyform_id_temp").value;
       w_hide_label = document.getElementById(id + "_hide_labelform_id_temp").value;
-      type_text(id, w_field_label, w_field_label_size, w_field_label_pos, w_hide_label, w_size, w_first_val, w_title, w_required, w_regExp_status, w_regExp_value, w_regExp_common, w_regExp_arg, w_regExp_alert, w_unique, w_attr_name, w_attr_value, w_readonly);
+      type_text(id, w_field_label, w_field_label_size, w_field_label_pos, w_hide_label, w_size, w_first_val, w_title, w_required, w_regExp_status, w_regExp_value, w_regExp_common, w_regExp_arg, w_regExp_alert, w_unique, w_attr_name, w_attr_value, w_readonly, w_class);
       break;
     }
     case 'type_number': {
@@ -1320,6 +1320,130 @@ function edit(id) {
       break;
     }
   }
+  if ( typeof e != "undefined" ) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}
+
+function fm_add_page() {
+  for (t = form_view_max; t > 0; t--) {
+    if (document.getElementById('form_id_tempform_view' + t)) {
+      form_view = t;
+      break;
+    }
+  }
+  form_view_count = jQuery('.wdform-page-and-images').length;
+  if (form_view_count == 1) {
+    var icon_edit = document.createElement("span");
+    icon_edit.setAttribute('title', 'Edit the pagination options');
+    icon_edit.setAttribute("class", "page_toolbar fm-ico-edit");
+    icon_edit.setAttribute("onclick", 'el_page_navigation()');
+    var edit_page_navigation = document.getElementById("edit_page_navigation");
+    edit_page_navigation.appendChild(icon_edit);
+    document.getElementById('page_navigation').appendChild(edit_page_navigation);
+  }
+  jQuery('#page_bar').removeClass('form_view_hide');
+  old_to_gen = form_view;
+  form_view_max++;
+
+  form_view = form_view_max;
+
+  if (form_view > 1) {
+    jQuery(".form_id_tempform_view_img").removeClass('form_view_hide');
+  }
+  table = document.createElement('div');
+  table.setAttribute('class', 'wdform-page-and-images fm-form-builder');
+  form_tempform_view = document.createElement('div');
+  form_tempform_view.setAttribute('id', 'form_id_tempform_view' + form_view);
+  form_tempform_view.setAttribute('page_title', 'Untitled Page');
+  form_tempform_view.setAttribute('class', 'wdform_page');
+
+  page_toolbar_wrap = document.createElement('div');
+  page_toolbar_wrap.setAttribute('id', 'form_id_tempform_view_img' + form_view);
+  page_toolbar_wrap.setAttribute('class', 'form_id_tempform_view_img');
+
+  page_title_div = document.createElement('div');
+  page_title_div.setAttribute('class', 'wdform_page_title');
+  page_toolbar_wrap.appendChild(page_title_div);
+
+  page_toolbar = document.createElement('div');
+  var icon_show_hide = document.createElement('span');
+  icon_show_hide.setAttribute('title', 'Show or hide the page');
+  icon_show_hide.setAttribute("class", "page_toolbar fm-ico-collapse");
+  icon_show_hide.setAttribute('id', 'show_page_img_' + form_view);
+  icon_show_hide.setAttribute('onClick', 'show_or_hide("' + form_view + '"); change_show_hide_icon(this);');
+
+  var icon_remove = document.createElement("span");
+  icon_remove.setAttribute('title', 'Delete the page');
+  icon_remove.setAttribute("class", "page_toolbar fm-ico-delete");
+  icon_remove.setAttribute("onclick", 'remove_page("' + form_view + '")');
+
+  var icon_edit = document.createElement("span");
+  icon_edit.setAttribute('title', 'Edit the page');
+  icon_edit.setAttribute("class", "page_toolbar fm-ico-edit");
+  icon_edit.setAttribute("onclick", 'edit_page_break("' + form_view + '")');
+
+  page_toolbar.appendChild(icon_remove);
+  page_toolbar.appendChild(icon_edit);
+  page_toolbar.appendChild(icon_show_hide);
+  page_toolbar_wrap.appendChild(page_toolbar);
+
+  tr = document.createElement('div');
+  tr.setAttribute('class', 'wdform_section');
+  tr_page_nav = document.createElement('div');
+  tr_page_nav.setAttribute('valign', 'top');
+  tr_page_nav.setAttribute('class', 'wdform_footer');
+  tr_page_nav.style.width = "100%";
+  td_page_nav = document.createElement('div');
+  td_page_nav.style.width = "100%";
+  table_min_page_nav = document.createElement('div');
+  table_min_page_nav.style.width = "100%";
+  table_min_page_nav.style.display = "table";
+  tbody_min_page_nav = document.createElement('div');
+  tbody_min_page_nav.style.display = "table-row-group";
+  tr_min_page_nav = document.createElement('div');
+  tr_min_page_nav.setAttribute('id', 'form_id_temppage_nav' + form_view);
+  tr_min_page_nav.style.display = "table-row";
+  table_min = document.createElement('div');
+  table_min.setAttribute('class', 'wdform_column');
+  table_min1 = document.createElement('div');
+  table_min1.setAttribute('class', 'wdform_column');
+  tr.appendChild(table_min);
+  // tr.appendChild(table_min1);
+  tbody_min_page_nav.appendChild(tr_min_page_nav);
+  table_min_page_nav.appendChild(tbody_min_page_nav);
+  td_page_nav.appendChild(table_min_page_nav);
+  tr_page_nav.appendChild(td_page_nav);
+  form_tempform_view.appendChild(tr);
+  form_tempform_view.appendChild(tr_page_nav);
+  table.appendChild(page_toolbar_wrap);
+  table.appendChild(form_tempform_view);
+  document.getElementById('take').insertBefore(table, document.getElementById("add_field_cont"));
+
+  form_view_element = document.getElementById('form_id_tempform_view' + form_view);
+  form_view_element.setAttribute('next_title', 'Next');
+  form_view_element.setAttribute('next_type', 'text');
+  form_view_element.setAttribute('next_class', 'wdform-page-button');
+  form_view_element.setAttribute('next_checkable', 'true');
+  form_view_element.setAttribute('previous_title', 'Previous');
+  form_view_element.setAttribute('previous_type', 'text');
+  form_view_element.setAttribute('previous_class', 'wdform-page-button');
+  form_view_element.setAttribute('previous_checkable', 'false');
+  form_view_element.setAttribute('page_title', 'Untitled Page');
+  page_title_div.innerHTML = '<span class="fm-ico-draggable"></span>Untitled Page';
+  if (form_view_count == 2) {
+    generate_page_nav(form_view);
+    generate_page_nav(old_to_gen);
+  }
+  else {
+    generate_page_nav(form_view);
+  }
+  all_sortable_events();
+  jQuery(".wdform_arrows").hide();
+  draggable_page_break(nextID, form_view_max);
+  nextID = "";
+  form_view_element.scrollIntoView();
 }
 
 function add(key, after_edit, wdid) {
@@ -1466,13 +1590,13 @@ function add(key, after_edit, wdid) {
       wdform_page = document.getElementById('form_id_tempform_view' + form_view);
       var arrows_body = '<span class="wdform_arrows_basic wdform_arrows_container">' +
                           '<span id="edit_' + i + '" valign="middle" class="element_toolbar">' +
-                            '<span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' + i + '&quot;)"></span>' +
+                            '<span title="Edit the field" class="page_toolbar fm-ico-edit" ontouchend="edit(&quot;' + i + '&quot;, event)" onclick="edit(&quot;' + i + '&quot;, event)"></span>' +
                           '</span>' +
                           '<span id="duplicate_' + i + '" valign="middle" class="element_toolbar">' +
-                            '<span title="Duplicate the field" class="page_toolbar dashicons dashicons-admin-page" onclick="duplicate(&quot;' + i + '&quot;)"></span>' +
+                            '<span title="Duplicate the field" class="page_toolbar fm-ico-duplicate" ontouchend="duplicate(&quot;' + i + '&quot;, event)" onclick="duplicate(&quot;' + i + '&quot;, event)"></span>' +
                           '</span>' +
                           '<span id="X_' + i + '" valign="middle" align="right" class="element_toolbar">' +
-                            '<span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_section_break(&quot;' + i + '&quot;)"></span>' +
+                            '<span title="Remove the field" class="page_toolbar fm-ico-delete" onclick="remove_section_break(&quot;' + i + '&quot;)"></span>' +
                           '</span>' +
                         '</span>';
       wdform_arrows.innerHTML = arrows_body;
@@ -1508,7 +1632,6 @@ function add(key, after_edit, wdid) {
       nextID = "";
       j = 2;
     }
-    sortable_columns();
     jQuery(".wdform_arrows").hide();
     close_window();
     all_sortable_events();
@@ -1556,7 +1679,7 @@ function add(key, after_edit, wdid) {
       form_view_element.setAttribute('previous_class', previous_class);
       form_view_element.setAttribute('previous_checkable', previous_checkable);
       form_view_element.setAttribute('page_title', page_title);
-      document.getElementById('form_id_tempform_view_img' + i).firstChild.innerHTML = '<span class="dashicons dashicons-move"></span>' + page_title;
+      document.getElementById('form_id_tempform_view_img' + i).firstChild.innerHTML = '<span class="fm-ico-draggable"></span>' + page_title;
       var input = document.getElementById('_div_between');
       atr = input.attributes;
       for (v = 0; v < 30; v++) {
@@ -1572,144 +1695,6 @@ function add(key, after_edit, wdid) {
       }
       sortable_columns();
       jQuery(".wdform_arrows").hide();
-      close_window();
-      return;
-    }
-    else {
-      for (t = form_view_max; t > 0; t--) {
-        if (document.getElementById('form_id_tempform_view' + t)) {
-          form_view = t;
-          break;
-        }
-      }
-      form_view_count = jQuery('.wdform-page-and-images').length;
-      if (form_view_count == 1) {
-        var icon_edit = document.createElement("span");
-        icon_edit.setAttribute('title', 'Edit the pagination options');
-        icon_edit.setAttribute("class", "page_toolbar dashicons dashicons-edit");
-        icon_edit.setAttribute("onclick", 'el_page_navigation()');
-        var edit_page_navigation = document.getElementById("edit_page_navigation");
-        edit_page_navigation.appendChild(icon_edit);
-        document.getElementById('page_navigation').appendChild(edit_page_navigation);
-      }
-      old_to_gen = form_view;
-      form_view_max++;
-
-
-      form_view = form_view_max;
-
-      if (form_view > 1) {
-        jQuery(".form_id_tempform_view_img").removeClass('form_view_hide');
-      }
-      table = document.createElement('div');
-      table.setAttribute('class', 'wdform-page-and-images');
-      table.style.cssText = "display:table; border-top:1px solid black";
-      form_tempform_view = document.createElement('div');
-      form_tempform_view.setAttribute('id', 'form_id_tempform_view' + form_view);
-      form_tempform_view.setAttribute('page_title', 'Untitled Page');
-      form_tempform_view.setAttribute('class', 'wdform_page');
-
-      page_toolbar_wrap = document.createElement('div');
-      page_toolbar_wrap.setAttribute('id', 'form_id_tempform_view_img' + form_view);
-      page_toolbar_wrap.setAttribute('class', 'form_id_tempform_view_img');
-
-      page_title_div = document.createElement('div');
-      page_toolbar_wrap.appendChild(page_title_div);
-
-      page_toolbar = document.createElement('div');
-      var icon_show_hide = document.createElement('span');
-      icon_show_hide.setAttribute('title', 'Show or hide the page');
-      icon_show_hide.setAttribute("class", "page_toolbar dashicons dashicons-arrow-up-alt2");
-      icon_show_hide.setAttribute('id', 'show_page_img_' + form_view);
-      icon_show_hide.setAttribute('onClick', 'show_or_hide("' + form_view + '"); change_show_hide_icon(this);');
-
-      var icon_remove = document.createElement("span");
-      icon_remove.setAttribute('title', 'Delete the page');
-      icon_remove.setAttribute("class", "page_toolbar dashicons dashicons-no");
-      icon_remove.setAttribute("onclick", 'remove_page("' + form_view + '")');
-
-      var icon_edit = document.createElement("span");
-      icon_edit.setAttribute('title', 'Edit the page');
-      icon_edit.setAttribute("class", "page_toolbar dashicons dashicons-edit");
-      icon_edit.setAttribute("onclick", 'edit_page_break("' + form_view + '")');
-
-      page_toolbar.appendChild(icon_remove);
-      page_toolbar.appendChild(icon_edit);
-      page_toolbar.appendChild(icon_show_hide);
-      page_toolbar_wrap.appendChild(page_toolbar);
-
-      tr = document.createElement('div');
-      tr.setAttribute('class', 'wdform_section');
-      tr_page_nav = document.createElement('div');
-      tr_page_nav.setAttribute('valign', 'top');
-      tr_page_nav.setAttribute('class', 'wdform_footer');
-      tr_page_nav.style.width = "100%";
-      td_page_nav = document.createElement('div');
-      td_page_nav.style.width = "100%";
-      table_min_page_nav = document.createElement('div');
-      table_min_page_nav.style.width = "100%";
-      table_min_page_nav.style.display = "table";
-      tbody_min_page_nav = document.createElement('div');
-      tbody_min_page_nav.style.display = "table-row-group";
-      tr_min_page_nav = document.createElement('div');
-      tr_min_page_nav.setAttribute('id', 'form_id_temppage_nav' + form_view);
-      tr_min_page_nav.style.display = "table-row";
-      table_min = document.createElement('div');
-      table_min.setAttribute('class', 'wdform_column');
-      table_min1 = document.createElement('div');
-      table_min1.setAttribute('class', 'wdform_column');
-      tr.appendChild(table_min);
-      // tr.appendChild(table_min1);
-      tbody_min_page_nav.appendChild(tr_min_page_nav);
-      table_min_page_nav.appendChild(tbody_min_page_nav);
-      td_page_nav.appendChild(table_min_page_nav);
-      tr_page_nav.appendChild(td_page_nav);
-      form_tempform_view.appendChild(tr);
-      form_tempform_view.appendChild(tr_page_nav);
-      table.appendChild(page_toolbar_wrap);
-      table.appendChild(form_tempform_view);
-      document.getElementById('take').insertBefore(table, document.getElementById("add_field_cont"));
-
-      form_view_element = document.getElementById('form_id_tempform_view' + form_view);
-      page_title = document.getElementById('_div_between').getAttribute('page_title');
-      next_title = document.getElementById('_div_between').getAttribute('next_title');
-      next_type = document.getElementById('_div_between').getAttribute('next_type');
-      next_class = document.getElementById('_div_between').getAttribute('next_class');
-      next_checkable = document.getElementById('_div_between').getAttribute('next_checkable');
-      previous_title = document.getElementById('_div_between').getAttribute('previous_title');
-      previous_type = document.getElementById('_div_between').getAttribute('previous_type');
-      previous_class = document.getElementById('_div_between').getAttribute('previous_class');
-      previous_checkable = document.getElementById('_div_between').getAttribute('previous_checkable');
-      form_view_element.setAttribute('next_title', next_title);
-      form_view_element.setAttribute('next_type', next_type);
-      form_view_element.setAttribute('next_class', next_class);
-      form_view_element.setAttribute('next_checkable', next_checkable);
-      form_view_element.setAttribute('previous_title', previous_title);
-      form_view_element.setAttribute('previous_type', previous_type);
-      form_view_element.setAttribute('previous_class', previous_class);
-      form_view_element.setAttribute('previous_checkable', previous_checkable);
-      form_view_element.setAttribute('page_title', page_title);
-      page_title_div.innerHTML = '<span class="dashicons dashicons-move"></span>' + page_title;
-      var input = document.getElementById('_div_between');
-      atr = input.attributes;
-      for (v = 0; v < 30; v++) {
-        if (atr[v]) {
-          if (atr[v].name.indexOf("add_") == 0) {
-            form_view_element.setAttribute(atr[v].name, atr[v].value);
-          }
-        }
-      }
-      if (form_view_count == 2) {
-        generate_page_nav(form_view);
-        generate_page_nav(old_to_gen);
-      }
-      else {
-        generate_page_nav(form_view);
-      }
-      sortable_columns();
-      jQuery(".wdform_arrows").hide();
-      draggable_page_break(nextID, form_view_max);
-      nextID = "";
       close_window();
       return;
     }
@@ -1792,13 +1777,13 @@ function add(key, after_edit, wdid) {
                         '</span>' +
                         '<span class="wdform_arrows_basic wdform_arrows_container">' +
                           '<span id="edit_' + i + '" valign="middle" class="element_toolbar">' +
-                            '<span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' + i + '&quot;)"></span>' +
+                            '<span title="Edit the field" class="page_toolbar fm-ico-edit" ontouchend="edit(&quot;' + i + '&quot;, event)" onclick="edit(&quot;' + i + '&quot;, event)"></span>' +
                           '</span>' +
                           '<span id="duplicate_' + i + '" valign="middle" class="element_toolbar">' +
-                           '<span title="Duplicate the field" class="page_toolbar dashicons dashicons-admin-page" onclick="duplicate(&quot;' + i + '&quot;)"></span>' +
+                           '<span title="Duplicate the field" class="page_toolbar fm-ico-duplicate" ontouchend="duplicate(duplicate(&quot;' + i + '&quot;, event))" onclick="duplicate(&quot;' + i + '&quot;, event)"></span>' +
                           '</span>' +
                           '<span id="X_' + i + '" valign="middle" align="right" class="element_toolbar">' +
-                            '<span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_row(&quot;' + i + '&quot;)"></span>' +
+                            '<span title="Remove the field" class="page_toolbar fm-ico-delete" ontouchend="remove_field(&quot;' + i + '&quot;, event)" onclick="remove_field(&quot;' + i + '&quot;, event)"></span>' +
                           '</span>' +
                         '</span>';
       wdform_arrows.innerHTML = arrows_body;
@@ -1967,14 +1952,14 @@ function add(key, after_edit, wdid) {
                             '</span>' +
                             '<span class="wdform_arrows_basic wdform_arrows_container">' +
                               '<span id="edit_' + i + '" valign="middle" class="element_toolbar">' +
-                                '<span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' + i + '&quot;)"></span>' +
+                                '<span title="Edit the field" class="page_toolbar fm-ico-edit" ontouchend="edit(&quot;' + i + '&quot;, event)" onclick="edit(&quot;' + i + '&quot;, event)"></span>' +
                               '</span>' +
                               (type != "type_captcha" && type != "type_arithmetic_captcha" && type != "type_recaptcha" && type != "type_send_copy" && type != "type_stripe" ?
                               '<span id="duplicate_' + i + '" valign="middle" class="element_toolbar">' +
-                                '<span title="Duplicate the field" class="page_toolbar dashicons dashicons-admin-page" onclick="duplicate(&quot;' + i + '&quot;)"></span>' +
+                                '<span title="Duplicate the field" class="page_toolbar fm-ico-duplicate" ontouchend="duplicate(&quot;' + i + '&quot;, event)" onclick="duplicate(&quot;' + i + '&quot;, event)"></span>' +
                               '</span>' : '')+
                               '<span id="X_' + i + '" valign="middle" align="right" class="element_toolbar">' +
-                               '<span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_row(&quot;' + i + '&quot;)"></span>' +
+                               '<span title="Remove the field" class="page_toolbar fm-ico-delete" ontouchend="remove_field(&quot;' + i + '&quot;, event)" onclick="remove_field(&quot;' + i + '&quot;, event)"></span>' +
                               '</span>' +
                             '</span>';
           wdform_arrows.innerHTML = arrows_body;
@@ -2019,15 +2004,10 @@ function add(key, after_edit, wdid) {
 /**
  * Add new field before submit button.
  */
-function move_submit_to_end() {
-  if(!jQuery('.wdform_column').find('[type=type_submit_reset]').length){
-    return false;
-  }
-  var child_count = jQuery('.wdform_column').find('[type=type_submit_reset]').parent().parent().children().length;
-  var submit_field = jQuery('.wdform_column').find('[type=type_submit_reset]').parent();
-  var submit_field_index = submit_field.index();
-  if ( child_count - submit_field_index == 1 ) {
-    return submit_field;
+function move_submit_to_end(column) {
+  var last_child = jQuery(column).children(':not(.fm-hidden)').last();
+  if (last_child.find('[type=type_submit_reset]').length) {
+    return last_child;
   }
   return false;
 }
@@ -2040,17 +2020,18 @@ function move_submit_to_end() {
  */
 function add_field_in_position( nextID, wdform_row ) {
   if( typeof nextID === 'undefined' || nextID === null || nextID == "" ) {
-    var wdform_col = document.getElementById('cur_column');           // getting current column for insert
-
-    if ( typeof wdform_col === 'undefined' || wdform_col === null ) {  // when add field button submitted not moved
-      if ( move_submit_to_end() !== false ) {
-        jQuery(  wdform_row ).insertBefore( move_submit_to_end() );
+    var wdform_col = jQuery('#cur_column');           // getting current column for insert
+    if ( wdform_col.val() == 1 ) {  // when add field button submitted not moved
+      var column = jQuery('<div class="wdform_column"></div>').append(wdform_row);
+      var submit_button_parent = move_submit_to_end(wdform_col);
+      if ( submit_button_parent !== false ) {
+        jQuery(column).insertBefore( submit_button_parent );
       } else {
-        wdform_column.appendChild(wdform_row);
+        wdform_col.append(column);
       }
     }
     else {
-        wdform_col.appendChild(wdform_row);
+        wdform_col.append(wdform_row);
     }
   }
   else {
@@ -2058,6 +2039,8 @@ function add_field_in_position( nextID, wdform_row ) {
     wdform_column = beforeTr.parentNode;
     wdform_column.insertBefore( wdform_row, beforeTr );
   }
+
+  jQuery(window).scrollTop(jQuery(wdform_row).offset().top - 100);
   jQuery("#cur_column").removeAttr("id");
 }
 
@@ -2179,7 +2162,7 @@ function close_window() {
   if (need_enable) {
     popup_ready();
     /* In Firfox and Safari click action is working during the drag and drop also */
-    jQuery(".add-new-button").attr("onclick","popup_ready(); Enable(); return false;");
+    /*jQuery(".add-new-button").attr("onclick","popup_ready(); Enable(); return false;");*/
   }
   need_enable = true;
   document.getElementById('edit_table').innerHTML = "";
@@ -2939,7 +2922,7 @@ function return_attributes(id) {
 function go_to_type_text(new_id) {
   w_attr_name = [];
   w_attr_value = [];
-  type_text(new_id, 'Text', '', 'top', 'no', '', '', '', 'no', 'no', '', '', '', 'Incorrect Value', 'no', w_attr_name, w_attr_value, 'no');
+  type_text(new_id, 'Text', '', 'top', 'no', '', '', '', 'no', 'no', '', '', '', 'Incorrect Value', 'no', w_attr_name, w_attr_value, 'no', '');
 }
 
 function delete_last_child() {
@@ -2954,7 +2937,7 @@ function delete_last_child() {
   jQuery('#edit_table').empty();
 }
 
-function type_text(i, w_field_label, w_field_label_size, w_field_label_pos, w_hide_label, w_size, w_first_val, w_title, w_required, w_regExp_status, w_regExp_value, w_regExp_common, w_regExp_arg, w_regExp_alert, w_unique, w_attr_name, w_attr_value, w_readonly) {
+function type_text(i, w_field_label, w_field_label_size, w_field_label_pos, w_hide_label, w_size, w_first_val, w_title, w_required, w_regExp_status, w_regExp_value, w_regExp_common, w_regExp_arg, w_regExp_alert, w_unique, w_attr_name, w_attr_value, w_readonly, w_class) {
   jQuery("#element_type").val("type_text");
   delete_last_child();
 
@@ -2981,6 +2964,7 @@ function type_text(i, w_field_label, w_field_label_size, w_field_label_pos, w_hi
   advanced_options_container.append(create_custom_regexp(i, w_regExp_status, w_regExp_value));
   advanced_options_container.append(create_case_sensitive(i, w_regExp_status, w_regExp_arg));
   advanced_options_container.append(create_alert_message(i, w_regExp_status, w_regExp_alert));
+  advanced_options_container.append(create_class(i, w_class));
   advanced_options_container.append(create_additional_attributes(i, w_attr_name, 'type_text'));
 
   // Preview
@@ -3123,7 +3107,7 @@ function type_text(i, w_field_label, w_field_label_size, w_field_label_pos, w_hi
 
   if (w_field_label_pos == "top")
     label_top(i);
-
+  change_class(w_class, i);
   refresh_attr(i, 'type_text');
 }
 
@@ -4455,7 +4439,7 @@ function create_select_options(i, w_value_disabled, w_choices, w_choices_params,
         '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + j + '_remove" onClick="remove_option(' + j + ', ' + i + ')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-        '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+        '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '<input type="hidden" class="el_option_params" id="el_option_params' + j + '" value="' + w_choices_params[j] + '" />' +
     '</div>');
@@ -4491,7 +4475,7 @@ function add_choise(type, num) {
       '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_choices' + max_value + '_remove" onClick="remove_choise(' + max_value + ',' + num + ',\'' + type + '\')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -4519,7 +4503,7 @@ function add_choise(type, num) {
       '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_option(' + max_value + ', ' + num + ')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '<input type="hidden" id="el_option_params' +  max_value + '" class="el_option_params" value=""></div>');
     attr_table.append(attr);
@@ -5073,7 +5057,7 @@ function set_allow_other(num, type) {
       '<div class="fm-table-col fm-width-10">' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -5109,7 +5093,7 @@ function create_radio_options(i, w_value_disabled, w_choices, w_choices_params, 
       (w_allow_other == "yes" && j == w_allow_other_num ? '' : '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_choices' + j + '_remove" onClick="remove_choise(' + j + ',' + i + ',\'' + type + '\')"></span>') +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -8673,7 +8657,7 @@ function create_paypal_select_options(i, w_choices, w_choices_params, w_choices_
       '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + j + '_remove" onClick="remove_option_price(' + j + ',' + i + ')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -8810,7 +8794,7 @@ function add_choise_price(type, num) {
       '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_choise_price(' + max_value + ',' + num + ')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -8838,7 +8822,7 @@ function add_choise_price(type, num) {
       '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + max_value + '_remove" onClick="remove_option_price(' + max_value + ',' + num + ')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -8957,7 +8941,7 @@ function add_properties(id, w_property, w_property_values) {
     li_edit.setAttribute("class", "thickbox-preview");
 
     var li_edit_img = document.createElement('span');
-    li_edit_img.setAttribute("class", 'fm-edit-attribute dashicons dashicons-edit');
+    li_edit_img.setAttribute("class", 'fm-edit-attribute fm-ico-edit');
     li_edit.appendChild(li_edit_img);
 
     var li_x = document.createElement('span');
@@ -9295,7 +9279,7 @@ function create_paypal_radio_options(i, w_choices, w_choices_params, w_choices_p
       '<span class="fm-remove-attribute dashicons dashicons-dismiss" id="el_option' + j + '_remove" onClick="remove_choise_price(' + j + ',' + i + ')"></span>' +
       '</div>' +
       '<div class="fm-table-col fm-width-10">' +
-      '<span class="fm-move-attribute dashicons dashicons-move el_choices_sortable"></span>' +
+      '<span class="fm-move-attribute fm-ico-draggable el_choices_sortable"></span>' +
       '</div>' +
       '</div>');
     attr_table.append(attr);
@@ -14610,10 +14594,6 @@ function type_page_navigation(w_type, w_show_title, w_show_numbers, w_attr_name,
   td2.setAttribute("width", "100%");
 
   var br1 = document.createElement('br');
-  var br2 = document.createElement('br');
-  var br3 = document.createElement('br');
-  var br4 = document.createElement('br');
-  //	table_little -@ sarqaca tbody table_little darela table_little_t
 
   var pages_div = document.createElement('div');
   pages_div.setAttribute("align", "left");
@@ -14726,6 +14706,7 @@ function gen_form_fields() {
       form_fields += w_regExp_alert + "*:*w_regExp_alert*:*";
       form_fields += w_unique + "*:*w_unique*:*";
       form_fields += w_readonly + "*:*w_readonly*:*";
+      form_fields += w_class + "*:*w_class*:*";
       for (j = 0; j < w_attr_name.length; j++) {
         form_fields += w_attr_name[j] + "=" + w_attr_value[j] + "*:*w_attr_name*:*";
       }

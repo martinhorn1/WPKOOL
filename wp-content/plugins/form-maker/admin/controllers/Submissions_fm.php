@@ -280,7 +280,7 @@ class FMControllerSubmissions_fm extends FMAdminController {
 		$option_key = (WDFMInstance(self::PLUGIN)->is_free == 2 ? 'fmc_settings' : 'fm_settings');
 		$params['fm_settings'] = get_option($option_key);
 
-		// Check is active pdf-integration add-on.
+		// Check is active pdf-integration extension.
 		$params['pdf_data'] = array();
 		if ( defined('WD_FM_PDF') && is_plugin_active(constant('WD_FM_PDF')) ) {
 			require_once(WD_FM_PDF_DIR . '/model.php');	

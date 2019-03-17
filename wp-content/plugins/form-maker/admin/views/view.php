@@ -10,7 +10,7 @@ class FMAdminView {
    */
   const PLUGIN = 1;
 
-  private $premium_link = 'https://web-dorado.com/files/fromFormMaker.php';
+  private $premium_link = 'https://10web.io/plugins/wordpress-form-maker/?utm_source=form_maker&utm_medium=free_plugin';
 
   /**
    * Generate form.
@@ -305,24 +305,24 @@ class FMAdminView {
     $page = isset($_GET['page']) ? esc_html($_GET['page']) : '';
     $page = str_replace(WDFMInstance(self::PLUGIN)->menu_postfix, '', $page);
     $task = isset($_REQUEST['task']) ? esc_html($_REQUEST['task']) : '';
-    $user_guide_link = 'https://web-dorado.com/wordpress-form-maker/';
+    $user_guide_link = 'https://help.10web.io/hc/en-us/sections/360002133951-Form-Maker-Documentation';
     $show_content = true;
     $show_guide_link = true;
     $show_head = false;
     switch ($page) {
       case 'blocked_ips': {
-        $user_guide_link .= 'submissions.html';
+        $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360015499752-Eliminating-Spam-Submissions';
         break;
       }
       case 'options': {
-        $user_guide_link .= 'themes-and-options.html';
+        $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360016112771-General-Options';
         break;
       }
       case 'pricing': {
         $show_content = false;
         $show_guide_link = false;
         $show_head = true;
-        $user_guide_link .= '';
+        $user_guide_link = 'https://10web.io/plugins/wordpress-form-maker/?utm_source=form_maker&utm_medium=free_plugin';
         break;
       }
       case 'manage': {
@@ -330,20 +330,20 @@ class FMAdminView {
           case 'add':
           case 'edit':
           case 'edit_old': {
-            $user_guide_link .= 'form-fields/basic-fields.html';
+            $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360015244232-Creating-a-Form';
             break;
           }
           case 'form_options':
           case 'form_options_old': {
-            $user_guide_link .= 'form-options/general-options.html';
+            $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360015862812-Form-Options-General';
             break;
           }
           case 'display_options': {
-            $user_guide_link .= 'display-options-publishing/configuring-display-options.html';
+            $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360015862692-Display-Options-and-Publishing';
             break;
           }
           default: {
-            $user_guide_link .= 'creating-form.html';
+            $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360015435831-Introduction';
             $show_content = false;
             $show_head = true;
           }
@@ -351,17 +351,17 @@ class FMAdminView {
         break;
       }
       case 'submissions': {
-        $user_guide_link .= 'submissions.html';
+        $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360015863292-Managing-Form-Submissions';
         break;
       }
       case 'themes': {
-        $user_guide_link .= 'themes-and-options.html';
+        $user_guide_link = 'https://help.10web.io/hc/en-us/articles/360016083071-Configuring-Form-Maker-Themes';
         break;
       }
       case 'addons': {
         $show_content = false;
         $show_head = true;
-        $user_guide_link .= '';
+        $user_guide_link = 'https://10web.io/plugins/wordpress-form-maker/#plugin_extensions';
         break;
       }
       default: {
@@ -427,19 +427,22 @@ class FMAdminView {
 		  $menus = array(
         'manage' => array(
           'href' => add_query_arg( array('page' => 'manage' . WDFMInstance(self::PLUGIN)->menu_postfix ), admin_url('admin.php')),
+          'target' => '_self',
           'name' => __('Forms', WDFMInstance(self::PLUGIN)->prefix)
         ),
         'addons' => array(
-          'href' => add_query_arg( array('page' => 'addons' . WDFMInstance(self::PLUGIN)->menu_postfix ), admin_url('admin.php')),
-          'name' => __('Add-ons', WDFMInstance(self::PLUGIN)->prefix)
+          'href' => 'https://10web.io/plugins/wordpress-form-maker/#plugin_extensions',
+          'target' => '_blanck',
+          'name' => __('Extensions', WDFMInstance(self::PLUGIN)->prefix)
         ),
         'pricing' => array(
-          'href' => add_query_arg( array('page' => 'pricing' . WDFMInstance(self::PLUGIN)->menu_postfix ), admin_url('admin.php')),
+          'href' => 'https://10web.io/plugins/wordpress-form-maker/?utm_source=form_maker&utm_medium=free_plugin',
+          'target' => '_blanck',
           'name' => __('Premium Version', WDFMInstance(self::PLUGIN)->prefix) .' <span class="fm-upgrade">' . __('Upgrade', WDFMInstance(self::PLUGIN)->prefix) . '</span>'
         ),
 		  );
 		  ?>
-		  <style>#wpbody-content>div:not(.wrap), .wrap .notice:not(#wd_bp_notice_cont) { display: none; }</style>
+		  <style>#wpbody-content>div:not(.wrap), .wrap .notice:not(.wd-notice) { display: none; }</style>
 		  <div class="fm-head">
 			<div><img src="<?php echo WDFMInstance(self::PLUGIN)->plugin_url . '/images/FormMaker.png'; ?>"></div>
         <ul class="fm-breadcrumbs">
@@ -450,7 +453,7 @@ class FMAdminView {
             }
             ?>
             <li class="fm-breadcrumb-item">
-              <a class="fm-breadcrumb-item-link<?php echo ( $key == $page ) ? ' fm-breadcrumb-item-link-active' : ''; ?>" href="<?php echo $item['href']; ?>"><?php echo $item['name']; ?></a>
+              <a class="fm-breadcrumb-item-link<?php echo ( $key == $page ) ? ' fm-breadcrumb-item-link-active' : ''; ?>" href="<?php echo $item['href']; ?>" target="<?php echo $item['target']; ?>"><?php echo $item['name']; ?></a>
             </li>
             <?php
           }
@@ -538,7 +541,7 @@ class FMAdminView {
     <div class="fm-limitation-alert-container fm-hidden">
       <div class="fm-limitation-alert-overlay"></div>
       <div class="fm-limitation-alert">
-        <span class="dashicons dashicons-no-alt"></span>
+        <span class="fm-ico-delete"></span>
         <div class="fm-limitation-alert-header">
           <?php _e('The free version is limited up to 7 fields.', WDFMInstance(self::PLUGIN)->prefix); ?>
         </div>
@@ -571,7 +574,7 @@ class FMAdminView {
         }
       }
       jQuery(document).ready(function() {
-        jQuery('.fm-limitation-alert-overlay, .fm-limitation-alert .dashicons-no-alt').on('click', function() {
+        jQuery('.fm-limitation-alert-overlay, .fm-limitation-alert .fm-ico-delete').on('click', function() {
           fm_limitation_alert(false);
         });
       });

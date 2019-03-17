@@ -25,7 +25,7 @@ class FMModelOptions_fm extends FMAdminModel {
       'fm_shortcode' => $fm_shortcode,
       'fm_advanced_layout' => $fm_advanced_layout,
 	    'fm_enable_wp_editor' => $fm_enable_wp_editor,
-	  'ajax_export_per_page' => !empty($fm_settings['ajax_export_per_page']) ? $fm_settings['export_per_page'] : 1000
+	  'ajax_export_per_page' => !empty($fm_settings['ajax_export_per_page']) ? $fm_settings['ajax_export_per_page'] : 1000
     ));
     return 8;
   }

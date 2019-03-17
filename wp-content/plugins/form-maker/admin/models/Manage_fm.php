@@ -31,6 +31,9 @@ class FMModelManage_fm extends FMAdminModel {
     $rows = $wpdb->get_results($query);
     if ( !empty($rows) ) {
       foreach ( $rows as $row ) {
+        if ( !isset($row->header_hide) ) {
+          $row->header_hide = 1;
+        }
         $query = "SELECT count(DISTINCT group_id) FROM " . $wpdb->prefix . "formmaker_submits WHERE form_id=" . (int) $row->id . "";
         $row->submission_count = $wpdb->get_var($query);
       }
@@ -72,7 +75,7 @@ class FMModelManage_fm extends FMAdminModel {
       $row->title = '';
       $row->mail = '';
       $row->form = '';
-      $row->form_front = '<div class="wdform-page-and-images wd-table"><div id="form_id_tempform_view1" class="wdform_page" page_title="Untitled page" next_title="Next" next_type="text" next_class="wdform-page-button" next_checkable="true" previous_title="Previous" previous_type="text" previous_class="wdform-page-button" previous_checkable="false"><div class="wdform_section"><div class="wdform_column"><div wdid="1" class="wdform_row ui-sortable-handle">%1 - type_submit_reset_1%</div></div></div><div valign="top" class="wdform_footer wd-width-100"><div class="wd-width-100"><div class="wd-width-100 wd-table" style="padding-top:10px;"><div class="wd-table-group"><div id="form_id_temppage_nav1" class="wd-table-row"></div></div></div></div></div></div></div>';
+      $row->form_front = '<div class="wdform-page-and-images fm-form-builder"><div id="form_id_tempform_view1" class="wdform_page" page_title="Untitled page" next_title="Next" next_type="text" next_class="wdform-page-button" next_checkable="true" previous_title="Previous" previous_type="text" previous_class="wdform-page-button" previous_checkable="false"><div class="wdform_section"><div class="wdform_column"><div wdid="1" class="wdform_row ui-sortable-handle">%1 - type_submit_reset_1%</div></div></div><div valign="top" class="wdform_footer wd-width-100"><div class="wd-width-100"><div class="wd-width-100 wd-table" style="padding-top:10px;"><div class="wd-table-group"><div id="form_id_temppage_nav1" class="wd-table-row"></div></div></div></div></div></div></div>';
       $row->theme = 0;
       $row->javascript = '';
       $row->submit_text = '';
@@ -119,6 +122,7 @@ class FMModelManage_fm extends FMAdminModel {
       $row->header_image_url = '';
       $row->header_image_animation = '';
       $row->header_hide_image = '';
+      $row->header_hide = 1;
       $row->gdpr_checkbox = 0;
       $row->gdpr_checkbox_text = __('I consent collecting this data and processing it according to {{privacy_policy}} of this website.', WDFMInstance(self::PLUGIN)->prefix);
       $row->save_ip = 1;
@@ -162,7 +166,7 @@ class FMModelManage_fm extends FMAdminModel {
       $row->title = '';
       $row->mail = '';
       $row->form = '';
-      $row->form_front = '<div class="wdform-page-and-images" class="wd-table"><div id="form_id_tempform_view1" class="wdform_page" page_title="Untitled page" next_title="Next" next_type="text" next_class="wdform-page-button" next_checkable="true" previous_title="Previous" previous_type="text" previous_class="wdform-page-button" previous_checkable="false"><div class="wdform_section"><div class="wdform_column"><div wdid="1" class="wdform_row ui-sortable-handle">%1 - type_submit_reset_1%</div></div></div><div valign="top" class="wdform_footer wd-width-100"><div class="wd-width-100"><div class="wd-width-100 wd-table" style="padding-top:10px;"><div class="wd-table-group"><div id="form_id_temppage_nav1" class="wd-table-row"></div></div></div></div></div></div></div>';
+      $row->form_front = '<div class="wdform-page-and-images fm-form-builder"><div id="form_id_tempform_view1" class="wdform_page" page_title="Untitled page" next_title="Next" next_type="text" next_class="wdform-page-button" next_checkable="true" previous_title="Previous" previous_type="text" previous_class="wdform-page-button" previous_checkable="false"><div class="wdform_section"><div class="wdform_column"><div wdid="1" class="wdform_row ui-sortable-handle">%1 - type_submit_reset_1%</div></div></div><div valign="top" class="wdform_footer wd-width-100"><div class="wd-width-100"><div class="wd-width-100 wd-table" style="padding-top:10px;"><div class="wd-table-group"><div id="form_id_temppage_nav1" class="wd-table-row"></div></div></div></div></div></div></div>';
       $row->theme = $wpdb->get_var("SELECT id FROM " . $wpdb->prefix . "formmaker_themes WHERE `default`='1'");
       $row->javascript = '';
       $row->submit_text = '';
@@ -209,6 +213,7 @@ class FMModelManage_fm extends FMAdminModel {
       $row->header_image_url = '';
       $row->header_image_animation = 'none';
       $row->header_hide_image = 0;
+      $row->header_hide = 1;
       $row->condition = '';
       $row->mail_cc = '';
       $row->mail_cc_user = '';
@@ -280,13 +285,13 @@ class FMModelManage_fm extends FMAdminModel {
             $arrows = '<div id="wdform_arrows' . $id . '" class="wdform_arrows" style="display: none;">
                         <span class="wdform_arrows_basic wdform_arrows_container">
                           <span id="edit_' . $id . '" valign="middle" class="element_toolbar">
-                            <span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' . $id . '&quot;)"></span>
+                            <span title="Edit the field" class="page_toolbar fm-ico-edit" ontouchend="edit(&quot;' . $id . '&quot;, event)" onclick="edit(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                           <span id="duplicate_' . $id . '" valign="middle" class="element_toolbar">
-                            <span title="Duplicate the field" class="page_toolbar dashicons dashicons-admin-page" onclick="duplicate(&quot;' . $id . '&quot;)"></span>
+                            <span title="Duplicate the field" class="page_toolbar fm-ico-duplicate" ontouchend="duplicate(&quot;' . $id . '&quot;, event)" onclick="duplicate(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                           <span id="X_' . $id . '" valign="middle" align="right" class="element_toolbar">
-                            <span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_section_break(&quot;' . $id . '&quot;)"></span>
+                            <span title="Remove the field" class="page_toolbar fm-ico-delete" onclick="remove_section_break(&quot;' . $id . '&quot;)"></span>
                           </span>
                         </span>
                       </div>';
@@ -300,11 +305,11 @@ class FMModelManage_fm extends FMAdminModel {
             $arrows = '<div id="wdform_arrows' . $id . '" class="wdform_arrows" style="display: none;">
                         <div class="wdform_arrows_basic wdform_arrows_container">
 						            <span id="edit_' . $id . '" valign="middle" class="element_toolbar">
-                            <span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' . $id . '&quot;)"></span>
+                            <span title="Edit the field" class="page_toolbar fm-ico-edit" ontouchend="edit(&quot;' . $id . '&quot;, event)" onclick="edit(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                           <span id="duplicate_' . $id . '" valign="middle" class="element_toolbar"></span>
                           <span id="X_' . $id . '" valign="middle" align="right" class="element_toolbar">
-                            <span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_row(&quot;' . $id . '&quot;)"></span>
+                            <span title="Remove the field" class="page_toolbar fm-ico-delete" ontouchend="remove_field(&quot;' . $id . '&quot;, event)" onclick="remove_field(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                         </div>
 						            <div class="wdform_arrows_advanced wdform_arrows_container" style="display: none;">
@@ -333,13 +338,13 @@ class FMModelManage_fm extends FMAdminModel {
           default : {
             $arrows = '<div id="wdform_arrows' . $id . '" class="wdform_arrows" style="display: none;">
                         <div class="wdform_arrows_basic wdform_arrows_container">                          <span id="edit_' . $id . '" valign="middle" class="element_toolbar">
-                            <span title="Edit the field" class="page_toolbar dashicons dashicons-edit" onclick="edit(&quot;' . $id . '&quot;)"></span>
+                            <span title="Edit the field" class="page_toolbar fm-ico-edit" ontouchend="edit(&quot;' . $id . '&quot;, event)" onclick="edit(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                           <span id="duplicate_' . $id . '" valign="middle" class="element_toolbar">
-                            <span title="Duplicate the field" class="page_toolbar dashicons dashicons-admin-page" onclick="duplicate(&quot;' . $id . '&quot;)"></span>
+                            <span title="Duplicate the field" class="page_toolbar fm-ico-duplicate" ontouchend="duplicate(&quot;' . $id . '&quot;, event)" onclick="duplicate(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                           <span id="X_' . $id . '" valign="middle" align="right" class="element_toolbar">
-                            <span title="Remove the field" class="page_toolbar dashicons dashicons-no-alt" onclick="remove_row(&quot;' . $id . '&quot;)"></span>
+                            <span title="Remove the field" class="page_toolbar fm-ico-delete" ontouchend="remove_field(&quot;' . $id . '&quot;, event)" onclick="remove_field(&quot;' . $id . '&quot;, event)"></span>
                           </span>
                         </div>
 						            <div class="wdform_arrows_advanced wdform_arrows_container" style="display: none;">
@@ -483,6 +488,25 @@ class FMModelManage_fm extends FMAdminModel {
                 'w_readonly',
               );
             }
+            if ( strpos($temp, 'w_class') > -1 ) {
+              $params_names = array(
+                'w_field_label_size',
+                'w_field_label_pos',
+                'w_hide_label',
+                'w_size',
+                'w_first_val',
+                'w_title',
+                'w_required',
+                'w_regExp_status',
+                'w_regExp_value',
+                'w_regExp_common',
+                'w_regExp_arg',
+                'w_regExp_alert',
+                'w_unique',
+                'w_readonly',
+                'w_class',
+              );
+            }
             foreach ( $params_names as $params_name ) {
               $temp = explode('*:*' . $params_name . '*:*', $temp);
               $param[$params_name] = $temp[0];
@@ -504,8 +528,9 @@ class FMModelManage_fm extends FMAdminModel {
             $param['w_regExp_alert'] = (isset($param['w_regExp_alert']) ? $param['w_regExp_alert'] : "Incorrect Value");
             $param['w_readonly'] = (isset($param['w_readonly']) ? $param['w_readonly'] : "no");
             $param['w_hide_label'] = (isset($param['w_hide_label']) ? $param['w_hide_label'] : "no");
+            $param['w_class'] = (isset($param['w_class']) ? $param['w_class'] : "");
             $display_label = $param['w_hide_label'] == "no" ? $param['w_field_label_pos'] : "none";
-            $rep = '<div id="wdform_field' . $id . '" type="type_text" class="wdform_field" style="display: table-cell;">' . $arrows . '<div align="left" id="' . $id . '_label_sectionform_id_temp" style="display: ' . $display_label . '; width: ' . $param['w_field_label_size'] . 'px;"><span id="' . $id . '_element_labelform_id_temp" class="label" style="vertical-align: top;">' . $label . '</span><span id="' . $id . '_required_elementform_id_temp" class="required" style="vertical-align: top;">' . $required_sym . '</span></div><div align="left" id="' . $id . '_element_sectionform_id_temp" style="display: ' . $param['w_field_label_pos'] . '"><input type="hidden" value="type_text" name="' . $id . '_typeform_id_temp" id="' . $id . '_typeform_id_temp" /><input type="hidden" value="' . $param['w_required'] . '" name="' . $id . '_requiredform_id_temp" id="' . $id . '_requiredform_id_temp" /><input type="hidden" value="' . $param['w_readonly'] . '" name="' . $id . '_readonlyform_id_temp" id="' . $id . '_readonlyform_id_temp"/><input type="hidden" value="' . $param['w_hide_label'] . '" name="' . $id . '_hide_labelform_id_temp" id="' . $id . '_hide_labelform_id_temp"/><input type="hidden" value="' . $param['w_regExp_status'] . '" name="' . $id . '_regExpStatusform_id_temp" id="' . $id . '_regExpStatusform_id_temp"><input type="hidden" value="' . $param['w_regExp_value'] . '" name="' . $id . '_regExp_valueform_id_temp" id="' . $id . '_regExp_valueform_id_temp"><input type="hidden" value="' . $param['w_regExp_common'] . '" name="' . $id . '_regExp_commonform_id_temp" id="' . $id . '_regExp_commonform_id_temp"><input type="hidden" value="' . $param['w_regExp_alert'] . '" name="' . $id . '_regExp_alertform_id_temp" id="' . $id . '_regExp_alertform_id_temp"><input type="hidden" value="' . $param['w_regExp_arg'] . '" name="' . $id . '_regArgumentform_id_temp" id="' . $id . '_regArgumentform_id_temp"><input type="hidden" value="' . $param['w_unique'] . '" name="' . $id . '_uniqueform_id_temp" id="' . $id . '_uniqueform_id_temp" /><input type="text" id="' . $id . '_elementform_id_temp" name="' . $id . '_elementform_id_temp" value="' . htmlentities($param['w_first_val'], ENT_COMPAT) . '" title="' . htmlentities($param['w_title'], ENT_COMPAT) . '" placeholder="' . htmlentities($param['w_title'], ENT_COMPAT) . '" style="width: ' . $param['w_size'] . 'px;" ' . $param['attributes'] . ' disabled /></div></div>';
+            $rep = '<div id="wdform_field' . $id . '" type="type_text" class="wdform_field" style="display: table-cell;">' . $arrows . '<div align="left" id="' . $id . '_label_sectionform_id_temp" class="' . $param['w_class'] . '" style="display: ' . $display_label . '; width: ' . $param['w_field_label_size'] . 'px;"><span id="' . $id . '_element_labelform_id_temp" class="label" style="vertical-align: top;">' . $label . '</span><span id="' . $id . '_required_elementform_id_temp" class="required" style="vertical-align: top;">' . $required_sym . '</span></div><div align="left" id="' . $id . '_element_sectionform_id_temp" class="' . $param['w_class'] . '" style="display: ' . $param['w_field_label_pos'] . '"><input type="hidden" value="type_text" name="' . $id . '_typeform_id_temp" id="' . $id . '_typeform_id_temp" /><input type="hidden" value="' . $param['w_required'] . '" name="' . $id . '_requiredform_id_temp" id="' . $id . '_requiredform_id_temp" /><input type="hidden" value="' . $param['w_readonly'] . '" name="' . $id . '_readonlyform_id_temp" id="' . $id . '_readonlyform_id_temp"/><input type="hidden" value="' . $param['w_hide_label'] . '" name="' . $id . '_hide_labelform_id_temp" id="' . $id . '_hide_labelform_id_temp"/><input type="hidden" value="' . $param['w_regExp_status'] . '" name="' . $id . '_regExpStatusform_id_temp" id="' . $id . '_regExpStatusform_id_temp"><input type="hidden" value="' . $param['w_regExp_value'] . '" name="' . $id . '_regExp_valueform_id_temp" id="' . $id . '_regExp_valueform_id_temp"><input type="hidden" value="' . $param['w_regExp_common'] . '" name="' . $id . '_regExp_commonform_id_temp" id="' . $id . '_regExp_commonform_id_temp"><input type="hidden" value="' . $param['w_regExp_alert'] . '" name="' . $id . '_regExp_alertform_id_temp" id="' . $id . '_regExp_alertform_id_temp"><input type="hidden" value="' . $param['w_regExp_arg'] . '" name="' . $id . '_regArgumentform_id_temp" id="' . $id . '_regArgumentform_id_temp"><input type="hidden" value="' . $param['w_unique'] . '" name="' . $id . '_uniqueform_id_temp" id="' . $id . '_uniqueform_id_temp" /><input type="text" id="' . $id . '_elementform_id_temp" name="' . $id . '_elementform_id_temp" value="' . htmlentities($param['w_first_val'], ENT_COMPAT) . '" title="' . htmlentities($param['w_title'], ENT_COMPAT) . '" placeholder="' . htmlentities($param['w_title'], ENT_COMPAT) . '" style="width: ' . $param['w_size'] . 'px;" ' . $param['attributes'] . ' disabled /></div></div>';
             break;
           }
           case 'type_number': {
@@ -1134,7 +1159,7 @@ class FMModelManage_fm extends FMAdminModel {
                     else {
                       $choise_value = $param['w_choices'][(int) $param['w_rowcol'] * $l + $i];
                     }
-                    $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                    $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                     if ( isset($param['w_choices_params']) && $param['w_choices_params'][(int) $param['w_rowcol'] * $l + $i] ) {
                       $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][(int) $param['w_rowcol'] * $l + $i]);
                       $where = 'where="' . $w_choices_params[0] . '"';
@@ -1167,7 +1192,7 @@ class FMModelManage_fm extends FMAdminModel {
                       else {
                         $choise_value = $param['w_choices'][(int) $param['w_rowcol'] * $i + $l];
                       }
-                      $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                      $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                       if ( isset($param['w_choices_params']) && $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l] ) {
                         $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l]);
                         $where = 'where="' . $w_choices_params[0] . '"';
@@ -1195,7 +1220,7 @@ class FMModelManage_fm extends FMAdminModel {
                       else {
                         $choise_value = $param['w_choices'][(int) $param['w_rowcol'] * $i + $l];
                       }
-                      $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                      $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                       if ( isset($param['w_choices_params']) && $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l] ) {
                         $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l]);
                         $where = 'where="' . $w_choices_params[0] . '"';
@@ -1226,7 +1251,7 @@ class FMModelManage_fm extends FMAdminModel {
                     else {
                       $choise_value = $param['w_choices'][$l];
                     }
-                    $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                    $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                     if ( isset($param['w_choices_params']) && $param['w_choices_params'][$l] ) {
                       $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][$l]);
                       $where = 'where="' . $w_choices_params[0] . '"';
@@ -1355,7 +1380,7 @@ class FMModelManage_fm extends FMAdminModel {
                     else {
                       $choise_value = $param['w_choices'][(int) $param['w_rowcol'] * $l + $i];
                     }
-                    $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                    $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                     if ( isset($param['w_choices_params']) && $param['w_choices_params'][(int) $param['w_rowcol'] * $l + $i] ) {
                       $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][(int) $param['w_rowcol'] * $l + $i]);
                       $where = 'where="' . $w_choices_params[0] . '"';
@@ -1388,7 +1413,7 @@ class FMModelManage_fm extends FMAdminModel {
                       else {
                         $choise_value = $param['w_choices'][(int) $param['w_rowcol'] * $i + $l];
                       }
-                      $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                      $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                       if ( isset($param['w_choices_params']) && $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l] ) {
                         $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l]);
                         $where = 'where="' . $w_choices_params[0] . '"';
@@ -1415,7 +1440,7 @@ class FMModelManage_fm extends FMAdminModel {
                       else {
                         $choise_value = $param['w_choices'][(int) $param['w_rowcol'] * $i + $l];
                       }
-                      $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                      $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                       if ( isset($param['w_choices_params']) && $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l] ) {
                         $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][(int) $param['w_rowcol'] * $i + $l]);
                         $where = 'where="' . $w_choices_params[0] . '"';
@@ -1446,7 +1471,7 @@ class FMModelManage_fm extends FMAdminModel {
                     else {
                       $choise_value = $param['w_choices'][$l];
                     }
-                    $choise_value = htmlentities($choise_value, ENT_COMPAT);
+                    $choise_value = htmlentities($choise_value, ENT_COMPAT, "UTF-8");
                     if ( isset($param['w_choices_params']) && $param['w_choices_params'][$l] ) {
                       $w_choices_params = explode('[where_order_by]', $param['w_choices_params'][$l]);
                       $where = 'where="' . $w_choices_params[0] . '"';
@@ -3593,24 +3618,46 @@ class FMModelManage_fm extends FMAdminModel {
   }
 
   /**
-   * Get previous or next id.
+   * Get all revisions from formmaker_backup.
+   *
+   * @param int $id
+   *
+   * @return array
+   */
+  public function get_revisions( $id ) {
+    global $wpdb;
+    $result = array();
+    $result['total'] = 0;
+    $query = "SELECT backup_id, cur, date FROM " . $wpdb->prefix . "formmaker_backup WHERE id = $id ORDER BY backup_id DESC";
+    $result['data'] = $wpdb->get_results($query);
+    if($result['data']) {
+      $result['total'] = $wpdb->num_rows;
+    }
+    return $result;
+  }
+
+  /**
+   * Get current form data from backup.
+   *
+   * @return array
+   */
+  public function get_current_revision( $id ) {
+    global $wpdb;
+    $query = "SELECT backup_id, cur, date FROM " . $wpdb->prefix . "formmaker_backup WHERE cur = 1 && id =" . $id;
+    $result = $wpdb->get_row($query);
+    return $result;
+  }
+
+  /**
+   * Get revision date.
    *
    * @param int $backup_id
-   * @param int $id
-   * @param string $type (undo,redo)
-   *                     type 0 = undo, 1 = redo
    *
    * @return int
    */
-  public function get_undo_redo_id( $backup_id = 0, $id = 0, $type = '' ) {
+  public function get_revision_date( $backup_id = 0 ) {
     global $wpdb;
-    if ( $type == 1 ) {
-      $query = "SELECT backup_id FROM " . $wpdb->prefix . "formmaker_backup WHERE backup_id > $backup_id AND id = $id ORDER BY backup_id ASC LIMIT 0 , 1 ";
-    }
-    elseif ( $type == 0 ) {
-      $query = "SELECT backup_id FROM " . $wpdb->prefix . "formmaker_backup WHERE backup_id < $backup_id AND id = $id ORDER BY backup_id DESC LIMIT 0 , 1 ";
-    }
-
+    $query = "SELECT date FROM " . $wpdb->prefix . "formmaker_backup WHERE backup_id = $backup_id";
     return $wpdb->get_var($query);
   }
 
@@ -3809,6 +3856,9 @@ class FMModelManage_fm extends FMAdminModel {
     elseif ( $get_type == "get_var" ) {
       return $wpdb->get_var($query);
     }
+    elseif ( $get_type == "get_results" ) {
+      return $wpdb->get_results($query);
+    }
 
     return $wpdb->get_row($query);
   }
@@ -3835,8 +3885,7 @@ class FMModelManage_fm extends FMAdminModel {
    */
   public function insert_formmaker_backup( $backup_id = 0, $id = 0 ) {
     global $wpdb;
-    $query = "INSERT INTO " . $wpdb->prefix . "formmaker_backup (backup_id, cur, id, title, `type`, mail, form_front, theme, javascript, submit_text, url, submit_text_type, script_mail, script_mail_user, counter, published, label_order, label_order_current, article_id, pagination, show_title, show_numbers, public_key, private_key, recaptcha_theme, paypal_mode, checkout_mode, paypal_email, payment_currency, tax, form_fields, savedb, sendemail, requiredmark, from_mail, from_name, reply_to, send_to, autogen_layout, custom_front, mail_from_user, mail_from_name_user, reply_to_user, `condition`, mail_cc, mail_cc_user, mail_bcc, mail_bcc_user, mail_subject, mail_subject_user, mail_mode, mail_mode_user, mail_attachment, mail_attachment_user, user_id_wd, sortable, frontend_submit_fields, frontend_submit_stat_fields, mail_emptyfields, mail_verify, mail_verify_expiretime, mail_verification_post_id, save_uploads, header_title, header_description, header_image_url, header_image_animation, header_hide_image, privacy) SELECT " . $backup_id . ", 1, formmakerbkup.id, formmakerbkup.title, formmakerbkup.type, formmakerbkup.mail, formmakerbkup.form_front, formmakerbkup.theme, formmakerbkup.javascript, formmakerbkup.submit_text, formmakerbkup.url, formmakerbkup.submit_text_type, formmakerbkup.script_mail, formmakerbkup.script_mail_user, formmakerbkup.counter, formmakerbkup.published, formmakerbkup.label_order, formmakerbkup.label_order_current, formmakerbkup.article_id, formmakerbkup.pagination, formmakerbkup.show_title, formmakerbkup.show_numbers, formmakerbkup.public_key, formmakerbkup.private_key, formmakerbkup.recaptcha_theme, formmakerbkup.paypal_mode, formmakerbkup.checkout_mode, formmakerbkup.paypal_email, formmakerbkup.payment_currency, formmakerbkup.tax, formmakerbkup.form_fields, formmakerbkup.savedb, formmakerbkup.sendemail, formmakerbkup.requiredmark, formmakerbkup.from_mail, formmakerbkup.from_name, formmakerbkup.reply_to, formmakerbkup.send_to, formmakerbkup.autogen_layout, formmakerbkup.custom_front, formmakerbkup.mail_from_user, formmakerbkup.mail_from_name_user, formmakerbkup.reply_to_user, formmakerbkup.condition, formmakerbkup.mail_cc, formmakerbkup.mail_cc_user, formmakerbkup.mail_bcc, formmakerbkup.mail_bcc_user, formmakerbkup.mail_subject, formmakerbkup.mail_subject_user, formmakerbkup.mail_mode, formmakerbkup.mail_mode_user, formmakerbkup.mail_attachment, formmakerbkup.mail_attachment_user, formmakerbkup.user_id_wd, formmakerbkup.sortable, formmakerbkup.frontend_submit_fields, formmakerbkup.frontend_submit_stat_fields, formmakerbkup.mail_emptyfields, formmakerbkup.mail_verify, formmakerbkup.mail_verify_expiretime, formmakerbkup.mail_verification_post_id, formmakerbkup.save_uploads, formmakerbkup.header_title, formmakerbkup.header_description, formmakerbkup.header_image_url, formmakerbkup.header_image_animation, formmakerbkup.header_hide_image, formmakerbkup.privacy FROM " . $wpdb->prefix . "formmaker as formmakerbkup WHERE id=" . $id;
-
+    $query = "INSERT INTO " . $wpdb->prefix . "formmaker_backup (backup_id, cur, id, title, `type`, mail, form_front, theme, javascript, submit_text, url, submit_text_type, script_mail, script_mail_user, counter, published, label_order, label_order_current, article_id, pagination, show_title, show_numbers, public_key, private_key, recaptcha_theme, paypal_mode, checkout_mode, paypal_email, payment_currency, tax, form_fields, savedb, sendemail, requiredmark, from_mail, from_name, reply_to, send_to, autogen_layout, custom_front, mail_from_user, mail_from_name_user, reply_to_user, `condition`, mail_cc, mail_cc_user, mail_bcc, mail_bcc_user, mail_subject, mail_subject_user, mail_mode, mail_mode_user, mail_attachment, mail_attachment_user, user_id_wd, sortable, frontend_submit_fields, frontend_submit_stat_fields, mail_emptyfields, mail_verify, mail_verify_expiretime, mail_verification_post_id, save_uploads, header_title, header_description, header_image_url, header_image_animation, header_hide_image, header_hide, privacy, date) SELECT " . $backup_id . ", 1, formmakerbkup.id, formmakerbkup.title, formmakerbkup.type, formmakerbkup.mail, formmakerbkup.form_front, formmakerbkup.theme, formmakerbkup.javascript, formmakerbkup.submit_text, formmakerbkup.url, formmakerbkup.submit_text_type, formmakerbkup.script_mail, formmakerbkup.script_mail_user, formmakerbkup.counter, formmakerbkup.published, formmakerbkup.label_order, formmakerbkup.label_order_current, formmakerbkup.article_id, formmakerbkup.pagination, formmakerbkup.show_title, formmakerbkup.show_numbers, formmakerbkup.public_key, formmakerbkup.private_key, formmakerbkup.recaptcha_theme, formmakerbkup.paypal_mode, formmakerbkup.checkout_mode, formmakerbkup.paypal_email, formmakerbkup.payment_currency, formmakerbkup.tax, formmakerbkup.form_fields, formmakerbkup.savedb, formmakerbkup.sendemail, formmakerbkup.requiredmark, formmakerbkup.from_mail, formmakerbkup.from_name, formmakerbkup.reply_to, formmakerbkup.send_to, formmakerbkup.autogen_layout, formmakerbkup.custom_front, formmakerbkup.mail_from_user, formmakerbkup.mail_from_name_user, formmakerbkup.reply_to_user, formmakerbkup.condition, formmakerbkup.mail_cc, formmakerbkup.mail_cc_user, formmakerbkup.mail_bcc, formmakerbkup.mail_bcc_user, formmakerbkup.mail_subject, formmakerbkup.mail_subject_user, formmakerbkup.mail_mode, formmakerbkup.mail_mode_user, formmakerbkup.mail_attachment, formmakerbkup.mail_attachment_user, formmakerbkup.user_id_wd, formmakerbkup.sortable, formmakerbkup.frontend_submit_fields, formmakerbkup.frontend_submit_stat_fields, formmakerbkup.mail_emptyfields, formmakerbkup.mail_verify, formmakerbkup.mail_verify_expiretime, formmakerbkup.mail_verification_post_id, formmakerbkup.save_uploads, formmakerbkup.header_title, formmakerbkup.header_description, formmakerbkup.header_image_url, formmakerbkup.header_image_animation, formmakerbkup.header_hide_image, formmakerbkup.header_hide, formmakerbkup.privacy, '".current_time('timestamp')."' FROM " . $wpdb->prefix . "formmaker as formmakerbkup WHERE id=" . $id;
     return $wpdb->query($query);
   }
 

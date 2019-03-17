@@ -980,14 +980,14 @@ class WDW_FM_Library {
     }
     $form_currency = apply_filters('fm_form_currency', $form_currency, $form_id);
     $form_currency = self::replace_currency_code( $form_currency );
-	$form_paypal_tax = 0;
-	if ( $row->paypal_mode && $row->paypal_mode == 1 ) {
-		$form_paypal_tax = $row->tax;
-	}
-	if ( $row->paypal_mode && $row->paypal_mode == 2 ) {
-		$stripe_data = apply_filters('fm_addon_stripe_get_data_init', array('form_id' => $form_id));
-		$form_paypal_tax = $stripe_data->stripe_tax;
-	}
+    $form_paypal_tax = 0;
+    if ( $row->paypal_mode && $row->paypal_mode == 1 ) {
+      $form_paypal_tax = $row->tax;
+    }
+    if ( $row->paypal_mode && $row->paypal_mode == 2 ) {
+      $stripe_data = apply_filters('fm_addon_stripe_get_data_init', array('form_id' => $form_id));
+      $form_paypal_tax = $stripe_data->stripe_tax;
+    }
     $is_type = array();
     $id1s = array();
     $types = array();
@@ -4426,6 +4426,7 @@ class WDW_FM_Library {
       "Oman" => __("Oman", WDFMInstance(self::PLUGIN)->prefix),
       "Pakistan" => __("Pakistan", WDFMInstance(self::PLUGIN)->prefix),
       "Palau" => __("Palau", WDFMInstance(self::PLUGIN)->prefix),
+      "Palestine" => __("Palestine", WDFMInstance(self::PLUGIN)->prefix),
       "Panama" => __("Panama", WDFMInstance(self::PLUGIN)->prefix),
       "Papua New Guinea" => __("Papua New Guinea", WDFMInstance(self::PLUGIN)->prefix),
       "Paraguay" => __("Paraguay", WDFMInstance(self::PLUGIN)->prefix),
@@ -5288,7 +5289,7 @@ class WDW_FM_Library {
     $post_id = get_option( 'wp_page_for_privacy_policy' );
     if ( $post_id ) {
       $post = get_post( $post_id, OBJECT );
-      if ( $post->post_status == 'publish' ) {
+      if ( !empty($post) && $post->post_status == 'publish' ) {
         $permalink = get_permalink( $post_id );
         $title = $post->post_title;
       }

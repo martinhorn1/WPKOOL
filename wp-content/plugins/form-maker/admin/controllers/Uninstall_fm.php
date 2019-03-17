@@ -51,6 +51,18 @@ class FMControllerUninstall_fm extends FMAdminController {
     $params['addons'] = $this->addons;
     $params['page_title'] = sprintf(__('Uninstall %s', WDFMInstance(self::PLUGIN)->prefix), WDFMInstance(self::PLUGIN)->nicename);
     $params['tables'] = $this->get_tables();
+    global $wpdb;
+    foreach ( $params['addons'] as $addon => $addon_name ) {
+      if ( is_array($addon_name) ) {
+        // If there are more than one db tables in an extension.
+        foreach ( $addon_name as $ad_name ) {
+          array_push($params['tables'], $wpdb->prefix . 'formmaker_' . $ad_name);
+        }
+      }
+      else {
+        array_push($params['tables'], $wpdb->prefix . 'formmaker_' . $addon_name);
+      }
+    }
     $this->view->display($params);
   }
 
@@ -81,7 +93,7 @@ class FMControllerUninstall_fm extends FMAdminController {
     $params['tables'] = $this->get_tables();
     $this->model->delete_db_tables();
 
-    // Deactivate all add-ons and form maker.
+    // Deactivate all extensions and form maker.
     WDW_FM_Library(self::PLUGIN)->deactivate_all_addons(WDFMInstance(self::PLUGIN)->main_file);
 
     wp_redirect(admin_url('plugins.php'));

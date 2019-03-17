@@ -1,112 +1,182 @@
-=== Form Maker by WD - responsive drag & drop Contact Form Builder ===
+=== Form Maker by 10Web - Mobile-Friendly Drag & Drop Contact Form Builder ===
 Contributors: webdorado,10web,wdsupport,formmakersupport
 Tags:  form, forms, form builder, contact form, feedback, custom form, contact, web contact form, captcha, email, form manager, survey
 Requires at least: 4.6
-Tested up to: 5.0
-Stable tag: 1.12.42
+Tested up to: 5.1
+Stable tag: 1.13.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Form Maker is a  user-friendly contact form builder that allows to create forms for any purpose, from a simple contact form to a multi page survey   
+Form Maker is the leading drag & drop plugin for building forms of any complexity in just a few clicks.  
 
 == Description ==
 
-https://www.youtube.com/watch?v=tN3_c6MhqFk
+Form Maker is the leading drag & drop plugin for building forms of any complexity in just a few clicks.
 
 = Useful Links: =  
-[Special Offer for all Premium Plugins](https://web-dorado.com/wordpress-plugins-bundle.html)  
+    
+[Live Demo](https://demo.10web.io/form-maker/)    
+   
+   
+[Demo Admin](https://admindemo.10web.io/?product_name=form-maker)
 
 
-[WordPress Form Maker](https://web-dorado.com/products/wordpress-form.html)  
-[Demo](http://wpdemo.web-dorado.com/)  
-[Demo Admin](http://wpdemo.web-dorado.com/wp-admin/admin.php?page=Form_maker)  
-[User Guide](https://web-dorado.com/wordpress-form-maker-guide-1.html)  
-[Frequently Asked Questions](https://web-dorado.com/blog/wordpress-themes-and-plugins/wordpress-form-maker-plugin-faq/)  
+[Premium Form Maker by 10Web](https://10web.io/plugins/wordpress-form-maker/)    
+    
+    
+[Special Offer for all Premium Plugins](https://10web.io/plugins-bundle-pricing/)    
+        
+https://www.youtube.com/watch?v=7rVCPlBZ-Sg
 
 
+Looking for the perfect form plugin that’ll save you time and effort?
+
+Is matching your website design with your forms difficult?
+
+Finding it hard to build lengthy and advanced forms? 
 
 
-Form Maker is a power-packed yet user-friendly form builder plugin. With an intuitive drag and drop interface, this plugin is the ultimate solution to help you create responsive WordPress Forms easily and in a timely manner. Add modern and functional questionnaires to your website with a few clicks. Using the plugin you can create forms for pretty much any purpose, from simple contact form to multi-page application, registration survey and questionnaire with conditional fields, captcha protection, multiple choice questions and more. It will take you just a few clicks to create them and a couple of minutes to customize with the available themes, styling and display options. This plugin can be a good addition to any website, so go ahead and give it a try.
+== Form Maker Features ==
 
-**Benefits**
+**Intuitive Interface**
+Drag and drop to build complex forms with just a few clicks.
 
-   * **Better communication between your visitors and you** - Contact forms serve as a communication tool between you and your site visitors, and make it easy to get/receive orders, requests, and inquiries. If you offer memberships, courses or trainings on your website, forms are an easy way to order, apply or register online.
-   * **Valuable User/Customer Feedback** - You are what your user/customer thinks of you! The plugin lets you put together surveys and questionnaires and get feedback from your users/customers.
-   * **One plugin, different purposes** - Whether you want to have a single form on the contact us page, or multiple, on different pages on your website, that&#39;s absolutely doable with this plugin. You can create unlimited number of different forms and display them using one of the available display options. Please note, that free version is limited to 7 form fields.
-   * **Save time** - Plugin uses an intuitive drag and drop interface, which makes it easy to create contact forms and add/remove form fields.
-   * **Add to the overall website design** - A well designed contact form can contribute to your website&#39;s overall look and feel. Customize its style and have it match with your website design.
-   * **Improve accessibility** - Plugin provides four different display options, which make your contact forms easily accessible. Whether you want to embed the form into a post or a page, or have it follow the visitors as they scroll up and down, you have the option to do that.
-   * **Awesome Support** - The team behind this plugin provides timely and effective support to all its users. We keep standards high and response time low.
+**Mobile-Friendly and Responsive**
+Your forms will look great on all resolutions and devices: mobile, tablet, and desktop.
+
+**Field Types**
+43 different form field types to help you create just the form you need.
+
+**Embed Easily**
+Display your forms as popups, top bars or scroll boxes or embed them into blog posts.
+
+**Pre-built Templates**
+Pick from five form template options to save time.
+
+**Fully Customizable Themes**
+Use one of our fifteen beautiful themes to make your forms match website design.
+
+**Manage Submissions**
+Set automatic email replies, track and export all your entries, and more.
+
+**Protection from Spam**
+Block IPs and set captchas to avoid spam.
+
+**Receive Payments\***
+Get payments and donations using integrated PayPal and Stripe gateways.
+
+**Conditional Logic**
+Build forms with complex conditional logic.
+
+**Multi-Page Forms**
+Divide up lengthy forms into pages to provide better user experience.
+
+**File Upload\***
+Your users can upload files to your forms.
+
+_\* Premium version only_
+
+== Form Maker Extensions ==
+_[Available in Plugins Bundle](https://10web.io/plugins/wordpress-form-maker/#product_pricing)_
+
+**Save Form Progress**
+Your users can save unfinished entries and continue anytime.
+
+**Conditional Mailing**
+Send out emails to user groups based on submitted forms.
+
+**Export/Import**
+Export form entries and forms in the XML format and import them into another site afterwards.
+
+**Pushover**
+Get a notification on your phone whenever there is an entry submission.
+
+**Mailchimp Integration**
+Create Mailchimp signup forms and expand your lead list.
+ 
+**WordPress Registration**
+Build WP user registration forms and expand the user base of your site.
+
+**Post Generation**
+Use a form to invite your users to submit guest posts.
+
+**Dropbox Integration**
+Store attachments received from form entries in your Dropbox.
+
+**Google Drive Integration**
+Upload received form attachments straight to your Google Drive.
+
+**PDF Integration**
+Use content from submitted entries to create PDFs.
+
+**Stripe**
+Your users can make credit card payments via Stripe, and we’ll transfer them to your bank account automatically.
+
+**Calculator**
+Build forms that contain automatically calculated fields.
 
 
-**What&#39;s in it**
+== World Class Customer Support ==
+*  Low response time
+We always respond within a few hours.
+*  Quick issue resolution
+Resolving an issue never takes more than 24 hours.
 
-**MULTIPLE FORM FIELDS**
-Plugin comes with a myriad of field options to let you create high performing forms. The fields you can add include: text input, multiple and single choice fields, select box, submit and reset buttons, custom HTML, 3 types of captcha protection and many more. In addition to these fields, the Premium version of the plugin offers file upload, Google Maps, and payment fields with automatic PayPal integration or Stripe integration with an add on.
 
-**FOUR FORM DISPLAY OPTIONS**
-There are four display options in the plugin: Embedded, Pop-Up, Scroll-box, and Top-bar. Each of the display options has its own set of settings you can customize.
+== Just ask our users ==
 
-**DRAG &amp; DROP**
-The intuitive drag-and-drop interface of the plugin makes it the most user-friendly form plugin for WordPress. Easily re-order the sequence of the fields or move them between columns, sections and pages, organizing your forms in no time.
+> I had tried several form plugins but I was always searching for a better one.
+> Then I stumbled Formmaker just by chance and thought to give a try.
+> I was thrilled to see its features. It has more than everything I expected. Very customizable and easy to use.
+> Now I don’t search for form plugin anymore
+> Lots of thanks to the developers of this plugin.
+> **by [@mayank0522](https://wordpress.org/support/topic/a-must-have-plugin-223/)**
 
-**15 CUSTOMIZABLE THEMES**
-Plugin comes with 15 fully customizable themes that you can apply to your forms. Under the theme options you can configure pretty much any setting of the theme, personalizing options for header, content, pagination, buttons and more. You can also create your own themes with your personal styling and features.
 
-**CUSTOM CSS EDITOR**
-You can use the custom CSS editor to give additional styling features to the forms.
+> If I could give this plugin more than 5 stars I would!
+> The level of control is extremely nice – even with the free version – though I quickly purchased the PRO version!
+> And the level of customer service in troubleshooting forum questions is incredible!
+> Very impressed with the plugin – but even more so with the way they interact with and help users get to what they need!
+> Great job guys!!
+> **by [@JonathanWilson99](https://wordpress.org/support/topic/amazing-form-plugin/)**
 
-**CUSTOMIZABLE EMAILS**
-Send customized emails to your users as well as website administrators upon submission for any given form.
 
-**MANAGED SUBMISSIONS**
-View and manage the submissions for each form. See number of entries, number of views, the conversion rate and more.
+> This is the best plugin for creating functional forms and very user friendly even for the none technical users.
+> Absolutely recommend everyone to use this one.
+> Thanks a lot guys!!!
+> **by [@denisecox](https://wordpress.org/support/topic/wonderful-form-builder-plugin/)**
 
-**CONDITIONAL FIELDS**
-Conditional fields feature of the plugin lets you display/hide specific fields based on the user input. This is a great way to make your forms shorter and avoid receiving irrelevant information.
+== Steps for creating a website form  ==
+1. Install Form Maker by 10Web.
+2. Create a form in a few clicks. 
+3. Publish your form.
 
-**PRE-BUILD TEMPLATES**
-The plugin comes with 5 pre-built templates, which you can use as they are or customize to better fit your needs.
 
-**ADD-ONs**
-Form Maker supports 12 premium add-ons to power up your forms even further. Whether you want to integrate them with Mailchimp service, send out conditional emails, or give your visitors an additional payment method like Stripe. Find the full list of add-ons bellow.
+> **[Premium version adds](https://10web.io/plugins/wordpress-form-maker/)**
+> 
+> * Unlimited fields in one form     
+> * File Upload field     
+> * PayPal Integration     
+> * Stripe Integration with Extension    
+> * Google Maps API Integration     
+> * Front-End Submissions     
 
-   * [Export/Import](https://web-dorado.com/products/wordpress-form/add-ons/export-import.html)     
-   * [PDF Integration](https://web-dorado.com/products/wordpress-form/add-ons/pdf.html)  
-   * [Save Progress](https://web-dorado.com/products/wordpress-form/add-ons/save-progress.html)    
-   * [Stripe Integration](https://web-dorado.com/products/wordpress-form/add-ons/stripe.html)       
-   * [Conditional Emails](https://web-dorado.com/products/wordpress-form/add-ons/conditional-emails.html)      
-   * [WordPress Registration](https://web-dorado.com/products/wordpress-form/add-ons/registration.html)  
-   * [Post Generation](https://web-dorado.com/products/wordpress-form/add-ons/post-generation.html)      
-   * [Mailchimp Integration](https://web-dorado.com/products/wordpress-form/add-ons/mailchimp.html)  
-   * [Dropbox Integration](https://web-dorado.com/products/wordpress-form/add-ons/dropbox.html)     
-   * [Google Drive Integration](https://web-dorado.com/products/wordpress-form/add-ons/google-drive.html)               
-   * [Pushover Integration](https://web-dorado.com/products/wordpress-form/add-ons/pushover.html)       
-   * [Calculator](https://web-dorado.com/products/wordpress-form/add-ons/calculator.html)       
 
-**SETTINGS/CUSTOMIZATION**
+== SETTINGS/CUSTOMIZATION ==
+
 _\*Some customizations described here are available in Premium version. Please refer to feature summary for additional info._
 
-Form Maker plugin provides a full range of options and features you can tailor to your needs. Each of the entries you create will have its own set of options and display settings. Under the options you can choose a theme for each form, adjust email options, choose what happens after the user submits, set conditional logic, and choose one of the available payment options, such as PayPal and Stripe (add-on). Under the display settings you can adjust the options for each form display type.
+Form Maker plugin provides a full range of options and features you can tailor to your needs. Each of the entries you create will have its own set of options and display settings. Under the options you can choose a theme for each form, adjust email options, choose what happens after the user submits, set conditional logic, and choose one of the available payment options, such as PayPal and Stripe (Extension). Under the display settings you can adjust the options for each form display type.
 
 The available themes are fully configurable, allowing you make the necessary adjustments to the header, content, input box, buttons, choices, pagination, and add custom CSS. You can change the header background color, adjust the parameters for title, description and header image,customize the parameters for buttons, adjust the settings for single and multiple choice questions, and many more. The changes you make to the settings will immediately be displayed in the form preview next to the settings box.
 
 With conditional fields option you can set to hide/show specific fields based on the selections your visitors make. You just choose the field you want to show or hide, then set the conditions based on which the field will appear or will be hidden. The plugin features a user-friendly interface, which makes it easy to create, style and customize the forms.
 
 
-**[Premium version adds](https://web-dorado.com/products/wordpress-form.html)**
 
-   * Unlimited fields in one form     
-   * File Upload field     
-   * PayPal Integration     
-   * Stripe Integration with add on     
-   * Google Maps API Integration     
-   * Front-End Submissions     
+== Privacy Notices ==
 
-
-= Privacy Notices =
-
-Form Maker plugin does not collect and store any data of your users on Web-Dorado’s end. All data submitted by your website visitors is stored in your website database. With every form submission Form Maker plugin collects users’ IP address and WordPress user ID for logged in users. From this perspective, you may be subject to GDPR compliance.
+Form Maker plugin does not collect and store any data of your users on 10Web's end. All data submitted by your website visitors is stored in your website database. With every form submission Form Maker plugin collects users' IP address and WordPress user ID for logged in users. From this perspective, you may be subject to GDPR compliance.
 
  Form Maker forms imply interaction between website visitors and website owner. As such you may publish forms that require input of Private data. You need to get explicit consent from your users to comply with GDPR. Under GDPR your users may request access  and/or erasure of their entry data at any time. Here you can find how to export and/or delete submissions.
 
@@ -180,7 +250,7 @@ This dynamic contact form builder lets you have a nice header section on your fo
 
 You can also have an image on your form header and set it to appear with an animation effect. Press **Add Image** button to upload and select a picture from **WordPress Media Library.** Then choose the animation effect using Image Animation option.
 
-In case you don’t want the **Header Image** of your forms to appear on smartphones and tablets, mark **Hide Image on Mobile** option as checked.
+In case you don't want the **Header Image** of your forms to appear on smartphones and tablets, mark **Hide Image on Mobile** option as checked.
 
 Make sure to **Publish/Update** the form to save the change you made.
 
@@ -196,7 +266,7 @@ Go to **Form Options** of your form, then click **Conditional Fields** tab to st
 
 Click the little **Plus (+)** icon to add the statement of your form condition.
 
-For example, let’s assume there is a **Single Choice** field on your form titled **Inquiry type.** And you wish to show **Message** field in case users choose **Support Request** as the type of their inquiry. The condition you configure needs to have the following logic:
+For example, let's assume there is a **Single Choice** field on your form titled **Inquiry type.** And you wish to show **Message** field in case users choose **Support Request** as the type of their inquiry. The condition you configure needs to have the following logic:
 
 *Show [Message] if [all] of the following match:*
 *[Inquiry type] is [Support request]*
@@ -264,7 +334,7 @@ Note: You need to set up **Form Options > Payment Options** of your form in orde
 
 Configuring Payment Options, you can use Form Maker as an order form generator and let users make payments through your form. Default payment gateway of Form Maker is **PayPal.** Select **PayPal** as **Payment Method** from Form **Options &gt; Payment Options** tab and configure corresponding options.
 
-Also, you can easily integrate the forms builder plugin with Stripe using its [Stripe Integration add-on](https://web-dorado.com/products/wordpress-form/add-ons/stripe.html).
+Also, you can easily integrate the forms builder plugin with Stripe using its Stripe Integration extension ( [Available in Plugins Bundle](https://10web.io/plugins/wordpress-form-maker/#product_pricing) ).
 
 **Payment Currency.** Choose the currency to be used for the payments made through your form. Note, that the selected currency symbol will only display on the front-end of the published form.
 
@@ -282,7 +352,7 @@ Also, you can easily integrate the forms builder plugin with Stripe using its [S
 
 **Export to CSV / Export to XML.** You are able to download all submissions of each contact form in **CSV** or **XML** format by clicking on these buttons.
 
-**Show Filters.** Form Maker lets you filter form submissions by values provided by user, e.g. submitter’s email address, name and more. Press **Show Filters** button on form submissions, write the values you wish to search with, then press **Search.** Click **Reset** button to clear the filters.
+**Show Filters.** Form Maker lets you filter form submissions by values provided by user, e.g. submitter's email address, name and more. Press **Show Filters** button on form submissions, write the values you wish to search with, then press **Search.** Click **Reset** button to clear the filters.
 
 **Add/Remove Columns.** This button will help you customize the columns which display in submissions of the selected contact form. Click on the button and unmark the columns you wish to hide.
 
@@ -310,7 +380,7 @@ Form Maker uses modern verification methods, such as ReCaptcha and invisible ReC
 
 = Can I use Form Maker to create a registration form? =
 
-You can register users on your website with the help of Form Maker [WordPress Registration add-on](https://web-dorado.com/products/wordpress-form/add-ons/registration.html). Install the add on and use it alongside the free version of Form Maker plugin.
+You can register users on your website with the help of Form Maker WordPress Registration Extension ( [Available in Plugins Bundle](https://10web.io/plugins/wordpress-form-maker/#product_pricing) ). Install the Extension and use it alongside the free version of Form Maker plugin.
 
 You are able to ask users to provide username, email address and password for their account. The registration of users is done upon completing the form created by this visual form builder plugin.
 
@@ -412,7 +482,7 @@ This might be a problem related to the hosting configurations of your website. Y
 
 Please install [WP SMTP](https://wordpress.org/plugins/wp-smtp/) plugin and go to **Settings > WP SMTP** page. Scroll down to the bottom and send a test mail to your email address.
 
-If the test email will be sent, then the issue is triggered by Form Maker plugin. Please contact Web-Dorado Customer Care at support@web-dorado.com. Our developers will have a closer look.
+If the test email will be sent, then the issue is triggered by Form Maker plugin. Please contact [10Web Customer Care at WordPress.org Support Forums](https://wordpress.org/support/plugin/form-maker/). Our developers will have a closer look.
 
 But if the test mail fails, the problem is on the server of your website. Please contact your hosting provider in this case, and ask them to enable mail functions on your site.
 
@@ -427,7 +497,7 @@ Connect to your website files via FTP connection and open the following two dire
 
 Please make sure all **.css** and **.js** files in these folders have their permissions set to **777.**
 
-If the permissions are correct, please do not hesitate to contact Web-Dorado Customer Care at support@web-dorado.com.
+If the permissions are correct, please do not hesitate to contact [10Web Customer Care at WordPress.org Support Forums](https://wordpress.org/support/plugin/form-maker/).
 
 = Is it possible to pass parameters from the page URL to form fields? =
 
@@ -451,6 +521,34 @@ Where **{{field_id}}** is the ID of the field you wish to prefill. Also, **{{par
 
 
 == Changelog ==
+
+= 1.13.2 =
+*  Changed: Links to 10Web.io.
+
+= 1.13.1 =
+*  Fixed: Bug on checking if Address field is required.
+
+= 1.13.0 =
+*  Added: Enable/Disable option for Form header.
+*  Added: Tax option for Stripe payments.
+*  Added: "Class name" option for "Single Line Text" field to allow add a css class for the field.
+*  Added: "Palestine" to country list field.
+*  Changed: Form editing page layout.
+*  Changed: Form Revisions functionality.
+*  Changed: Settings (Form Options) tab new design.
+*  Changed: Form Publishing tab new design.
+*  Changed: Selecting a Theme moved to Appearance.
+*  Changed: Make email options a separate tab.
+*  Changed: Remove required mark color from "Default" and "Inherit from site" themes.
+*  Changed: Inherit styles (font, color) from Elementor for Form maker widget.
+*  Fixed: Try to reproduce, try/catch curl part of code.
+*  Fixed: Requirement of table field should be affected on all rows of it.
+*  Fixed: The Like/Starting With options in WHERE of Select options from Database.
+*  Fixed: Remove the link of the word "Privacy Policy" when there is no Privacy Policy page.
+*  Fixed: Styles for rtl languages.
+*  Fixed: Addons settings for duplicated forms.
+*  Fixed: Required validation not allow space.
+*  Fixed: Error when clicking allow or skip to collect some usage data more then once.
 
 = 1.12.42 =
 *  Fixed: Remove the link from "Privacy Policy" text in the form when there is no Privacy Policy page.

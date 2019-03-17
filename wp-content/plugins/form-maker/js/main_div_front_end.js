@@ -435,7 +435,7 @@ function generate_page_nav(id, form_id, form_view_count) {
   td.style.display = "table-cell";
   td.style.width = "40%";
   page_nav.appendChild(td);
-  if (form_view_elemet.parentNode.previousSibling && 'wdform-page-and-images' == form_view_elemet.parentNode.previousSibling.className && form_view_elemet.parentNode.previousSibling.previousSibling) {
+  if (form_view_elemet.parentNode.previousSibling && form_view_elemet.parentNode.previousSibling.className.indexOf('wdform-page-and-images') != -1 && form_view_elemet.parentNode.previousSibling.previousSibling) {
     if (form_view_elemet.parentNode.previousSibling.tagName == "DIV") {
       table = form_view_elemet.parentNode.previousSibling;
     }
@@ -482,7 +482,7 @@ function generate_page_nav(id, form_id, form_view_count) {
   page_nav.appendChild(td);
   not_next = false;
   if (form_view_elemet.parentNode.nextSibling) {
-    if (form_view_elemet.parentNode.nextSibling.tagName == "DIV" && form_view_elemet.parentNode.nextSibling.className == "wdform-page-and-images") {
+    if (form_view_elemet.parentNode.nextSibling.tagName == "DIV" && form_view_elemet.parentNode.nextSibling.className.indexOf('wdform-page-and-images') != -1) {
       table = form_view_elemet.parentNode.nextSibling;
     }
     else {
@@ -1174,8 +1174,10 @@ function wd_is_filled(form_id, field_id, all_pages) {
         case 'type_phone_new':
         case 'type_submitter_mail': {
           var element = "#wdform_" + wdid + "_element" + form_id;
+		  var element_value = jQuery(element).val();
+			  element_value = jQuery.trim(element_value);
           if(all_pages || x.find(jQuery("div[wdid='"+wdid+"']")).closest(".wdform-page-and-images").css('display') != "none") {
-            if(jQuery(element).val() == jQuery(element).attr('title') || jQuery(element).val() == ""){
+            if ( element_value == "" || element_value  == jQuery(element).attr('title') ) {
               not_filled[wdid] = element;
             }
           }
@@ -1234,9 +1236,13 @@ function wd_is_filled(form_id, field_id, all_pages) {
           var element = ["#wdform_" + wdid + "_element_title" + form_id, "#wdform_" + wdid + "_element_first" + form_id, "#wdform_" + wdid + "_element_last" + form_id, "#wdform_" + wdid + "_element_middle" + form_id];
           jQuery.each(element, function(i, elem){
             if(all_pages || x.find(jQuery("div[wdid='"+wdid+"']")).closest(".wdform-page-and-images").css('display') != "none") {
-              if((jQuery(elem).val() == "" || jQuery(elem).val() == jQuery(elem).attr('title')) && typeof jQuery(elem).val() != "undefined"){
-                not_filled[wdid] = elem;
-              }
+				if ( jQuery(elem).length) {
+					var element_value = jQuery(elem).val();
+						element_value = jQuery.trim(element_value);
+				  if( ( element_value == "" || element_value == jQuery(elem).attr('title') ) && typeof element_value != "undefined") {
+					not_filled[wdid] = elem;
+				  }
+				}
             }
             if(!field_id  && !window['check_submit'+form_id]){
               jQuery(elem).focus(function() {
@@ -1253,7 +1259,11 @@ function wd_is_filled(form_id, field_id, all_pages) {
           var element = ["#wdform_" + wdid + "_street1" + form_id, "#wdform_" + wdid + "_street2" + form_id, "#wdform_" + wdid + "_city" + form_id, "#wdform_" + wdid + "_state" + form_id, "#wdform_" + wdid + "_postal" + form_id, "#wdform_" + wdid + "_country" + form_id];
           jQuery.each(element, function(i, elem){
             if(all_pages || x.find(jQuery("div[wdid='"+wdid+"']")).closest(".wdform-page-and-images").css('display') != "none") {
-              if(jQuery(elem).val() == "" && typeof jQuery(elem).val() != "undefined"){
+              var element_value = jQuery(elem).val();
+              if (typeof element_value != "undefined") {
+                element_value = jQuery.trim(element_value);
+              }
+              if ( element_value == "" ) {
                 not_filled[wdid] = elem;
               }
             }
@@ -1487,24 +1497,36 @@ function wd_is_filled(form_id, field_id, all_pages) {
           break;
         }
         case 'type_matrix': {
-          if(jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') =="radio" || jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') =="checkbox"){
+          if ( jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') == 'radio'
+			|| jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') == 'checkbox' ) {
             if(all_pages || x.find(jQuery("div[wdid='"+wdid+"']")).closest(".wdform-page-and-images").css('display') != "none") {
               if(x.find(jQuery("div[wdid='"+ wdid +"'] input:checked")).length == 0){
                 not_filled[wdid] = true;
               }
             }
-            if(!field_id  && !window['check_submit'+form_id]) {
-              jQuery.each(jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input"), function( i, val ){
-                jQuery(this).change(function() {
-                  if(x.find(jQuery("div[wdid='"+ wdid +"'] input:checked")).length == 0){
-                    wd_is_filled(form_id, wdid);
-                  }
-                  else{
-                    jQuery("#form"+form_id+" div[wdid='"+wdid+"'] .wdform-label-section:first .error_label").removeClass("error_label");
-                    jQuery("#form"+form_id+" #wd_required_"+wdid).remove();
-                  }
-                });
-              });
+
+			if ( jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') == 'radio' ) {
+				jQuery.each(jQuery("#form" + form_id + " div[class^='wdform-matrix-row']"), function( i, rows ) {
+					if ( jQuery(rows).find('input[type="radio"]:checked').length == 0 ) {
+						not_filled[wdid] = true;
+					}
+				});
+			}
+
+			if ( jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') == 'checkbox' ) {
+				if ( !field_id  && !window['check_submit'+form_id] ) {
+				  jQuery.each(jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input"), function( i, val ){
+					jQuery(this).change(function() {
+					  if(x.find(jQuery("div[wdid='"+ wdid +"'] input:checked")).length == 0){
+						wd_is_filled(form_id, wdid);
+					  }
+					  else{
+						jQuery("#form"+form_id+" div[wdid='"+wdid+"'] .wdform-label-section:first .error_label").removeClass("error_label");
+						jQuery("#form"+form_id+" #wd_required_"+wdid).remove();
+					  }
+					});
+				  });
+				}
             }
           }
           else if(jQuery("#form" + form_id + " div[wdid='"+ wdid +"'] input").attr('type') =="text") {

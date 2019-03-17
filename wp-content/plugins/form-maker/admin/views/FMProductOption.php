@@ -152,7 +152,7 @@ class FMViewProduct_option extends FMAdminView {
         li_edit.setAttribute("onclick", "tb_show('', 'admin-ajax.php?action=product_option&field_id=<?php echo $field_id; ?>&property_id=" + i + "&width=530&height=370&TB_iframe=1')");
         li_edit.setAttribute("class", "thickbox-preview" + i);
         var li_edit_img = document.createElement('span');
-        li_edit_img.setAttribute("class", 'fm-edit-attribute dashicons dashicons-edit');
+        li_edit_img.setAttribute("class", 'fm-edit-attribute fm-ico-edit');
         li_edit.appendChild(li_edit_img);
         var li_x = document.createElement('span');
         li_x.setAttribute("class", 'fm-remove-attribute dashicons dashicons-dismiss');

@@ -1065,7 +1065,7 @@ msgid ""
 msgstr ""
 
 #: admin/views/view.php:424 form-maker.php:253
-msgid "Add-ons"
+msgid "Extensions"
 msgstr ""
 
 #: admin/views/view.php:428 form-maker.php:250

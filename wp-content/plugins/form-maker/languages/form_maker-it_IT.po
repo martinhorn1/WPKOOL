@@ -31,7 +31,7 @@ msgstr ""
 
 #: admin/controllers/Addons_fm.php:68
 msgid ""
-"This add-on is an integration of the Form Maker with MailChimp which allows "
+"This extension is an integration of the Form Maker with MailChimp which allows "
 "to add contacts to your subscription lists just from submitted forms."
 msgstr ""
 
@@ -43,7 +43,7 @@ msgstr "Paginazione"
 
 #: admin/controllers/Addons_fm.php:76
 msgid ""
-"User Registration add-on integrates with Form maker forms allowing users to "
+"User Registration extension integrates with Form maker forms allowing users to "
 "create accounts at your website."
 msgstr ""
 
@@ -59,7 +59,7 @@ msgstr ""
 
 #: admin/controllers/Addons_fm.php:92
 msgid ""
-"Conditional Emails add-on allows to send emails to different recipients "
+"Conditional Emails extension allows to send emails to different recipients "
 "depending on the submitted data ."
 msgstr ""
 
@@ -82,7 +82,7 @@ msgstr "Integrazione con moduli Maker Stripe"
 
 #: admin/controllers/Addons_fm.php:109
 msgid ""
-"The Google Drive Integration add-on integrates Form Maker with Google Drive "
+"The Google Drive Integration extension integrates Form Maker with Google Drive "
 "and allows you to send the file uploads to the Google Drive"
 msgstr ""
 
@@ -92,7 +92,7 @@ msgstr ""
 
 #: admin/controllers/Addons_fm.php:117
 msgid ""
-"The Form Maker PDF Integration add-on allows sending submitted forms in PDF "
+"The Form Maker PDF Integration extension allows sending submitted forms in PDF "
 "format."
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr "In corso"
 
 #: admin/controllers/Addons_fm.php:133
 msgid ""
-"The add-on allows to save filled in forms as draft and continue editing them "
+"The extension allows to save filled in forms as draft and continue editing them "
 "subsequently."
 msgstr ""
 
@@ -125,7 +125,7 @@ msgstr "Strisce"
 
 #: admin/controllers/Addons_fm.php:141
 msgid ""
-"Form Maker Stripe Integration Add-on allows to accept direct payments made "
+"Form Maker Stripe Integration extension allows to accept direct payments made "
 "by Credit Cards. Users will remain on your website during the entire process."
 msgstr ""
 
@@ -135,7 +135,7 @@ msgstr ""
 
 #: admin/controllers/Addons_fm.php:149
 msgid ""
-"The Form Maker Calculator add-on allows creating forms with dynamically "
+"The Form Maker Calculator extension allows creating forms with dynamically "
 "calculated fields."
 msgstr ""
 
@@ -987,7 +987,7 @@ msgid "This field type is available in Premium version"
 msgstr "Questo tipo di campo è disabilitato nella versione gratuita."
 
 #: admin/views/Manage_fm.php:636 admin/views/Manage_fm.php:1448
-msgid "STRIPE add-on compatible with Premium version only"
+msgid "STRIPE extension compatible with Premium version only"
 msgstr ""
 
 #: admin/views/Manage_fm.php:641 admin/views/Manage_fm.php:1456
@@ -997,11 +997,11 @@ msgid "This feature is available only in the Premium version"
 msgstr "Questo tipo di campo è disabilitato nella versione gratuita."
 
 #: admin/views/Manage_fm.php:641 admin/views/Manage_fm.php:1456
-msgid "Requires STRIPE add-on."
+msgid "Requires STRIPE extension."
 msgstr ""
 
 #: admin/views/Manage_fm.php:644 admin/views/Manage_fm.php:1459
-msgid "This feature requires STRIPE add-on"
+msgid "This feature requires STRIPE extension"
 msgstr ""
 
 #: admin/views/Manage_fm.php:644 admin/views/Manage_fm.php:1459
@@ -1873,7 +1873,7 @@ msgstr "Pubblicando gli invii"
 
 #: form-maker.php:1049
 #, php-format
-msgid "Please update the %s add-on to start using."
+msgid "Please update the %s extension to start using."
 msgstr ""
 "Si prega di aggiornare il componente aggiuntivo%s per iniziare a utilizzare."
 
@@ -3676,8 +3676,8 @@ msgstr "Anteprima"
 #~ msgid "Please install "
 #~ msgstr "Perfavore installa "
 
-#~ msgid " add-on to use this feature."
-#~ msgstr "add-on per usare questa funzione."
+#~ msgid " extension to use this feature."
+#~ msgstr "extension per usare questa funzione."
 
 #~ msgid "This section allows you to %s."
 #~ msgstr "Questa sezione consente di%s."
@@ -3685,8 +3685,8 @@ msgstr "Anteprima"
 #~ msgid "Upgrade to paid version"
 #~ msgstr "Perfavore fai l'upgrade alla versione a pagamento"
 
-#~ msgid "Please install %s add-on to use this feature."
-#~ msgstr "Installa%s add-on per utilizzare questa funzione."
+#~ msgid "Please install %s extension to use this feature."
+#~ msgstr "Installa%s extension per utilizzare questa funzione."
 
 #~ msgid "Address line 1"
 #~ msgstr "Indirizzo riga 1"
@@ -3714,7 +3714,7 @@ msgstr "Anteprima"
 
 #~ msgid ""
 #~ "Please install Form Maker plugin version %s and higher to start using "
-#~ "Stripe add-on."
+#~ "Stripe extension."
 #~ msgstr ""
 #~ "installa la versione del plug-in di Form Maker % s e successiva per "
 #~ "iniziare a utilizzare il componente aggiuntivo Stripe."

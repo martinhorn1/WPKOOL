@@ -93,7 +93,7 @@ class  FMViewSubmissions_fm extends FMAdminView {
 		$asc_or_desc = $params['asc_or_desc'];
 		$pagination_url_args = $params['pagination_url_args'];
 		ob_start();
-		$unexpected_error_message = sprintf( __('An unexpected error occurred while exporting data. %s Please contact Web-Dorado (10Web) Customer Care. %s', WDFMInstance(self::PLUGIN)->prefix), '<a href="https://web-dorado.com/support/contact-us.html" target="_blank">','</a>');
+		$unexpected_error_message = sprintf( __('An unexpected error occurred while exporting data. %s Please contact 10Web Customer Care. %s', WDFMInstance(self::PLUGIN)->prefix), '<a href="https://help.10web.io/hc/en-us/requests/new" target="_blank">','</a>');
 		echo '<div class="fm-unexpected_error_message fm-hide">' . WDW_FM_Library(self::PLUGIN)->message_id('', $unexpected_error_message, 'error') . '</div>';
 		echo $this->body($params);
 		// Pass the content to form.
