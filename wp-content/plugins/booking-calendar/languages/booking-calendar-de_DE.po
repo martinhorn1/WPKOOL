@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: booking calendar\n"
 "POT-Creation-Date: 2016-12-08 23:52+0400\n"
-"PO-Revision-Date: 2018-03-09 14:05+0400\n"
+"PO-Revision-Date: 2019-02-19 21:08+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -132,19 +132,19 @@ msgstr ""
 
 #: admin/views/Calendars.php:223
 msgid "Start Date"
-msgstr ""
+msgstr "Anfangsdatum"
 
 #: admin/views/Calendars.php:230
 msgid "End Date"
-msgstr ""
+msgstr "Endtermin"
 
 #: admin/views/Calendars.php:244
 msgid "Edit Calendar"
-msgstr ""
+msgstr "Kalender bearbeiten"
 
 #: admin/views/Calendars.php:302 admin/views/Themes.php:2219
 msgid "Current"
-msgstr ""
+msgstr "Aktuell"
 
 #: admin/views/Calendars.php:303 admin/views/Themes.php:2220
 #: includes/textfortr.php:2

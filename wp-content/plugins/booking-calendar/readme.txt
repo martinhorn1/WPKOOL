@@ -3,8 +3,8 @@ Contributors: wpdevart
 Donate link: http://wpdevart.com/wordpress-booking-calendar-plugin
 Tags: Booking, booking system, appointment booking, Booking calendar, reservation calendar
 Requires at least: 3.4.0
-Tested up to: 5.0.1
-Stable tag: 2.3.1
+Tested up to: 5.0.3
+Stable tag: 2.3.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -717,6 +717,14 @@ Yes dear users, you need to pay only one time for our pro version.
 = 2.3.1 =
 
 *  Added new translation words and changed "tested up to" part.
+
+= 2.3.2 =
+
+*  Added new translation words for two languages.
+
+= 2.3.3 =
+
+*  Added translation words for several languages.
 
 == Step by step guide ==
 

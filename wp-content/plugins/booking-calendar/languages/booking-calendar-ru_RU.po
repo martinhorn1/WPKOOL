@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: booking calendar\n"
 "POT-Creation-Date: 2016-12-08 23:53+0400\n"
-"PO-Revision-Date: 2018-12-18 13:30+0400\n"
+"PO-Revision-Date: 2019-01-23 00:49+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -248,7 +248,7 @@ msgstr ""
 
 #: admin/views/Forms.php:129
 msgid "Text"
-msgstr ""
+msgstr "Текст"
 
 #: admin/views/Forms.php:130
 msgid "Textarea"
@@ -256,7 +256,7 @@ msgstr ""
 
 #: admin/views/Forms.php:131
 msgid "Checkbox"
-msgstr ""
+msgstr "Галочка"
 
 #: admin/views/Forms.php:133
 msgid "Drop down"
@@ -277,7 +277,7 @@ msgstr ""
 #: admin/views/Reservations.php:54 admin/views/Reservations.php:438
 #: admin/views/Reservations.php:482
 msgid "Select Calendar"
-msgstr ""
+msgstr "Выберите календарь"
 
 #: admin/views/Reservations.php:59 admin/views/Reservations.php:443
 #: admin/views/Reservations.php:487
@@ -300,7 +300,7 @@ msgstr ""
 
 #: admin/views/Reservations.php:69
 msgid "Actions"
-msgstr ""
+msgstr "Действие"
 
 #: admin/views/Reservations.php:72
 msgid "Filters"
@@ -312,16 +312,16 @@ msgstr ""
 
 #: admin/views/Reservations.php:94 admin/views/Reservations.php:379
 msgid "Approve"
-msgstr ""
+msgstr "Одобрить"
 
 #: admin/views/Reservations.php:95 admin/views/Reservations.php:381
 msgid "Reject"
-msgstr ""
+msgstr "Отклонить"
 
 #: admin/views/Reservations.php:96 admin/views/Reservations.php:384
 #: admin/views/Reservations.php:394
 msgid "Cancel"
-msgstr ""
+msgstr "Отменить"
 
 #: admin/views/Reservations.php:98 admin/views/Reservations.php:371
 msgid "Mark as read"

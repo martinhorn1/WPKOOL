@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: booking calendar\n"
 "POT-Creation-Date: 2016-12-08 23:53+0400\n"
-"PO-Revision-Date: 2016-12-08 23:53+0400\n"
+"PO-Revision-Date: 2019-01-23 00:50+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.11\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
@@ -112,15 +112,15 @@ msgstr ""
 #: admin/views/Forms.php:48 admin/views/Reservations.php:390
 #: admin/views/Themes.php:38 admin/views/Themes.php:48
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #: admin/views/Calendars.php:83
 msgid "Calendar Title"
-msgstr ""
+msgstr "Titolo del calendario"
 
 #: admin/views/Calendars.php:90
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
 #: admin/views/Calendars.php:99
 msgid "Form"
@@ -248,7 +248,7 @@ msgstr ""
 
 #: admin/views/Forms.php:129
 msgid "Text"
-msgstr ""
+msgstr "Testo"
 
 #: admin/views/Forms.php:130
 msgid "Textarea"
@@ -312,16 +312,16 @@ msgstr ""
 
 #: admin/views/Reservations.php:94 admin/views/Reservations.php:379
 msgid "Approve"
-msgstr ""
+msgstr "Approvare"
 
 #: admin/views/Reservations.php:95 admin/views/Reservations.php:381
 msgid "Reject"
-msgstr ""
+msgstr "Rifiutare"
 
 #: admin/views/Reservations.php:96 admin/views/Reservations.php:384
 #: admin/views/Reservations.php:394
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #: admin/views/Reservations.php:98 admin/views/Reservations.php:371
 msgid "Mark as read"

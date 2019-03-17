@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: booking calendar\n"
 "POT-Creation-Date: 2016-12-08 23:52+0400\n"
-"PO-Revision-Date: 2016-12-08 23:52+0400\n"
+"PO-Revision-Date: 2019-02-19 21:07+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.11\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
@@ -132,19 +132,19 @@ msgstr ""
 
 #: admin/views/Calendars.php:223
 msgid "Start Date"
-msgstr ""
+msgstr "Date de début"
 
 #: admin/views/Calendars.php:230
 msgid "End Date"
-msgstr ""
+msgstr "Date de fin"
 
 #: admin/views/Calendars.php:244
 msgid "Edit Calendar"
-msgstr ""
+msgstr "Modifier le calendrier"
 
 #: admin/views/Calendars.php:302 admin/views/Themes.php:2219
 msgid "Current"
-msgstr ""
+msgstr "Actuelle"
 
 #: admin/views/Calendars.php:303 admin/views/Themes.php:2220
 #: includes/textfortr.php:2
