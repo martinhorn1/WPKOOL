@@ -7,6 +7,10 @@ class wpdevart_bc_ViewExtras {
     }	
     public function display_extras($error_msg="",$delete=true) {
 		$rows = $this->model_obj->get_extras_rows();
+		$current_user = get_current_user_id();
+		$current_user_info = get_userdata( $current_user ); 
+		$current_user_info = $current_user_info->roles; 
+		$role = isset($current_user_info[0]) ? $current_user_info[0] : "";
 		$items_nav = $this->model_obj->items_nav();
 		$asc_desc = ((isset($_POST['asc_desc']) && $_POST['asc_desc'] == 'asc') ? 'asc' : 'desc');
 		$res_order_by = (isset($_POST['order_by']) ? sanitize_sql_orderby($_POST['order_by']) :  'id');
@@ -15,7 +19,9 @@ class wpdevart_bc_ViewExtras {
 			<div id="action-buttons" class="div-for-clear">
 				<div class="div-for-clear">
 					<span class="admin_logo"></span>
-					<h1><?php _e('Extras','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+					<h1><?php _e('Extras','booking-calendar'); ?>
+					<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+					</h1>
 					<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 				</div>
 				<a href="" onclick="wpdevart_set_value('task','add'); wpdevart_form_submit(event, 'extras_form')" class="action-link"><?php _e('Add Extra','booking-calendar'); ?></a>
@@ -36,6 +42,9 @@ class wpdevart_bc_ViewExtras {
 							<th class="check-column"><input type="checkbox" name="check_all" onclick="check_all_checkboxes(this,'check_for_action');"></th>
 							<th class="small-column"><?php _e('ID','booking-calendar'); ?></th>
 							<th><?php _e('Title','booking-calendar'); ?></th>
+							<?php if($role == "administrator"){ ?>
+								<th><?php _e('User','booking-calendar'); ?></th>
+							<?php } ?>	
 							<th class="action-column"><?php _e('Edit','booking-calendar'); ?></th>
 							<th class="action-column"><?php _e('Delete','booking-calendar'); ?></th>
 						</thead>
@@ -46,6 +55,11 @@ class wpdevart_bc_ViewExtras {
 								<td><input type="checkbox" name="check_for_action[]" class="check_for_action" value="<?php echo $row->id; ?>"></td>
 								<td><?php echo $row->id; ?></td>
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'extras_form')" ><?php echo $row->title; ?></a></td>
+								<?php if($role == "administrator"){
+                                     $user = $row->user_id;
+									 $user_info = get_userdata( $user ); ?>
+									<td><a href="<?php echo get_edit_user_link( $user ) ?>"><?php echo ($user_info)? $user_info->user_login : ""; ?></a></td>
+								<?php } ?>	
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'extras_form')" ><?php _e('Edit','booking-calendar'); ?></a></td>
 								<td><a href="" onclick="wpdevart_set_value('task','delete'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'extras_form')" ><?php _e('Delete','booking-calendar'); ?></a></td>
 							<tr>
@@ -154,12 +168,16 @@ class wpdevart_bc_ViewExtras {
 			    if($id != 0){ ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Edit Extra','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Edit Extra','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } else { ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Add Extra','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Add Extra','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } ?>
 			<form action="?page=wpdevart-extras" method="post">

@@ -4,7 +4,7 @@
  * Plugin URI: http://wpdevart.com/wordpress-booking-calendar-plugin
  * Author URI: http://wpdevart.com 
  * Description: WordPress Booking Calendar plugin is an awesome tool to create a booking system for your website. Create booking calendars in a few minutes.
- * Version: 2.3.3
+ * Version: 2.3.7
  * Author: WpDevArt
  * License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: booking-calendar
@@ -13,7 +13,7 @@
 defined('ABSPATH') || die('Access Denied');
 class wpdevart_bc_calendar{
 	
-	protected $version = "10.3";
+	protected $version = "2.3.7";
 	protected $prefix = 'wpdevart';
 	public $options;
 	public static $booking_count = 1;
@@ -32,6 +32,7 @@ class wpdevart_bc_calendar{
 	* Setup constants
 	**/
 	private function setup_constants() {
+		$upload_dir = wp_upload_dir();
 		if ( ! defined( 'WPDEVART_PLUGIN_DIR' ) ) {
 			define( 'WPDEVART_PLUGIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 		}
@@ -45,10 +46,19 @@ class wpdevart_bc_calendar{
 			define ('WPDEVART_VERSION', $this->version);
 		}
 		if(!defined('WPDEVART_PRO')){
-			define('WPDEVART_PRO', false);
+			define('WPDEVART_PRO', "free");
 		}
 		if(!defined('wpdevart_booking_support_url')){
 			define('wpdevart_booking_support_url', "https://wordpress.org/support/plugin/booking-calendar");
+		}
+		if(!defined('WPDEVART_UPLOADS')){
+			define( 'WPDEVART_UPLOADS', $upload_dir['basedir'] . '/booking_calendar/' );
+		}
+		if(!defined('WPDEVART_UPLOADS_URL')){
+			define( 'WPDEVART_UPLOADS_URL', $upload_dir['baseurl'] . '/booking_calendar/' );
+		}
+		if(!defined('WPDEVART_PLUGIN_URL')){
+			define( 'WPDEVART_PLUGIN_URL', "http://wpdevart.com/wordpress-booking-calendar-plugin" );
 		}
 	}
 
@@ -87,9 +97,12 @@ class wpdevart_bc_calendar{
 		return  $result;
 	}
 	
-    /*############  Install database function ################*/		
 	
 	public function install_databese(){
+		$version = get_option("wpdevart_booking_version");
+		if ($version && version_compare($version, "10.1", '>')) {
+			update_option("wpdevart_booking_version", "2.3.5");
+		}
 		$version = get_option("wpdevart_booking_version");
         $new_version = $this->version;
 		//registration of file that is responsible for database
@@ -103,6 +116,9 @@ class wpdevart_bc_calendar{
 		elseif (version_compare($version, $new_version, '<')) {
 			$wpdevart_bc_install_database->update_databese($version);
 			update_option("wpdevart_booking_version", $new_version);
+		}
+		if (!is_dir(WPDEVART_UPLOADS)) {
+			mkdir(WPDEVART_UPLOADS, 0777);
 		}
 		
 	}
@@ -119,6 +135,8 @@ class wpdevart_bc_calendar{
 				'ajaxUrl'         => admin_url( 'admin-ajax.php', $scheme ),
 				'ajaxNonce'       => wp_create_nonce( 'wpdevart_ajax_nonce' ),
 				'required' => __("is required.",'booking-calendar'),
+				'file_size' => __(" The file size is too large!",'booking-calendar'),
+				'file_type' => __(" The file type not allowed!",'booking-calendar'),
 				'emailValid' => __("Enter the valid email address.",'booking-calendar'),
 				'date' => __("Date",'booking-calendar'),
 				'hour' => __("Hour",'booking-calendar')
@@ -148,7 +166,6 @@ class wpdevart_bc_calendar{
 		add_filter('wp_privacy_personal_data_exporters', array($this,'wpdevart_plugin_exporter'), 10);
 		add_filter('wp_privacy_personal_data_erasers', array($this,'wpdevart_plugin_eraser'), 10);
 		
-		
 		add_action( 'wp_ajax_nopriv_wpdevart_add_field', array($this,'wpdevart_add_field') );
 		add_action( 'wp_ajax_wpdevart_add_field', array($this,'wpdevart_add_field') );
 		add_action( 'wp_ajax_nopriv_wpdevart_add_extra_field', array($this,'wpdevart_add_extra_field') );
@@ -161,8 +178,16 @@ class wpdevart_bc_calendar{
 		add_action( 'wp_ajax_wpdevart_get_interval_dates', array($this,'wpdevart_get_interval_dates') );
 		add_action( 'wp_ajax_nopriv_wpdevart_form_ajax', array($this,'wpdevart_form_ajax') );
 		add_action( 'wp_ajax_wpdevart_form_ajax', array($this,'wpdevart_form_ajax') );
+		add_action( 'wp_ajax_nopriv_wpdevart_payment_ajax', array($this,'wpdevart_payment_ajax') );
+		add_action( 'wp_ajax_wpdevart_payment_ajax', array($this,'wpdevart_payment_ajax') );
+		add_action( 'wp_ajax_nopriv_wpdevart_payment', array($this,'wpdevart_payment') );
+		add_action( 'wp_ajax_wpdevart_payment', array($this,'wpdevart_payment') );
+		add_action( 'wp_ajax_nopriv_wpdevart_quick_update', array($this,'wpdevart_quick_update') );
+		add_action( 'wp_ajax_wpdevart_quick_update', array($this,'wpdevart_quick_update') );
 		add_action( 'wp_ajax_nopriv_wpdevart_captcha', array($this,'wpdevart_captcha') );
 		add_action( 'wp_ajax_wpdevart_captcha', array($this,'wpdevart_captcha') );
+		add_action( 'wp_ajax_nopriv_wpdevart_export', array($this,'wpdevart_export') );
+		add_action( 'wp_ajax_wpdevart_export', array($this,'wpdevart_export') );
 	}
 	
 	/*GDPR*/
@@ -186,9 +211,9 @@ class wpdevart_bc_calendar{
 			'start_hour'    => __( 'Start Hour', 'booking-calendar' ),
 			'end_hour'        => __( 'End Hour', 'booking-calendar' ),
 			'total_price'         => __( 'Total Price', 'booking-calendar' ),
-			'form'      => __( 'Reservation Form Informarion', 'booking-calendar' ),
-			'address_billing'      => __( 'Billing Form Informarion', 'booking-calendar' ),
-			'address_shipping'      => __( 'Shipping Form Informarion', 'booking-calendar' ),
+			'form'      => __( 'Reservation Form Information', 'booking-calendar' ),
+			'address_billing'      => __( 'Billing Form Information', 'booking-calendar' ),
+			'address_shipping'      => __( 'Shipping Form Information', 'booking-calendar' ),
 			'payment_price'      => __( 'Payment Price', 'booking-calendar' ),
 			'ip'      => __( 'Ip', 'booking-calendar' ),
 			'payment_address'      => __( 'Payment Address', 'booking-calendar' ),
@@ -440,22 +465,40 @@ class wpdevart_bc_calendar{
 	  } 
 	/*GDPR*/
 	
-	
 	public function wpdevart_captcha() {
 		if(!check_ajax_referer('wpdevart_ajax_nonce', 'wpdevart_nonce')) {
 			die('Request has failed.');
 		}
-		$response = isset($_POST['wpdevart_captcha']) ? sanitize_text_field($_POST['wpdevart_captcha']) : "";
+		$response = isset($_POST['wpdevart_captcha']) ? esc_html($_POST['wpdevart_captcha']) : "";
         $global_settings = get_option("wpdevartec_settings") === false ? array() :  json_decode(get_option("wpdevartec_settings"), true);
 		$secret = isset($global_settings["recaptcha_private_key"]) ? $global_settings["recaptcha_private_key"] : "";
-		$verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$secret}&response={$response}");
-		$captcha_success = json_decode($verify);
-		if ($captcha_success->success == false) {
-		  echo 0;
+		$verify = wp_remote_get("https://www.google.com/recaptcha/api/siteverify?secret={$secret}&response={$response}");
+		if ( is_array( $verify ) && ! is_wp_error( $verify ) ) {
+			$body    = $verify['body']; 
+			$captcha_success = json_decode($body);
+			if ($captcha_success->success == false) {
+			  echo 0;
+			}
+			else if ($captcha_success->success==true) {
+			  echo 1;
+			}
+
+		} else {
+			echo 0;
 		}
-		else if ($captcha_success->success==true) {
-		  echo 1;
+		
+		wp_die();
+	}
+	
+	/*Export*/
+	
+	public function wpdevart_export() {
+		if(!check_ajax_referer('wpdevart_ajax_nonce', 'wpdevart_nonce')) {
+			die('Request has failed.');
 		}
+		require_once(WPDEVART_PLUGIN_DIR . 'admin/controllers/Reservations.php');
+		$controller = new wpdevart_bc_ControllerReservations();
+		$controller->export_as_csv();
 		wp_die();
 	}
 	
@@ -496,6 +539,29 @@ class wpdevart_bc_calendar{
 		wp_die();
 	}
 	
+	public function wpdevart_payment_ajax() {
+		if(!check_ajax_referer('wpdevart_ajax_nonce', 'wpdevart_nonce')) {
+			die('Request has failed.');
+		}
+		$main_class = new wpdevart_Main();
+		$main_class->main_payment_ajax();
+		wp_die();
+	}
+	
+	public function wpdevart_payment() {
+		require_once(WPDEVART_PLUGIN_DIR . 'admin/controllers/Payment.php');
+		$controller = new wpdevart_bc_ControllerPayments();
+		$controller->perform();
+	}
+	
+	public function wpdevart_quick_update() {
+		if(!check_ajax_referer('wpdevart_ajax_nonce', 'wpdevart_nonce')) {
+			die('Request has failed.');
+		}
+		$main_class = new wpdevart_Main();
+		$main_class->main_quick_update();
+		wp_die();
+	}
 	
 	public function wpdevart_add_field() {
 		if ( isset( $_POST['wpdevart_field_type'] ) ) {

@@ -3,7 +3,7 @@ class wpdevart_bc_ModelReservations {
 
     /*############  Reservations rows function ################*/
 	
-  public function get_reservations_rows($id) {
+  public function get_reservations_rows($id,$type = "OBJECT") {
     global $wpdb;
 	$where = array();
     $limit = (isset($_POST['wpdevart_page']) && $_POST['wpdevart_page'])? (((int) $_POST['wpdevart_page'] - 1) * 20) : 0;
@@ -33,13 +33,28 @@ class wpdevart_bc_ModelReservations {
 
     $query = "SELECT " . $wpdb->prefix . "wpdevart_reservations.*, " . $wpdb->prefix . "wpdevart_payments.* FROM " . $wpdb->prefix . "wpdevart_reservations LEFT JOIN " . $wpdb->prefix . "wpdevart_payments ON " . $wpdb->prefix . "wpdevart_reservations.id=" . $wpdb->prefix . "wpdevart_payments.res_id " . $where . " ".$reserv_order_by." LIMIT " . $limit . ",20";
    // $query = "SELECT * FROM " . $wpdb->prefix . "wpdevart_reservations " . $where . " ".$reserv_order_by." LIMIT " . $limit . ",20";
-    $rows = $wpdb->get_results($query);
+    $rows = $wpdb->get_results($query, $type);
 
     return $rows;
   }	
-
-    /*############  Items navigation function ################*/
+  
+  public function get_reservations_for_export() {
+	  global $wpdb;
+	$where = '';
+    $limit = (isset($_POST['wpdevart_page']) && $_POST['wpdevart_page'])? (((int) $_POST['wpdevart_page'] - 1) * 20) : 0;
+    $reserv_order_by = ((isset($_POST['order_by']) && $_POST['order_by'] != "") ? esc_html($_POST['order_by']) :  'id');
+	$reserv_order = ((isset($_POST['asc_desc']) && $_POST['asc_desc'] == 'asc') ? 'asc' : 'desc');
 	
+    $reserv_order_by = ' ORDER BY `' . $reserv_order_by . '` ' . $reserv_order;
+	if(isset($_SESSION["clendar_id"]) && (esc_html($_SESSION["clendar_id"]) != 0))
+		$where = 'WHERE calendar_id=' . esc_html($_SESSION["clendar_id"]);
+    $query = "SELECT id, calendar_id, single_day, check_in, check_out, start_hour, end_hour, count_item, price, total_price, extras_price, status, payment_method, payment_status, date_created  FROM " . $wpdb->prefix . "wpdevart_reservations " . $where . " ".$reserv_order_by." LIMIT " . $limit . ",20";
+    $rows = $wpdb->get_results($query, ARRAY_A);
+
+    return $rows;
+  }	
+  
+  /*############  Items navigation function ################*/
   public function items_nav($id = 0) {
     global $wpdb;
     $where = array();
@@ -115,6 +130,72 @@ class wpdevart_bc_ModelReservations {
 	}
     return $form_info;
   } 
+  
+  public function get_form_data_new($reservations,$res,$form_info,$type = "") {
+	if($form_info) {
+		$form_info = json_decode($form_info, true);
+		if(isset($form_info['apply']) || isset($form_info['save']))	{
+			array_shift($form_info);
+		}
+		foreach($res as $key=>$reservation){
+			if($reservation["form"]) {
+				$form_value = json_decode($reservation["form"], true);				
+				foreach($form_info as $k=>$form_fild_info) { 
+					if(isset($form_value["wpdevart_".$type.$k])) {
+						$reservations[$key][$k] = $form_value["wpdevart_".$type.$k];
+					}
+					else {
+						$reservations[$key][$k] = "";
+					}
+				}
+			} else {
+				$reservations[$key] = "";
+			}
+		}
+	}
+    return $reservations;
+  } 
+  
+  public function get_extra_data_new($reservations,$res,$extra_info,$currency) {
+	if($extra_info){
+		$extra_info = json_decode($extra_info, true);
+		if(isset($extra_info['apply']) || isset($extra_info['save']))	{
+			array_shift($extra_info);
+		}
+		foreach($res as $key=>$reservation) {
+			if($reservation["extras"]) {
+				$extras_value = json_decode($reservation["extras"], true);
+				foreach($extras_value as $k=>$extra_value) { 
+					if(isset($extra_info[$k])) {
+						if($extra_value['price_type'] == "percent") {
+							$reservations[$key][$k] = $extra_value["label"] . " " .$extra_value['operation'] .(($reservation["price"]*$extra_value['price_percent'])/100) . html_entity_decode($currency);
+						} else {
+							$reservations[$key][$k] = $extra_value["label"] . " ".$extra_value['operation'] .$extra_value['price_percent'] . html_entity_decode($currency);
+						}
+					}
+				}
+			} else {
+				$reservations[$key] = "";
+			}
+		}
+	}
+    return $reservations;
+  } 
+  
+  public function get_labels($info) {
+	  $lables = array();
+	if($info) {
+		$info = json_decode($info, true);
+		if(isset($info['apply']) || isset($info['save']))	{
+			array_shift($info);
+		}
+		foreach($info as $key=>$fild_info) { 
+			$lables[$key] = $fild_info["label"];
+		}
+	}
+    return $lables;
+  } 
+
   
   public function get_extra_data($extras,$mail="",$price=0,$id=0) {
     global $wpdb;

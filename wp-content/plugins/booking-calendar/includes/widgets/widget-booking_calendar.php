@@ -65,4 +65,3 @@ function wpdevart_bc_register_widget(){
 	return register_widget("wpdevart_bc_Widget");
 }
 
-

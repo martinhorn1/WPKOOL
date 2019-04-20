@@ -51,10 +51,10 @@ class wpdevart_bc_ControllerCalendars {
 		$theme_id = wpdevart_bc_Library::getData($_POST, 'theme_id', 'text', '');
 		$form_id = wpdevart_bc_Library::getData($_POST, 'form_id', 'text', '');
 		$extra_id = wpdevart_bc_Library::getData($_POST, 'extra_id', 'text', '');
+		$user = get_current_user_id();
 		
 		if ($id != 0) {
 			 $save = $wpdb->update($wpdb->prefix . 'wpdevart_calendars', array(
-				'user_id' => 1,
 				'title' => $title,
 				'hours_enabled' => $hours_enabled,
 				'hours_interval_enabled' => $hours_interval_enabled,
@@ -66,7 +66,7 @@ class wpdevart_bc_ControllerCalendars {
 		}
 		else {
 			$save = $wpdb->insert($wpdb->prefix . 'wpdevart_calendars', array(
-				'user_id' => 1,                       
+				'user_id' => $user,                       
 				'title' => $title,                       
 				'hours_enabled' => $hours_enabled,         
 				'hours_interval_enabled' => $hours_interval_enabled,         

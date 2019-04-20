@@ -45,7 +45,9 @@ class wpdevart_bc_ViewGlobalSettings {
 		<div id="wpdevart_global" class="wpdevart-item-container wpdevart-main-item-container">
 			<div class="div-for-clear">
 				<span class="admin_logo"></span>
-				<h1><?php _e('General Settings','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+				<h1><?php _e('General Settings','booking-calendar'); ?>
+				<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+				</h1>
 				<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 			</div>
 			<form action="?page=wpdevart-global-settings" method="post" class="div-for-clear">
@@ -54,12 +56,7 @@ class wpdevart_bc_ViewGlobalSettings {
 				</div>
 				<div id="wpdevart-tabs-container" class="div-for-clear">
 					<div id="wpdevart-tabs-item-container" class="div-for-clear">
-						<?php foreach( $wpdevart_themes as $key=>$wpdevart_setting ) {
-							$pro = false;
-							if(isset($wpdevart_setting['pro']) && $wpdevart_setting['pro'] === true) {
-								$pro = true;
-							}
-						?>
+						<?php foreach( $wpdevart_themes as $key=>$wpdevart_setting ) { ?>
 							<div id="wpdevart_theme-tab-<?php echo $key; ?>_container" class="wpdevart_container wpdevart-item-section <?php echo ($key == "general")? "show" : ""; ?>"> 
 							<?php foreach( $wpdevart_setting['sections'] as $value_key=>$value_setting ) { ?>
 								

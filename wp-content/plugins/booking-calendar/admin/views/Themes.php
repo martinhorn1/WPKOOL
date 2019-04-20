@@ -7,6 +7,10 @@ class wpdevart_bc_ViewThemes {
     }	
     public function display_themes($error_msg="",$delete=true) {
 		$rows = $this->model_obj->get_themes_rows();
+		$current_user = get_current_user_id();
+		$current_user_info = get_userdata( $current_user ); 
+		$current_user_info = $current_user_info->roles; 
+		$role = isset($current_user_info[0]) ? $current_user_info[0] : "";
 		$items_nav = $this->model_obj->items_nav();
 		$asc_desc = ((isset($_POST['asc_desc']) && $_POST['asc_desc'] == 'asc') ? 'asc' : 'desc');
 		$res_order_by = (isset($_POST['order_by']) ? sanitize_sql_orderby($_POST['order_by']) :  'id');
@@ -15,7 +19,9 @@ class wpdevart_bc_ViewThemes {
 			<div id="action-buttons" class="div-for-clear">
 				<div class="div-for-clear">
 					<span class="admin_logo"></span>
-					<h1><?php _e('Themes','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+					<h1><?php _e('Themes','booking-calendar'); ?>
+					<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+					</h1>
 					<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 				</div>
 				<a href="" onclick="wpdevart_set_value('task','add'); wpdevart_form_submit(event, 'themes_form')" class="action-link"><?php _e('Add Theme','booking-calendar'); ?></a>
@@ -36,6 +42,9 @@ class wpdevart_bc_ViewThemes {
 							<th class="check-column"><input type="checkbox" name="check_all" onclick="check_all_checkboxes(this,'check_for_action');"></th>
 							<th class="small-column"><?php _e('ID','booking-calendar'); ?></th>
 							<th><?php _e('Title','booking-calendar'); ?></th>
+							<?php if($role == "administrator"){ ?>
+								<th><?php _e('User','booking-calendar'); ?></th>
+							<?php } ?>	
 							<th class="action-column"><?php _e('Edit','booking-calendar'); ?></th>
 							<th class="action-column"><?php _e('Delete','booking-calendar'); ?></th>
 						</thead>
@@ -46,9 +55,14 @@ class wpdevart_bc_ViewThemes {
 								<td><input type="checkbox" name="check_for_action[]" class="check_for_action" value="<?php echo $row->id; ?>"></td>
 								<td><?php echo $row->id; ?></td>
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'themes_form')" ><?php echo $row->title; ?></a></td>
+								<?php if($role == "administrator"){
+                                     $user = $row->user_id;
+									 $user_info = get_userdata( $user ); ?>
+									<td><a href="<?php echo get_edit_user_link( $user ) ?>"><?php echo ($user_info)? $user_info->user_login : ""; ?></a></td>
+								<?php } ?>	
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'themes_form')" ><?php _e('Edit','booking-calendar'); ?></a></td>
 								<td><a href="" onclick="wpdevart_set_value('task','delete'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'themes_form')" ><?php _e('Delete','booking-calendar'); ?></a></td>
-							<tr>
+							</tr>
 					<?php	}
 					?>
 				</table>
@@ -163,14 +177,14 @@ class wpdevart_bc_ViewThemes {
 							'type' => 'checkbox',
 							'pro' => 'pro',
 							'default' => 'on'
-						),			
+						),	
 						'hide_price' => array(
 							'id'   => 'hide_price',
 							'title' =>__('HIde Price in Form','booking-calendar'),
 							'description' => __('Hide Price in Form','booking-calendar' ),
 							'type' => 'checkbox',
 							'default' => ''
-						),				
+						),						
 						'unavailable_week_days' => array(
 							'id'   => 'unavailable_week_days',
 							'title' => __('Unavailable week days','booking-calendar'),
@@ -439,8 +453,8 @@ class wpdevart_bc_ViewThemes {
 							'type' => 'radio_enable',
 							'enable' => array('multiple_hours'=>array('hours_sale_conditions','min_hours','max_hours')),
 							'extra_div' => true,
-							'pro' => 'pro',
 							'valid_options' => array("multiple_hours"=>"Multiple hours","single_hour"=>"Single hour"),
+							'pro' => 'pro',
 							'default' => 'multiple_hours'
 						),
 						'hours_sale_conditions' => array(
@@ -448,7 +462,7 @@ class wpdevart_bc_ViewThemes {
 							'title' => __('Discount depending on the hours','booking-calendar' ),
 							'description' => __('','booking-calendar' ),
 							'type' => 'conditions',
-							'pro' => 'pro',
+							'pro' => 'extended',
 							'default' => ''
 						),
 						'min_hours' => array(
@@ -456,7 +470,7 @@ class wpdevart_bc_ViewThemes {
 							'title' => __('Minimum hours count','booking-calendar' ),
 							'description' => __('1 if empty','booking-calendar' ),
 							'type' => 'text',
-							'pro' => 'pro',
+							'pro' => 'extended',
 							'default' => ''
 						),
 						'max_hours' => array(
@@ -464,7 +478,7 @@ class wpdevart_bc_ViewThemes {
 							'title' => __('Maximm hours count','booking-calendar' ),
 							'description' => __('Unlimited if empty','booking-calendar' ),
 							'type' => 'text',
-							'pro' => 'pro',
+							'pro' => 'extended',
 							'default' => ''
 						),
 						'show_hours_info' => array(
@@ -507,6 +521,13 @@ class wpdevart_bc_ViewThemes {
 							'id'   => 'enable_instant_approval',
 							'title' => __('Enable instant approval','booking-calendar'),
 							'description' => __('Select this if you need approve the booking requests instantly, without moderation','booking-calendar'),
+							'type' => 'checkbox',
+							'default' => ''
+						),
+						'enable_psuccess_approval' => array(
+							'id'   => 'enable_psuccess_approval',
+							'title' => __('Enable instant approve for success payment','booking-calendar'),
+							'description' => __('Select this if you need approve the booking requests after payment success','booking-calendar'),
 							'type' => 'checkbox',
 							'default' => ''
 						),
@@ -1459,7 +1480,6 @@ class wpdevart_bc_ViewThemes {
 							'description' => '',
 							'enable' => array('notify_admin_paypal_to','notify_admin_paypal_from','notify_admin_paypal_fromname','notify_admin_paypal_subject','notify_admin_paypal_content'),
 							'type' => 'checkbox_enable',
-							'pro' => 'extended',
 							'default' => ''
 						),
 						'notify_admin_paypal_to' => array(
@@ -1724,8 +1744,8 @@ class wpdevart_bc_ViewThemes {
 							'title' => __( 'PayPal Notification', 'booking-calendar' ),
 							'description' => '',
 							'enable' => array('notify_user_paypal_from','notify_user_paypal_fromname','notify_user_paypal_subject','notify_user_paypal_content'),
-							'type' => 'checkbox_enable',
 							'pro' => 'extended',
+							'type' => 'checkbox_enable',
 							'default' => ''
 						),
 						'notify_user_paypal_from' => array(
@@ -1735,6 +1755,7 @@ class wpdevart_bc_ViewThemes {
 							'type' => 'text',
 							'width' => 340,
 							'extra_div' => true,
+							'pro' => 'extended',
 							'default' => get_option("admin_email")
 						),
 						'notify_user_paypal_fromname' => array(
@@ -1742,6 +1763,7 @@ class wpdevart_bc_ViewThemes {
 							'title' => __( 'From Name:', 'booking-calendar' ),
 							'description' => '',
 							'type' => 'text',
+							'pro' => 'extended',
 							'width' => 340,
 							'default' => ""
 						),
@@ -1750,6 +1772,7 @@ class wpdevart_bc_ViewThemes {
 							'title' => __( 'Subject:', 'booking-calendar' ),
 							'description' => '',
 							'type' => 'text',
+							'pro' => 'extended',
 							'width' => 340,
 							'default' => 'Thank you for your purchase'
 						),
@@ -1760,6 +1783,7 @@ class wpdevart_bc_ViewThemes {
 							'type' => 'textarea',
 							'wp_editor' => true,
 							'required' => "on",
+							'pro' => 'extended',
 							'extra_div_end' => true,
 							'default' => 'Your order has been received. Thank you for your purchase! You will receive an order confirmation by email.'
 						),
@@ -1778,6 +1802,7 @@ class wpdevart_bc_ViewThemes {
 							'description' => '',
 							'type' => 'text',
 							'width' => 340,
+							'pro' => 'extended',
 							'extra_div' => true,
 							'default' => get_option("admin_email")
 						),
@@ -1787,6 +1812,7 @@ class wpdevart_bc_ViewThemes {
 							'description' => '',
 							'type' => 'text',
 							'width' => 340,
+							'pro' => 'extended',
 							'default' => ""
 						),
 						'notify_user_paypal_failed_subject' => array(
@@ -1795,6 +1821,7 @@ class wpdevart_bc_ViewThemes {
 							'description' => '',
 							'type' => 'text',
 							'width' => 340,
+							'pro' => 'extended',
 							'default' => 'Payment failed'
 						),
 						'notify_user_paypal_failed_content' => array(
@@ -1804,6 +1831,7 @@ class wpdevart_bc_ViewThemes {
 							'type' => 'textarea',
 							'wp_editor' => true,
 							'required' => "on",
+							'pro' => 'extended',
 							'extra_div_end' => true,
 							'default' => 'Your payment failed.'
 						)
@@ -2017,8 +2045,8 @@ class wpdevart_bc_ViewThemes {
 							'type' => 'text',
 							'default' => "Pay in cash"
 						),
-						'for_payPal' => array(
-							'id'   => 'for_payPal',
+						'for_paypal' => array(
+							'id'   => 'for_paypal',
 							'title' => __("Text for pay with PayPal",'booking-calendar'),
 							'description' => "",
 							'type' => 'text',
@@ -2168,9 +2196,9 @@ class wpdevart_bc_ViewThemes {
 						),
 						
 					),*/
-					'payPal' => array(
-						'payPal' => array(
-							'id'   => 'payPal',
+					'paypal' => array(
+						'paypal' => array(
+							'id'   => 'paypal',
 							'title' => __('Enable PayPal','booking-calendar'),
 							'description' => __('','booking-calendar'),
 							'enable' => array('payment_mode','transaction_type'),
@@ -2194,36 +2222,36 @@ class wpdevart_bc_ViewThemes {
 							'valid_options' => array("sale" => "Sale", "authorization" => "Authorization"),
 							'default' => '1'
 						),*/
-						'payPal_email' => array(
-							'id'   => 'payPal_email',
+						'paypal_email' => array(
+							'id'   => 'paypal_email',
 							'title' => __('PayPal email','booking-calendar'),
 							'description' => __('','booking-calendar'),
 							'type' => 'text',
 							'default' => ''
 						),
-						'payPal_image' => array(
-							'id'   => 'payPal_image',
+						'paypal_image' => array(
+							'id'   => 'paypal_image',
 							'title' => __('PayPal button image','booking-calendar'),
 							'description' => __('','booking-calendar'),
 							'type' => 'upload',
 							'default' => WPDEVART_URL.'css/images/paynow.png'
 						),
-						/*'payPal_username' => array(
-							'id'   => 'payPal_username',
+						/*'paypal_username' => array(
+							'id'   => 'paypal_username',
 							'title' => __('PayPal API user name','booking-calendar'),
 							'description' => __('','booking-calendar'),
 							'type' => 'text',
 							'default' => ''
 						),
-						'payPal_password' => array(
-							'id'   => 'payPal_password',
+						'paypal_password' => array(
+							'id'   => 'paypal_password',
 							'title' => __('PayPal API password','booking-calendar'),
 							'description' => __('','booking-calendar'),
 							'type' => 'text',
 							'default' => ''
 						),
-						'payPal_signature' => array(
-							'id'   => 'payPal_signature',
+						'paypal_signature' => array(
+							'id'   => 'paypal_signature',
 							'title' => __('PayPal API signature','booking-calendar'),
 							'description' => __('','booking-calendar'),
 							'type' => 'text',
@@ -2244,12 +2272,16 @@ class wpdevart_bc_ViewThemes {
 			    if($id != 0){ ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Edit Theme','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Edit Theme','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } else { ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Add Theme','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Add Theme','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } ?>
 			<form action="?page=wpdevart-themes" method="post" class="div-for-clear">
@@ -2262,19 +2294,20 @@ class wpdevart_bc_ViewThemes {
 					<div id="wpdevart_theme-tabs" class="div-for-clear">
 						<?php foreach($wpdevart_themes as $key=>$wpdevart_theme) { ?>
 							<div id="wpdevart_theme-tab-<?php echo $key; ?>" class="wpdevart_tab <?php echo ($key == "general")? "show" : ""; ?>"><?php echo $wpdevart_theme["title"];
-							if(isset($wpdevart_theme["pro"])) {
-								echo "<span class='pro_feature'> (" . ucfirst($wpdevart_theme["pro"]) . " Feature!)</span>";
-							}
-							?></div>
+							if(isset($wpdevart_theme["pro"]) &&  WPDEVART_PRO != "extended") {
+								if (WPDEVART_PRO == "free") {
+									echo "<span class='pro_feature'> (" . ucfirst($wpdevart_theme["pro"]) . " Feature!)</span>";
+								} 
+								elseif (WPDEVART_PRO == "pro" && $wpdevart_theme["pro"] == "extended") {
+									echo "<span class='pro_feature'> (" . ucfirst($wpdevart_theme["pro"]) . " Feature!)</span>";
+								}
+							}	
+							?>
+							</div>
 						<?php } ?>
 					</div>
 					<div id="wpdevart-tabs-item-container" class="div-for-clear">
-						<?php foreach( $wpdevart_themes as $key=>$wpdevart_setting ) {
-							$pro = "";
-							if(isset($wpdevart_setting['pro'])) {
-								$pro = $wpdevart_setting['pro'];
-							}
-						?>
+						<?php foreach( $wpdevart_themes as $key=>$wpdevart_setting ) { ?>
 							<div id="wpdevart_theme-tab-<?php echo $key; ?>_container" class="wpdevart_container wpdevart-item-section <?php echo ($key == "general")? "show" : ""; ?>"> 
 							<?php foreach( $wpdevart_setting['sections'] as $value_key=>$value_setting ) { ?>
 								<div class="wpdevart-item-section-cont">
@@ -2282,6 +2315,9 @@ class wpdevart_bc_ViewThemes {
 									<div>
 										<?php
 										foreach( $value_setting as $key => $wpdevart_setting_value ) {
+											if(isset($wpdevart_setting['pro'])) {
+												$wpdevart_setting_value['pro'] = $wpdevart_setting['pro'];
+											}
 											if(isset($wpdevart_setting_value["extra_div"]) && $wpdevart_setting_value["extra_div"]){
 												echo "<div class='items_open'>";
 											}
@@ -2299,7 +2335,7 @@ class wpdevart_bc_ViewThemes {
 											}
 
 											$function_name = "wpdevart_callback_" . $wpdevart_setting_value['type'];
-											wpdevart_bc_Library::$function_name($wpdevart_setting_value, $sett_value,$pro);
+											wpdevart_bc_Library::$function_name($wpdevart_setting_value, $sett_value);
 											if(isset($wpdevart_setting_value["extra_div_end"]) && $wpdevart_setting_value["extra_div_end"]){
 												echo "</div>";
 											}

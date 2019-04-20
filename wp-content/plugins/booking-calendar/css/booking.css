@@ -354,18 +354,21 @@ h4.form_title {
 	line-height: 1;
 	padding:0 2px;
 }
-.wpdevart-responsive.booking_widget.show_day_info_on_hover .day-price,
-.wpdevart-responsive.booking_widget.show_day_info_on_hover .day-availability{
+.booking_widget .day-price,
+.booking_widget .day-availability{
 	display:none;
+}
+.booking_widget:not(.wpdevart-responsive.show_day_info_on_hover) .day-price,
+.booking_widget:not(.wpdevart-responsive.show_day_info_on_hover) .day-availability,
+.booking_widget .wpdevart-hours .day-availability{
+	display:block;
 }
 .wpdevart-responsive.booking_widget.show_day_info_on_hover .wpdevart-hour-item .day-price,
 .wpdevart-responsive.booking_widget.show_day_info_on_hover .wpdevart-hour-item .day-availability{
 	display:initial;
 }
 .wpdevart-responsive.booking_widget.show_day_info_on_hover .booking_widget_day .day-price,
-.wpdevart-responsive.booking_widget.show_day_info_on_hover .booking_widget_day .day-availability{
-	display:block;
-}
+.wpdevart-responsive.booking_widget.show_day_info_on_hover .booking_widget_day .day-availability,
 .wpdevart-responsive .wpdevart-day .day-price span{
 	display:block;
 }
@@ -373,7 +376,7 @@ h4.form_title {
 	float:none;
 	width:100%;
 }
-.wpdevart-responsive .day-user-info-container{
+.booking_widget .day-user-info-container{
 	display:none;
 }
 .wpdevart-responsive .wpdevart-day .day-price {
@@ -534,10 +537,10 @@ div[id^=booking_calendar_container_] .wpdevart-day-hours .wpdevart-day-hour-item
     background: #fff;
     padding: 5px;
     display: none;
-    z-index: 99;
+    z-index: 99999;
     border: 1px solid #DDD;
 	left: 0px;
-    top: 64px;
+    bottom: 65px;
     box-shadow: 0 0 5px rgba(27, 27, 27, 0.32);
 }
 .wpdevart-day-hours:empty{
@@ -593,7 +596,8 @@ div[id^=booking_calendar_container_] .wpdevart-day-hours .wpdevart-day-hour-item
     color: #fff;
     border: 0px;
     border-radius: 2px;
-    cursor: pointer;
+    cursor: pointer;   
+	float: left;
 }
 .wpdevart_order button:hover,
 .wpdevart_order button:focus{
@@ -602,6 +606,7 @@ div[id^=booking_calendar_container_] .wpdevart-day-hours .wpdevart-day-hour-item
 .wpdevart_order button.with_image:hover,
 .wpdevart_order button.with_image{
     background: none;
+	padding: 0;
 }
 .wpdevart_order_wrap {
     position: fixed;
@@ -694,14 +699,9 @@ div[id^=booking_calendar_container_] .wpdevart-day-hours .wpdevart-day-hour-item
     z-index: 1;
     position: relative;
 }
-.booking_calendar_main_container[data-night="1"] .wpdevart-calendar-container > div.selected.checkout_night .wpda-day-header, 
-.booking_calendar_main_container[data-night="1"] .wpdevart-calendar-container > div.selected.checkin_night .wpda-day-header {
-    background-color: #85B70B !important;
-}
 .booking_calendar_main_container[data-night="1"] .wpdevart-calendar-container > div.selected.checkout_night .wpda-day-header:before,
 .booking_calendar_main_container[data-night="1"] .wpdevart-calendar-container > div.selected.checkin_night .wpda-day-header:before {
-	content: "";   
-	background-color: #373740 !important;
+	content: "";
 	position:absolute;
 	height:100%;
 	width:50%;
@@ -715,294 +715,33 @@ div[id^=booking_calendar_container_] .wpdevart-day-hours .wpdevart-day-hour-item
 	content: "";
 	right:0;
 }
-/*static*/
- .booking_calendar_main_container .wpdevart-load-image .fa{
-			   color:#464646 !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-day{
-			   background-color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpda-booking-calendar-head{
-			   background-color:#FFFFFF;
-		   } 
-		   .booking_calendar_main_container .wpda-previous *,.booking_calendar_main_container .wpda-next *{
-			   color:#636363;
-		   } 
-		   .booking_calendar_main_container .wpda-current-year{
-			   color:#636363;
-			   font-size:19px;
-		   } 
-		   .booking_calendar_main_container .wpda-current-month{
-			   color:#636363;
-			   font-size:19px;
-		   } 
-		   .booking_calendar_main_container .week-day-name .wpda-day-header{
-			   background-color:#ECECEC;
-		   }
-		   .booking_calendar_main_container .wpdevart-calendar-container{
-			   background-color:#FFFFFF;
-		   } 
-		   .booking_calendar_main_container .wpdevart-calendar-container > div{
-			   border-right-color:#ddd;
-			   border-bottom-color: #ddd;
-		   }  
-		   .booking_calendar_main_container .wpdevart-hour-price,
-		   .booking_calendar_main_container .wpdevart-hour-item{
-			   border-color:#ddd;
-		   }  
-		   .booking_calendar_main_container .wpda-booking-calendar-head{
-			   border-color:#ddd;
-		   } 
-		   .booking_calendar_main_container .wpdevart-calendar-container > div:nth-child(7n+1),
-		   .booking_calendar_main_container .wpdevart-calendar-container > div:first-child{
-			   border-left-color: #ddd;
-		   } 
-		   .booking_calendar_main_container .wpda-day-header{
-			   background-color:#ECECEC;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-item.wpdevart-hour-available,
-		   .booking_calendar_main_container .wpdevart-available{
-			   background-color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-available .wpdevart-hour span,
-		   .booking_calendar_main_container .wpdevart-available .wpda-day-header{
-			   background-color:#85B70B !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-available .wpdevart-hour span,
-		   .booking_calendar_main_container .wpdevart-available .wpda-day-header .wpda-day-number{
-			   color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-item.hour_selected .wpdevart-hour span,
-		   .booking_calendar_main_container div.selected .wpda-day-header{
-			   background-color:#373740 !important;
-		   }
-		   .booking_calendar_main_container div.hour_selected,
-		   .booking_calendar_main_container div.selected{
-			   background-color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-item{
-			   width:95px;
-			   height:125px;
-		   } 
-		   .booking_calendar_main_container div.selected .wpdevart-hour-item.hour_selected .wpdevart-hour span,
-		   .booking_calendar_main_container div.selected .wpda-day-header .wpda-day-number{
-			   color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-unavailable .wpda-day-header .wpda-day-number,.booking_calendar_main_container .wpdevart-hour-unavailable .wpdevart-hour span{
-			   color:#ECECEC;
-		   } 
-		   .booking_calendar_main_container .wpdevart-unavailable .wpda-day-header,
-		   .booking_calendar_main_container .wpdevart-hour-unavailable .wpdevart-hour span{
-			   background-color:#464646;
-		   } 
-		   .booking_calendar_main_container .wpdevart-unavailable,
-		   .booking_calendar_main_container .wpdevart-hour-unavailable{
-			   background-color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-booked .wpdevart-hour span,
-		   .booking_calendar_main_container .wpdevart-booked .wpda-day-header .wpda-day-number{
-			   color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-booked .wpdevart-hour span,
-		   .booking_calendar_main_container .wpdevart-booked .wpda-day-header{
-			   background-color:#FD7C93 !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-item.wpdevart-hour-booked,
-		   .booking_calendar_main_container .wpdevart-booked{
-			   background-color:#FFFFFF !important;
-		   } 
-		   .booking_calendar_main_container .day-user-info-container{
-			   border:1px solid #FFFFFF;
-		   } 
-		   .booking_calendar_main_container .day-user-info-container{
-			   color:#FFFFFF;
-		   } 
-		   .booking_calendar_main_container .day-user-info{
-			   background-color:#FFFFFF;
-			   color:#4E4E4E;
-			   font-weight:normal;
-			   font-style:normal;
-			   font-size:13px;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hours-container .wpdevart-hour-info{
-			   font-weight:normal;
-			   font-style:normal;
-			   font-size:13px;
-		   } 
-		   .booking_calendar_main_container .error_text_container{
-			   background-color:#FFFFFF;
-			   color:#C11212;
-			   border:1px solid #C11212;
-		   } 
-		   .booking_calendar_main_container .error_text_container .notice_text_close{
-			   background-color:#C11212;
-			   color:#FFFFFF;
-		   }
-		   .booking_calendar_main_container .successfully_text_container{
-			   background-color:#FFFFFF;
-			   color:#7FAD16;
-			   border:1px solid #7FAD16;
-		   } 
-		   .booking_calendar_main_container .successfully_text_container .notice_text_close{
-			   background-color:#7FAD16;
-			   color:#FFFFFF;
-		   } 
-		   .booking_calendar_main_container .day-availability{
-			    font-size: 13px;
-				font-style: normal;
-				font-weight: normal;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-available .day-availability,
-		   .booking_calendar_main_container .wpdevart-hour-available .day-availability *,
-		   .booking_calendar_main_container .wpdevart-available .day-availability,
-		   .booking_calendar_main_container .wpdevart-available .day-availability *{
-				color: #848484 !important;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-price *,
-		   .booking_calendar_main_container .wpdevart-day .day-price{
-			    font-size: 12px;
-				color: #848484;
-				font-style: normal;
-				font-weight: normal;
-		   } 
-		   .booking_calendar_main_container .wpdevart-day .day-price *{
-				color: #848484;
-		   } 
-		   .booking_calendar_main_container .hour_selected .day-availability,
-		   .booking_calendar_main_container .hour_selected .day-availability *,
-		   .booking_calendar_main_container .selected .day-availability,
-		   .booking_calendar_main_container .selected .day-availability *{
-				color: #848484 !important;
-		   } 
-		   .booking_calendar_main_container .hour_selected .wpdevart-hour-price *,
-		   .booking_calendar_main_container .selected.wpdevart-day .day-price *{
-				color: #848484;
-		   } 
-		   .booking_calendar_main_container .wpdevart-unavailable.wpdevart-day .day-availability,
-		   .booking_calendar_main_container .wpdevart-hour-unavailable .day-availability{
-				color: #848484;
-		   } 
-		   .booking_calendar_main_container .wpdevart-hour-booked .day-availability,
-		   .booking_calendar_main_container .wpdevart-booked .day-availability{
-				color: #848484 !important;
-		   } 
-		   #wpdevart_booking_form_1 .wpdevart-booking-form{
-			   background-color:#FDFDFD;
-			   border:1px solid #ddd;
-		   } 
-		   #wpdevart_booking_form_1 .wpdevart-fild-item-container *{
-			   color:#636363;
-			   font-size:15px;
-			   font-weight:normal;
-			   font-style:normal;
-		   } 
-		   #wpdevart_booking_form_1 span.wpdevart-required{
-			  color:#FD7C93;
-		   } 
-		   #wpdevart_booking_form_1 button.wpdevart-submit{
-			  background:#FD7C93;
-			  color:#FFFFFF;
-			  font-weight:normal;
-			  font-style:normal;
-		   } 
-		   #booking_calendar_main_container_1 .wpdevart-legends-available .legend-div{
-			   background-color:#85B70B;
-		   } 
-		   #booking_calendar_main_container_1 .wpdevart-legends-unavailable .legend-div{
-			   background-color:#464646;
-		   } 
-		   #booking_calendar_main_container_1 .wpdevart-legends-pending .legend-div{
-			   background-color:#FD7C93;
-		   } 
-		   .booking_calendar_main_container,#wpdevart_booking_form_1{
-			   max-width:680px;
-		   } 
-		   .booking_calendar_main_container .wpda-booking-calendar-head{
-			   padding:10px;
-		   } 
-		   .booking_calendar_main_container .wpda-previous *, .booking_calendar_main_container .wpda-next *{
-			   font-size:15px;
-		   } 
-		   .booking_calendar_main_container .week-day-name .wpda-day-number{
-			   font-size:13px;
-			   font-weight:normal;
-			   font-style:normal;
-			   color:#656565 !important;
-		   } 
-		   .booking_calendar_main_container .wpda-day-number{
-			   font-size:13px;
-			   font-weight:normal;
-			   font-style:normal;
-			   color:#464646;
-		   } 
-		   .booking_calendar_main_container .wpdevart-calendar-container > div:not(.week-day-name){
-			   height:65px;
-		   } 
-		   .booking_calendar_main_container .day-user-info-container{
-			   border-radius:px;
-		   } 
-		   #wpdevart_booking_form_1 .wpdevart-fild-item-container label,
-		   #wpdevart_booking_form_1 .wpdevart-fild-item-container label a{
-			   font-size:15px;
-			   color:#636363;
-			   font-weight:normal;
-			   font-style:italic;
-		   } 
-		   .booking_calendar_main_container .wpda-booking-calendar-head *{
-			   font-weight:normal;
-			   font-style:normal;
-		   } 
-		   #wpdevart_booking_form_1 h4.form_title{
-			   font-weight:normal;
-			   font-style:italic;
-			   font-size:21px;
-			   color:#636363;
-			   background-color:#FDFDFD;
-		   } 
-		   #wpdevart_booking_form_1 .wpdevart-extra-info.wpdevart-extra-0{
-			   border-top: 1px solid #FDFDFD;
-		   }
-		   #wpdevart_booking_form_1 .wpdevart-reserv-info{
-			   border-bottom: 1px solid #FDFDFD;
-		   }
-		   #wpdevart_booking_form_1 .check-info{
-			   font-weight:normal;
-			   font-style:normal;
-			   font-size:14px;
-			   color:#545454;
-		   } 
-		   #wpdevart_booking_form_1 .wpdevart-total-price.reserv_info_row{
-			   background-color:#545454;
-			   color:#F7F7F7;
-		   }
-		   .booking_calendar_main_container .booking_widget_day{
-				background-color: #FFFFFF;
-				border: 1px solid #C7C7C7;
-		   }
-		   .booking_calendar_main_container .widget-day-user-info{
-				border-bottom: 1px solid #C7C7C7;
-		   }
-		   .booking_calendar_main_container .booking_widget_day *{
-				color: #6B6B6B !important;
-				font-style: normal !important;
-				font-size: 14px !important;
-				font-weight: normal !important;
-		   }
-		   .booking_calendar_main_container .wpdevart-available  .booking_widget_day *,
-		   .booking_calendar_main_container .wpdevart-booked  .booking_widget_day *,
-		   .booking_calendar_main_container .wpdevart-unavailable  .booking_widget_day *{
-				color: #6B6B6B !important;
-		   }
 
+.booking_calendar_main_container[data-night="1"]  .wpdevart-booked + .wpdevart-available .wpda-day-header:before,
+.booking_calendar_main_container[data-night="1"] .wpdevart-available + .wpdevart-booked .wpda-day-header:before {
+	content: "";
+	position:absolute;
+	height:100%;
+	width:50%;
+	top:0;
+}
+.booking_calendar_main_container[data-night="1"] .wpdevart-available+ .wpdevart-booked .wpda-day-header:before {
+	content: "";
+	right:0;
+}
+.booking_calendar_main_container[data-night="1"] .wpdevart-booked + .wpdevart-available .wpda-day-header:before {
+	content: "";
+	left:0;
+}
 
-
-
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 767px) {
 	#booking_calendar_container_1 .wpdevart-calendar-container > div:nth-child(7n+7) .wpdevart-day-hours,
 	#booking_calendar_container_1 .wpdevart-calendar-container > div:nth-child(7n+6) .wpdevart-day-hours,
 	#booking_calendar_container_1 .wpdevart-calendar-container > div:nth-child(7n+5) .wpdevart-day-hours{
 		left:auto;
 		right:0;
+	}
+	.wpdevart_order_content {
+		width: 90%;	
 	}
 }
 

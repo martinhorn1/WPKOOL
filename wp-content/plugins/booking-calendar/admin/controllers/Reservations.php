@@ -218,8 +218,80 @@ class wpdevart_bc_ControllerReservations {
 		}
 		$this->display_reservations(0,array());
 	}
+	public function export_as_csv(){
+		global $wpdb;
+		$reservations = $this->model->get_reservations_for_export();
+		
+		$form_id = $wpdb->get_var($wpdb->prepare('SELECT form_id FROM ' . $wpdb->prefix . 'wpdevart_calendars WHERE id="%d"', $_SESSION["clendar_id"]));
+		$form_info = $wpdb->get_var($wpdb->prepare('SELECT data FROM ' . $wpdb->prefix . 'wpdevart_forms WHERE id="%d"', $form_id));
+		$extra_id = $wpdb->get_var($wpdb->prepare('SELECT extra_id FROM ' . $wpdb->prefix . 'wpdevart_calendars WHERE id="%d"', $_SESSION["clendar_id"]));
+		$extra_info = $wpdb->get_var($wpdb->prepare('SELECT data FROM ' . $wpdb->prefix . 'wpdevart_extras WHERE id="%d"', $extra_id));
+		$res = $this->model->get_reservations_rows(0,"ARRAY_A");
+		$currency = isset($res[0]) ? $res[0]["currency"] : "$";
+		
+		if ( !empty($reservations)) {
+			$title = $this->model->get_calendar_title();
+			$reservations = $this->model->get_form_data_new($reservations,$res,$form_info);
+			$reservations = $this->model->get_extra_data_new($reservations,$res,$extra_info,$currency);
+			$form_lables = $this->model->get_labels($form_info);
+			$extra_lables = $this->model->get_labels($extra_info);
+			$col_names = array_merge(array(
+						  "id" => "ID",
+						  "calendar_id" => "Calendar ID",
+						  "single_day" => "Single Day",
+						  "check_in" => "Check In",
+						  "check_out" => "Check Out",
+						  "start_hour" => "Start Hour",
+						  "end_hour" => "End Hour",
+						  "count_item" => "Count Item",
+						  "price" => "Price",
+						  "total_price" => "Total Price",
+						  "extras_price" =>  "Extras Price",
+						  "status" => "Status",
+						  "payment_method" => "Payment Method",
+						  "payment_status" => "Payment Status",
+						  "date_created" => "Created Date"
+						),$form_lables,$extra_lables);
+
+			$upload_direct = wp_upload_dir();
+			$booking_path = $upload_direct['basedir'] . '/booking_calendar';
+			if ( !is_dir($booking_path) ) {
+				mkdir($booking_path, 0777);
+			}
+			$temp = $booking_path . '/' . $title . '.txt';
+			if ( file_exists($temp) ) {
+				unlink($temp);
+			}
+			$output = fopen($temp, "a");
+
+			foreach ($col_names as $i => $name) {
+				$col_names[$i] = ltrim($name, '=+-@');
+			}
+			fputcsv($output, $col_names, ",");
+
+			foreach ( $reservations as $index => $record ) {
+				foreach ( $record as $i => $rec ) {
+					$record[$i] = ltrim($rec, '=+-@');
+				}
+				fputcsv($output, $record, ",");
+			}
+			
+			fclose($output); 
+			$txtfile = fopen($temp, "r");
+			$txtfilecontent = fread($txtfile, filesize($temp));
+			fclose($txtfile);
+			$filename = $title . "_" . date('Ymd') . ".csv";
+			header('Content-Encoding: UTF-8');
+			header('content-type: application/csv; charset=UTF-8');
+			header("Content-Disposition: attachment; filename=\"$filename\"");
+			echo "\xEF\xBB\xBF";
+			echo $txtfilecontent;
+			unlink($temp);
+		
+		}
+	}
 	
-	private function change_date_avail_count( $id,$approve,$reserv_info_del="" ){
+	public function change_date_avail_count( $id,$approve,$reserv_info_del="" ){
 		global $wpdb;
 		$theme_rows = $this->model->get_theme_rows();
 		if($reserv_info_del == "") {
@@ -372,6 +444,7 @@ class wpdevart_bc_ControllerReservations {
 		} else {
 			$res_day = date($theme_rows["date_format"], strtotime($form_result["single_day"]));
 		}
+		$cur_pos = (isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? "before" : "after";
 		$hide_price = (isset($theme_rows['hide_price']) && $theme_rows['hide_price'] == "on") ? true : false;
 		if(isset($form_result["start_hour"]) && $form_result["start_hour"] != ""){
 			$hour_html = $form_result["start_hour"];
@@ -389,16 +462,21 @@ class wpdevart_bc_ControllerReservations {
 						<tr><td style='padding: 1px 7px;'>".__('Reservation dates','booking-calendar')."</td><td style='padding: 1px 7px;'>".$res_day."</td></tr>".$hour_html."
 						<tr><td style='padding: 1px 7px;'>".__('Item Count','booking-calendar')."</td><td style='padding: 1px 7px;'>".$form_result["count_item"]."</td></tr>";
 		if($form_result["price"] != "NaN" && !$hide_price){
-			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".(((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? $form_result["currency"] : '') . $form_result["price"] . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "after") || !isset($theme_rows['currency_pos'])) ? $form_result["currency"] : ''))."</td></tr>";
+			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".(($cur_pos == "before" ? $form_result["currency"] : '') . $form_result["price"] . ($cur_pos == "after" ? $form_result["currency"] : ''))."</td></tr>";
 		}
 		if($form_result["total_price"] != "NaN" && !$hide_price){
 			/*Sale percent*/
 			$sale_percent_html = "";
 			if(isset($form_result["sale_percent"]) && !empty($form_result["sale_percent"])){
-				$sale_percent_value = ($form_result["total_price"] * 100) / (100 - $form_result["sale_percent"]);
-				$sale_percent_html = (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? $form_result["currency"] : '') . $sale_percent_value . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "after") || !isset($theme_rows['currency_pos'])) ? $form_result["currency"] : '')) . " - " . $form_result["sale_percent"] . "% = ";
+				if($form_result["sale_type"] == "percent"){
+					$sale_percent_value = ($form_result["sale_percent"] != "100") ? (($form_result["total_price"] * 100) / (100 - $form_result["sale_percent"])) : $form_result["price"];
+					$sale_percent_html = (($cur_pos == "before" ? $form_result["currency"] : '') . $sale_percent_value . ($cur_pos == "after" ? $form_result["currency"] : '')) . " - " . $form_result["sale_percent"] . "% = ";
+				} else{
+					$sale_percent_value = $form_result["total_price"] + $form_result["sale_percent"];
+					$sale_percent_html = (($cur_pos == "before" ? $form_result["currency"] : '') . $sale_percent_value . ($cur_pos == "after" ? $form_result["currency"] : '')) . " - " . ($cur_pos == "before" ? $form_result["currency"] : '') . $form_result["sale_percent"] . ($cur_pos == "after" ? $form_result["currency"] : '') ." = ";
+				}
 			}
-			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Total Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".$sale_percent_html . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? $form_result["currency"] : '') . $form_result["total_price"] . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "after") || !isset($theme_rows['currency_pos'])) ? $form_result["currency"] : ''))."</td></tr>";
+			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Total Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".$sale_percent_html . (($cur_pos == "before" ? $form_result["currency"] : '') . $form_result["total_price"] . ($cur_pos == "after" ? $form_result["currency"] : ''))."</td></tr>";
 		}
 		$res_info .= "</table>";
 		$form = "";
@@ -424,13 +502,13 @@ class wpdevart_bc_ControllerReservations {
 				$extras .= "<td style='padding: 1px 7px;'>";
 				if($extra_data["price_type"] == "percent") {
 					$extras .= "<span class='price-percent'>".$extra_data["operation"].$extra_data["price_percent"]."%</span>";
-					$extras .= "<span class='price'>".$extra_data["operation"] . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? $form_result["currency"] : '') . (isset($extra_data["price"])? $extra_data["price"] : "") . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "after") || !isset($theme_rows['currency_pos'])) ? $form_result["currency"] : ''))."</span></td></tr>";
+					$extras .= "<span class='price'>".$extra_data["operation"] . (($cur_pos == "before" ? $form_result["currency"] : '') . (isset($extra_data["price"])? $extra_data["price"] : "") . ($cur_pos == "after" ? $form_result["currency"] : ''))."</span></td></tr>";
 				} else {
-					$extras .= "<span class='price'>".$extra_data["operation"] . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? $form_result["currency"] : '') . $extra_data["price"] . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "after") || !isset($theme_rows['currency_pos'])) ? $form_result["currency"] : ''))."</span></td></tr>";
+					$extras .= "<span class='price'>".$extra_data["operation"] . (($cur_pos == "before" ? $form_result["currency"] : '') . $extra_data["price"] . ($cur_pos == "after" ? $form_result["currency"] : ''))."</span></td></tr>";
 				}
 				
 			}
-			$extras .= "<tr><td style='padding: 1px 7px;'>".__('Price change','booking-calendar')."</td><td style='padding: 1px 7px;'>+".(((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "before") ? $form_result["currency"] : '') . $form_result["extras_price"] . (((isset($theme_rows['currency_pos']) && $theme_rows['currency_pos'] == "after") || !isset($theme_rows['currency_pos'])) ? $form_result["currency"] : ''))."</td></tr>";
+			$extras .= "<tr><td style='padding: 1px 7px;'>".__('Price change','booking-calendar')."</td><td style='padding: 1px 7px;'>+".(($cur_pos == "before" ? $form_result["currency"] : '') . $form_result["extras_price"] . ($cur_pos == "after" ? $form_result["currency"] : ''))."</td></tr>";
 			$extras .= "</table>";
 		}
 		$emails = $form_result["email"];

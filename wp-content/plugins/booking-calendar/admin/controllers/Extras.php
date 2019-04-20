@@ -49,9 +49,11 @@ class wpdevart_bc_ControllerExtras {
 		  $save = $wpdb->insert($wpdb->prefix . 'wpdevart_extras', array(
 			'title' => $title,                       
 			'data' => $data_json,         
+			'user_id' => $user,         
 		  ), array(
 			'%s',
 			'%s',
+			'%d',
 		  ));
 		  $id = $wpdb->get_var('SELECT MAX(id) FROM ' . $wpdb->prefix . 'wpdevart_extras');
 		} 

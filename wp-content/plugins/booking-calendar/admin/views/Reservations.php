@@ -31,6 +31,7 @@ class wpdevart_bc_ViewReservations {
 		$res_order_by = (isset($_POST['order_by']) ? sanitize_sql_orderby($_POST['order_by']) :  'id');
 		$res_order_class = 'sorted ' . $asc_desc;
 		$mail_error = array();
+		$cur_pos = (isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? "before" : "after";
 		if(count($send_mails)) {
 			foreach($send_mails as $send_mail) {
 				foreach($send_mail as $key=>$value) {
@@ -41,7 +42,7 @@ class wpdevart_bc_ViewReservations {
 			}
 		}
 		
-		if((isset($theme_options["pay_in_cash"]) && $theme_options["pay_in_cash"] == "on") || (isset($theme_options["payPal"]) && $theme_options["payPal"] == "on")){
+		if((isset($theme_options["pay_in_cash"]) && $theme_options["pay_in_cash"] == "on") || (isset($theme_options["paypal"]) && $theme_options["paypal"] == "on")){
 			$class = "with_paymants";
 		}
 		?>
@@ -51,7 +52,9 @@ class wpdevart_bc_ViewReservations {
 				<div id="reservation_header" class="div-for-clear">
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Reservations List View','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Reservations List View','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 						<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 					</div>
 					<select name="clendar_id" onchange="this.form.submit()">
@@ -61,7 +64,12 @@ class wpdevart_bc_ViewReservations {
 						} ?>
 					</select>
 					<span id="view_list"><span class="reservation-item-info"><?php _e('Reservation List View','booking-calendar'); ?></span></span>
-					<span id="view_calendar" class="pro-field"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?><span class="pro_feature">(Pro Feature!)</span></span></span>
+					<?php if (WPDEVART_PRO == "free") : ?>
+						<span id="view_calendar" class="pro-field"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?><span class="pro_feature">(Pro Feature!)</span></span></span>
+						<a id="view_calendar" href="" onclick="wpdevart_set_value('task','display_month_reservations'); wpdevart_form_submit(event, 'reservations_form')"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?></span></a>
+					<?php else : ?>
+						<a id="view_calendar" href="" onclick="wpdevart_set_value('task','display_month_reservations'); wpdevart_form_submit(event, 'reservations_form')"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?></span></a>
+					<?php endif; ?>
 					<a id="add_reservation" href="" onclick="wpdevart_set_value('task','add'); wpdevart_form_submit(event, 'reservations_form')" class="add-reservation"><span class="plus">+</span><span class="reservation-item-info"><?php _e('Add Reservation','booking-calendar'); ?></span></a>
 				</div>
 				<div id="resrv_action_filters">
@@ -100,6 +108,7 @@ class wpdevart_bc_ViewReservations {
 							<a href="" onclick="wpdevart_set_value('task','canceled_selected');wpdevart_form_submit(event, 'reservations_form')" class="action-button cancel-button"><?php _e('Cancel','booking-calendar'); ?></a>
 							<a href="" onclick="wpdevart_set_value('task','delete_selected'); wpdevart_form_submit(event, 'reservations_form')" class="action-button delete-button"><?php _e('Delete','booking-calendar'); ?></a>
 							<a href="" onclick="wpdevart_set_value('task','mark_read_selected'); wpdevart_form_submit(event, 'reservations_form')" class="action-button default-button"><?php _e('Mark as read','booking-calendar'); ?></a>
+							<a  id="wpdevart_export" class="action-button default-button" style="cursor:pointer"><?php _e('Export as excel','booking-calendar'); ?></a>
 						</div>
 						<div id="wpdevart_tab_3_container" class="wpdevart_container div-for-clear">
 						    <div class="filter_item status_filter_item">
@@ -158,7 +167,7 @@ class wpdevart_bc_ViewReservations {
 						<th class="small-column <?php echo (($res_order_by == 'id')? $res_order_class : ""); ?>"><a onclick="wpdevart_set_value('order_by', 'id'); wpdevart_set_value('asc_desc', '<?php echo (($res_order_by == 'id' && $asc_desc == 'asc') ? 'desc' : 'asc'); ?>');wpdevart_form_submit(event, 'reservations_form')" href=""><span><?php _e('ID','booking-calendar'); ?></span><span class="sorting-indicator"></span></a></th>
 						<th class="average-column <?php echo (($res_order_by == 'status')? $res_order_class : ""); ?>"><a onclick="wpdevart_set_value('order_by', 'status'); wpdevart_set_value('asc_desc', '<?php echo (($res_order_by == 'status' && $asc_desc == 'asc') ? 'desc' : 'asc'); ?>');wpdevart_form_submit(event, 'reservations_form')" href=""><span><?php _e('Status','booking-calendar'); ?></span><span class="sorting-indicator"></span></a></th>
 						<th class="res_info"><?php _e('Reservation information','booking-calendar'); ?></th>
-						<?php if(WPDEVART_PRO === true && $class != "") : ?>
+						<?php if(WPDEVART_PRO == "extended" && $class != "") : ?>
 							<th class="pay_info"><?php _e('Payment information','booking-calendar'); ?></th>
 						<?php endif; ?>
 						<th class="medium-column"><?php _e('Reservation dates','booking-calendar'); ?></th>
@@ -215,8 +224,14 @@ class wpdevart_bc_ViewReservations {
 							$hour_html = $hour_html." - ".$row->end_hour;
 						}
 						if(isset($row->sale_percent) && !empty($row->sale_percent)){
-							$sale_percent = ($row->total_price * 100) / (100 - $row->sale_percent);
-							$sale_percent_html = (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '') . $sale_percent . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : '')) . " - " . $row->sale_percent . "% = ";
+							if($row->sale_type == "price"){
+								$sale_percent = $row->total_price + $row->sale_percent;
+								$sale_percent_html = ($cur_pos == "before" ? $row->currency : '') . $sale_percent . ($cur_pos == "after" ? $row->currency : '') . " - " . ($cur_pos == "before" ? $row->currency : '') . $row->sale_percent . ($cur_pos == "after" ? $row->currency : '') ." = ";
+							}else{
+								$sale_percent = $row->sale_percent != "100" ? ($row->total_price * 100) / (100 - $row->sale_percent) : $row->price;
+								$sale_percent_html = ($cur_pos == "before" ? $row->currency : '') . $sale_percent . ($cur_pos == "after" ? $row->currency : '') . " - " . $row->sale_percent . "% = ";
+							}
+							
 						}
 						?>
 						
@@ -230,8 +245,8 @@ class wpdevart_bc_ViewReservations {
 									<h5  class="reserv-info-open-title"><?php _e('Details','booking-calendar'); ?><span class="reserv-info-open"><i class="fa fa-chevron-down" aria-hidden="true"></i></span></h5>
 									<span class='form_info'><span class='form_label'><?php _e('Item Count','booking-calendar'); ?></span> <span class='form_value'><?php echo $row->count_item; ?></span></span>
 									<?php if(!isset($theme_options['hide_price'])) { ?>
-									<span class='form_info'><span class='form_label'><?php _e('Price','booking-calendar'); ?></span> <span class='form_value'><?php echo (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '') . $row->price . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : '')); ?></span></span>
-									<span class='form_info'><span class='form_label'><?php _e('Total Price','booking-calendar'); ?></span> <span class='form_value'><?php echo $sale_percent_html . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '') . $row->total_price . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : '')); ?></span></span>
+									<span class='form_info'><span class='form_label'><?php _e('Price','booking-calendar'); ?></span> <span class='form_value'><?php echo ($cur_pos == "before" ? $row->currency : '') . $row->price . (($cur_pos == "after") ? $row->currency : ''); ?></span></span>
+									<span class='form_info'><span class='form_label'><?php _e('Total Price','booking-calendar'); ?></span> <span class='form_value'><?php echo $sale_percent_html . ($cur_pos == "before" ? $row->currency : '') . $row->total_price . ($cur_pos == "after" ? $row->currency : ''); ?></span></span>
 									<?php } ?>
 								</div>
 								
@@ -250,7 +265,7 @@ class wpdevart_bc_ViewReservations {
 												$start = 1;
 											} 
 											if($start == 1 && (!($row->end_hour == "" && $count == 1))) { ?>
-												<span class='form_info'><span class='form_label'><?php echo $key; ?></span> <span class='form_value'><?php echo ((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '').(isset($hour["price"]) ? $hour["price"] : "").(((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : ''); ?><span class="hour-info"><?php echo (isset($hour["info_users"])) ? $hour["info_users"] : ""; ?></span></span></span>
+												<span class='form_info'><span class='form_label'><?php echo $key; ?></span> <span class='form_value'><?php echo ($cur_pos == "before" ? $row->currency : '').(isset($hour["price"]) ? $hour["price"] : "").($cur_pos == "after" ? $row->currency : ''); ?><span class="hour-info"><?php echo (isset($hour["info_users"])) ? $hour["info_users"] : ""; ?></span></span></span>
 											<?php $count += 1;
 											}
 											if($key == $row->end_hour){ 
@@ -274,6 +289,8 @@ class wpdevart_bc_ViewReservations {
 												$value = explode("|wpdev|",$form_fild_data["value"]);
 												$value = implode(", ",$value);
 											}
+											if($form_fild_data["type"] == "upload" && trim($value) != "")
+												$value = "<a href='" . $value . "' target='_blank'>" . __("File", 'booking-calendar') . "</a>";
 											$reserv_info .= "<span class='form_info'><span class='form_label'>". $form_fild_data["label"] ."</span> <span class='form_value'>". $value ."</span></span>";
 										}
 									}
@@ -289,14 +306,14 @@ class wpdevart_bc_ViewReservations {
 										$reserv_info .= "<span class='form_value'>";
 										if($extra_data["price_type"] == "percent") {
 											$reserv_info .= "<span class='price-percent'>".$extra_data["operation"].$extra_data["price_percent"]."%</span>";
-											$reserv_info .= "<span class='price'>".$extra_data["operation"] . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '') . (isset($extra_data["price"]) ? $extra_data["price"] : "") . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : ''))."</span></span></span>";
+											$reserv_info .= "<span class='price'>".$extra_data["operation"] . (($cur_pos == "before" ? $row->currency : '') . (isset($extra_data["price"]) ? $extra_data["price"] : "") . (($cur_pos == "after") ? $row->currency : ''))."</span></span></span>";
 										} else {
-											$reserv_info .= "<span class='price'>".$extra_data["operation"] .(((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '') . $extra_data["price"] . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : ''))."</span></span></span>";
+											$reserv_info .= "<span class='price'>".$extra_data["operation"] .(($cur_pos == "before" ? $row->currency : '') . $extra_data["price"] . ($cur_pos == "after" ? $row->currency : ''))."</span></span></span>";
 										}
 										
 									}
 									$reserv_info .= "<h6>" .__("Price change",'booking-calendar')."</h6>";
-									$reserv_info .= "<span class='form_info'><span class='form_label'></span><span class='form_value'>".(($row->extras_price<0)? "" : "+").(((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "before") ? $row->currency : '') . $row->extras_price . (((isset($theme_options['currency_pos']) && $theme_options['currency_pos'] == "after") || !isset($theme_options['currency_pos'])) ? $row->currency : ''))."</span>"; 
+									$reserv_info .= "<span class='form_info'><span class='form_label'></span><span class='form_value'>".(($row->extras_price<0)? "" : "+").($cur_pos == "before" ? $row->currency : '') . $row->extras_price . ($cur_pos == "after" ? $row->currency : '')."</span>"; 
 									$reserv_info .= "</div></div>";
 								}
 								/*Billing data*/
@@ -338,7 +355,7 @@ class wpdevart_bc_ViewReservations {
 								echo $reserv_info;	?> 		
 							  </div>
 							</td>
-							<?php if(WPDEVART_PRO === true && $class != "") : ?>
+							<?php if(WPDEVART_PRO == "extended" && $class != "") : ?>
 								<td>
 								<div class="reserv-info div-for-clear">
 									<div class='reserv-info-container'>
@@ -386,7 +403,7 @@ class wpdevart_bc_ViewReservations {
 						   </td>
 						</tr>   
 						<tr>   
-							<td colspan="<?php echo (WPDEVART_PRO === true && $class != "") ? "5" : "4"; ?>">
+							<td colspan="<?php echo (WPDEVART_PRO == "extended" && $class != "") ? "5" : "4"; ?>">
 							<span class="buttons">
 								<?php if($row->status == "pending" || $row->status == "canceled" || $row->status == "rejected") { ?>
 									<a href="" onclick="wpdevart_set_value('task','approve'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'reservations_form')"  class="action-button approve-button" ><?php _e('Approve','booking-calendar'); ?></a>
@@ -398,17 +415,20 @@ class wpdevart_bc_ViewReservations {
 								<?php  } ?>
 								<a href="" onclick="wpdevart_set_value('task','delete'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'reservations_form')"  class="action-button delete-button"><?php _e('Delete','booking-calendar'); ?></a>
 							</span>
-							<?php if(WPDEVART_PRO === true ) : ?>
-								<span class="buttons">
-									<a  class="action-button cal-edit-button wpdevart-button"><?php _e('Edit','booking-calendar'); ?><span>(Extended)</span></a>	
-								  <?php if(isset($row->pay_status) && $row->pay_status != "") :?>
-									<a  onclick="quick_edit(this,'<?php echo $row->id; ?>');"  class="action-button quick-edit-button wpdevart-button"><?php _e('Payment Status Edit','booking-calendar'); ?></a>
-								  <?php endif; ?>
-									<a  onclick="cancel_edit(this,'<?php echo $row->id; ?>');"  class="action-button cancel-edit-button wpdevart-button cancel_<?php echo $row->id; ?>"><?php _e('Cancel','booking-calendar'); ?></a>
-									<a  class="action-button update-edit-button wpdevart-button"><?php _e('Update','booking-calendar'); ?></a>
-									<span class="spinner"></span>
-								</span>
-							<?php endif; ?>
+							
+							<span class="buttons">
+								<a  <?php echo (WPDEVART_PRO == "extended" ) ? 'onclick="wpdevart_set_value(\'task\',\'edit\'); wpdevart_set_value(\'cur_id\',' . $row->id .'); wpdevart_form_submit(event, \'reservations_form\')"' : ""; ?>  class="action-button cal-edit-button wpdevart-button"><?php _e('Edit','booking-calendar'); ?>
+								<?php if(WPDEVART_PRO != "extended" ) : ?>
+									<span>(Extended)</span>
+								<?php endif; ?>
+								</a>	
+							  <?php if(isset($row->pay_status) && $row->pay_status != "") :?>
+								<a  onclick="quick_edit(this,'<?php echo $row->id; ?>');"  class="action-button quick-edit-button wpdevart-button"><?php _e('Payment Status Edit','booking-calendar'); ?></a>
+							  <?php endif; ?>
+								<a  onclick="cancel_edit(this,'<?php echo $row->id; ?>');"  class="action-button cancel-edit-button wpdevart-button cancel_<?php echo $row->id; ?>"><?php _e('Cancel','booking-calendar'); ?></a>
+								<a  onclick="quick_update(this,'<?php echo $row->id; ?>');"  class="action-button update-edit-button wpdevart-button"><?php _e('Update','booking-calendar'); ?></a>
+								<span class="spinner"></span>
+							</span>
 							</td>
 							<td colspan="1">
 								<div class="created_date"><?php _e('Created:','booking-calendar'); ?> <?php echo date($date_format. " H:i", strtotime($row->date_created)); ?></div>
@@ -445,7 +465,9 @@ class wpdevart_bc_ViewReservations {
 				<div id="reservation_header" class="div-for-clear">
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Reservations Month View','booking-calendar'); ?></h1>
+						<h1><?php _e('Reservations Month View','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 					<select name="clendar_id" onchange="this.form.submit()">
 						<option value='0'><?php _e('Select Calendar','booking-calendar'); ?></option>
@@ -489,7 +511,9 @@ class wpdevart_bc_ViewReservations {
 					<div id="reservation_header" class="div-for-clear">
 						<div class="div-for-clear">
 							<span class="admin_logo"></span>
-							<h1><?php _e('Add Reservation','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+							<h1><?php _e('Add Reservation','booking-calendar'); ?>
+							<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+							</h1>
 						</div>
 						<select name="clendar_id" onchange="this.form.submit()">
 							<option value='0'><?php _e('Select Calendar','booking-calendar'); ?></option>
@@ -498,7 +522,12 @@ class wpdevart_bc_ViewReservations {
 							} ?>
 						</select>
 						<a id="view_list" href="" onclick="wpdevart_set_value('task','display_reservations'); wpdevart_form_submit(event, 'reservations_form')"><span class="reservation-item-info"><?php _e('Reservation List View','booking-calendar'); ?></span></a>
-						<span id="view_calendar" class="pro-field"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?><span class="pro_feature">(Pro Feature!)</span></span></span>
+						<?php if (WPDEVART_PRO == "free") : ?>
+							<span id="view_calendar" class="pro-field"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?><span class="pro_feature">(Pro Feature!)</span></span></span>
+							<a id="view_calendar" href="" onclick="wpdevart_set_value('task','display_month_reservations'); wpdevart_form_submit(event, 'reservations_form')"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?></span></a>
+						<?php else : ?>
+							<a id="view_calendar" href="" onclick="wpdevart_set_value('task','display_month_reservations'); wpdevart_form_submit(event, 'reservations_form')"><span class="reservation-item-info"><?php _e('Reservation Month View','booking-calendar'); ?></span></a>
+						<?php endif; ?>
 						<span id="add_reservation" class="add-reservation"><span class="plus">+</span><span class="reservation-item-info"><?php _e('Add Reservation','booking-calendar'); ?></span></span>
 					</div>
 					<input type="hidden" name="task" id="task" value="add">
@@ -528,7 +557,9 @@ class wpdevart_bc_ViewReservations {
 		<div id="wpdevart_add_reservations_container"  class="wpdevart-list-container">
 			<div class="div-for-clear">
 				<span class="admin_logo"></span>
-				<h1><?php _e('Edit Reservation','booking-calendar'); ?></h1>
+				<h1><?php _e('Edit Reservation','booking-calendar'); ?>
+				<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+				</h1>
 			</div>
 			<div id="wpdevart_update_res" class="wpdevart_add_res">
 				<?php

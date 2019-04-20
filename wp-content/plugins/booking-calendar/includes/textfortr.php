@@ -78,7 +78,9 @@ __("Email on approved to administrator doesn't send","booking-calendar");
 __( "Email on book to user doesn't send","booking-calendar");
 __("Email on approved to user doesn't send","booking-calendar");
 __("Email on canceled to user doesn't send","booking-calendar");
-__("Email on delete to user doesn't send","booking-calendar")
+__("Email on delete to user doesn't send","booking-calendar");
+__("New countries Field","booking-calendar");
+__("Last Name","booking-calendar");
 
 
 ?>

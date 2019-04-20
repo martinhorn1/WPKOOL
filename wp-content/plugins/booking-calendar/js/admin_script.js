@@ -71,6 +71,25 @@ function cancel_edit(el,id) {
 	return false;
 }
 
+function quick_update(el,id) {
+	if(jQuery("#payment_status_"+id).length){
+		jQuery(el).next().addClass("is-active");
+		var res_data = [];
+		res_data = jQuery("#payment_status_"+id).val();
+		/*res_data = JSON.stringify(res_data);*/
+		jQuery.post(wpdevart_admin.ajaxUrl, {
+				action: 'wpdevart_quick_update',
+				wpdevart_data:res_data,
+				wpdevart_id: id,
+				wpdevart_nonce: wpdevart_admin.ajaxNonce
+			}, function (data) {
+				jQuery(el).next().removeClass("is-active");
+				cancel_edit(jQuery(".cancel_" + id)[0],id);
+			});
+	}
+	return false;
+}
+
 function wpdevart_titleCase(string) { 
 	return string.charAt(0).toUpperCase() + string.slice(1); 
 }
@@ -172,7 +191,8 @@ function add_hour(el,arg){
 
 function add_conditions(el,arg,placeholder){
 	if(!jQuery(el).hasClass("pro-field")){
-		var conditions = "<div class='conditions_element div-for-clear'> <input type='text' class='short_input' value='' name='"+arg+"[count][]' placeholder='"+placeholder+"'> <input type='text' class='short_input' value='' name='"+arg+"[percent][]' placeholder='"+wpdevart_admin.price+"'><span class='delete_hour_item'><i class='fa fa-close'></i></span> </div>";
+		var conditions = "<div class='conditions_element div-for-clear'> <input type='text' class='short_input' value='' name='"+arg+"[count][]' placeholder='"+placeholder+"'> <select name='"+arg+"[type][]'>"+
+		"<option value='percent' selected='selected'>Percent</option><option value='price'>Price</option></select><input type='text' class='short_input' value='' name='"+arg+"[percent][]' placeholder='"+wpdevart_admin.price+"'><span class='delete_hour_item'><i class='fa fa-close'></i></span> </div>";
 		
 		jQuery(el).parent().append(conditions);
 	}
@@ -198,6 +218,8 @@ function content_required(button_action,el){
 		jQuery(el).closest("form").submit();
 	}
 }
+
+
 
 jQuery( document ).ready(function() {
     var $ = jQuery;
@@ -236,6 +258,17 @@ jQuery( document ).ready(function() {
         });
 		e.stopPropagation();
 		extra_count += 1;
+	});
+	
+	/*Export*/
+	$("body").on( "click", "#wpdevart_export", function(e){	
+		$.post(wpdevart_admin.ajaxUrl, {
+			action: 'wpdevart_export',
+			wpdevart_nonce: wpdevart_admin.ajaxNonce
+		}, function (data) {
+			window.location = wpdevart_admin.ajaxUrl + "?action=wpdevart_export&wpdevart_nonce=" + wpdevart_admin.ajaxNonce;
+		});
+		return false;
 	});
 	
 	/*

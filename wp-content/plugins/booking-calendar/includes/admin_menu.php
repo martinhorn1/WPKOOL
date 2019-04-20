@@ -175,7 +175,7 @@ class wpdevart_bc_admin_menu{
 						'site_url'		=>	'http://wpdevart.com/wordpress-contact-form-plugin/',
 						'title'			=>	'Contact Form',
 						'description'	=>	'Contact Form plugin is an nice and handy tool for creating different types of contact forms on your WordPress websites.'
-						),		
+						),	
 			 'gallery_album'=>array(
 						'image_url'	=>	WPDEVART_URL.'css/images/featured_plugins/gallery.png',
 						'site_url'	=>	'http://wpdevart.com/wordpress-gallery-plugin',

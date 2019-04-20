@@ -10,6 +10,10 @@ class wpdevart_bc_ViewCalendars {
 	
     public function display_calendars() {
 		$rows = $this->model_obj->get_calendars_rows();
+		$current_user = get_current_user_id();
+		$current_user_info = get_userdata( $current_user ); 
+		$current_user_info = $current_user_info->roles; 
+		$role = isset($current_user_info[0]) ? $current_user_info[0] : "";
 		$items_nav = $this->model_obj->items_nav();
 		$asc_desc = ((isset($_POST['asc_desc']) && $_POST['asc_desc'] == 'asc') ? 'asc' : 'desc');
 		$res_order_by = (isset($_POST['order_by']) ? sanitize_sql_orderby($_POST['order_by']) :  'id');
@@ -18,7 +22,9 @@ class wpdevart_bc_ViewCalendars {
 			<div id="action-buttons" class="div-for-clear">
 				<div class="div-for-clear">
 					<span class="admin_logo"></span>
-					<h1><?php _e('Calendars','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+					<h1><?php _e('Calendars','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+					</h1>
 					<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 				</div>
 				<a href="" onclick="wpdevart_set_value('task','add'); wpdevart_form_submit(event, 'calendars_form')" class="action-link"><?php _e('Add Calendar','booking-calendar'); ?></a>
@@ -33,17 +39,26 @@ class wpdevart_bc_ViewCalendars {
 							<th class="small-column"><?php _e('ID','booking-calendar'); ?></th>
 							<th><?php _e('Title','booking-calendar'); ?></th>
 							<th><?php _e('Shortcode','booking-calendar'); ?></th>
+							<?php if($role == "administrator"){ ?>
+								<th><?php _e('User','booking-calendar'); ?></th>
+							<?php } ?>	
 							<th class="action-column"><?php _e('Edit','booking-calendar'); ?></th>
 							<th class="action-column"><?php _e('Delete','booking-calendar'); ?></th>
 						</thead>
 					<tr>
 					<?php
-						foreach ( $rows as $row ) { ?>
+						foreach ( $rows as $row ) { 
+							$user = $row->user_id;
+							$user_info = get_userdata( $user );						?>
 							<tr>
 								<td><input type="checkbox" name="check_for_action[]" class="check_for_action" value="<?php echo $row->id; ?>"></td>
 								<td><?php echo $row->id; ?></td>
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'calendars_form')" ><?php echo $row->title; ?></a></td>
 								<td><input type="text" value="[wpdevart_booking_calendar id=&quot;<?php echo $row->id; ?>&quot;]" onclick="this.focus();this.select();" readonly="readonly" size="32"></td>
+								<?php if($role == "administrator"){
+                                      ?>
+									<td><a href="<?php echo get_edit_user_link( $user ) ?>"><?php echo ($user_info)? $user_info->user_login : ""; ?></a></td>
+								<?php } ?>	
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'calendars_form')" ><?php _e('Edit','booking-calendar'); ?></a></td>
 								<td><a href="" onclick="wpdevart_set_value('task','delete'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'calendars_form')" ><?php _e('Delete','booking-calendar'); ?></a></td>
 							<tr>
@@ -131,8 +146,8 @@ class wpdevart_bc_ViewCalendars {
 												   "overall" => "Disable",
 												   "custom" => "Enable"
 												),
-							'pro' => 'extended',					
 							'type' => 'radio_enable',
+							'pro' => 'extended',
 							'enable' => array('overall'=>array('days_availability','info_users','info_admin','day_hours'),'custom'=>array('monday_info','days_availability_monday','info_users_monday','info_admin_monday','day_hours_monday','tuesday_hour_info','wednesday_hour_info','thursday_hour_info','friday_hour_info','saturday_hour_info','sunday_hour_info','monday_hour_info','tuesday_info','days_availability_tuesday','info_users_tuesday','info_admin_tuesday','day_hours_tuesday','wednesday_info','days_availability_wednesday','info_users_wednesday','info_admin_wednesday','day_hours_wednesday','thursday_info','days_availability_thursday','info_users_thursday','info_admin_thursday','day_hours_thursday','friday_info','days_availability_friday','info_users_friday','info_admin_friday','day_hours_friday','saturday_info','days_availability_saturday','info_users_saturday','info_admin_saturday','day_hours_saturday','sunday_info','days_availability_sunday','info_users_sunday','info_admin_sunday','day_hours_sunday')),
 							'default' => 'overall'
 						),
@@ -152,8 +167,8 @@ class wpdevart_bc_ViewCalendars {
 							'id'   => 'info_users',
 							'title' => 'Information for users',
 							'description' => '',
-							'type' => 'textarea',
 							'pro' => 'pro',	
+							'type' => 'textarea',
 							'default' => ''
 						),
 						'info_admin' => array(
@@ -578,7 +593,7 @@ class wpdevart_bc_ViewCalendars {
 							'title' => 'Marked Price',
 							'description' =>'',
 							'type' => 'text',
-							'pro' => 'pro',	
+							'pro' => 'pro',
 							'default' => ''
 						),
 						'info_users' => array(
@@ -586,7 +601,7 @@ class wpdevart_bc_ViewCalendars {
 							'title' => 'Information for users',
 							'description' => '',
 							'type' => 'textarea',
-							'pro' => 'pro',	
+							'pro' => 'pro',
 							'default' => ''
 						),
 						'info_admin' => array(
@@ -594,7 +609,7 @@ class wpdevart_bc_ViewCalendars {
 							'title' => 'Information for administrators',
 							'description' => '',
 							'type' => 'textarea',
-							'pro' => 'pro',	
+							'pro' => 'pro',
 							'default' => ''
 						),
 						/*monday*/
@@ -1018,17 +1033,21 @@ class wpdevart_bc_ViewCalendars {
 			    if($id != 0){ ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Edit Calendar','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Edit Calendar','booking-calendar'); ?>
+						   <?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } else { ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Add Calendar','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Add Calendar','booking-calendar'); ?>
+							<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } ?>
 			<form action="?page=wpdevart-calendars" method="post" id="add_edit_form">
-				<input type="submit" value="Save" class="action-link wpda-input" name="save">
-				<input type="submit" value="Apply" class="action-link wpda-input" name="apply" id="apply">
+				<input type="submit" value="Save" class="action-link wpda-input" name="save" onclick="if(!jQuery('#theme_id option').length){alert('Add Theme'); return false;}">
+				<input type="submit" value="Apply" class="action-link wpda-input" name="apply" id="apply"  onclick="if(!jQuery('#theme_id option').length){alert('Add Theme'); return false;}">
 				<?php
 				  foreach( $wpdevart_calendars as $wpdevart_calendar ) { ?>
 					<div class="wpdevart-item-section"> 
@@ -1070,8 +1089,8 @@ class wpdevart_bc_ViewCalendars {
 				<input type="hidden" name="task" value="save">
 				<input type="hidden" name="id" value="<?php echo $id; ?>">
 				<input type="hidden" name="current_date" value="">
-				<input type="submit" value="Save" class="action-link wpda-input" name="save">
-				<input type="submit" value="Apply" class="action-link wpda-input" name="apply" id="apply">
+				<input type="submit" value="Save" class="action-link wpda-input" name="save" onclick="if(!jQuery('#theme_id option').length){alert('Add Theme'); return false;}">
+				<input type="submit" value="Apply" class="action-link wpda-input" name="apply" id="apply"  onclick="if(!jQuery('#theme_id option').length){alert('Add Theme'); return false;}">
 			</form>
 		</div>
 	<?php	

@@ -261,16 +261,16 @@ jQuery( document ).ready(function() {
 	$("body").on( "click",".delete_hour_item",function(){
 		$(this).parent().remove();
 	});
-	
-	
-		/*PRO*/
+			/*PRO*/
 	$('body').on("click", ".pro-field", function(){
-		alert("If you want to use this feature upgrade to Booking calendar Pro");
+		var proText = $(this).closest(".wpdevart-fild-item-container").length ? $(this).closest(".wpdevart-fild-item-container").find(".pro_feature").html() : $(this).closest("#form_field_type").find(".pro_feature").html()
+		alert("If you want to use this feature upgrade to Booking calendar " + proText);
 		$(this).blur(); 
 		return false;
 	});
 	$('.pro-field').closest(".wp-picker-container").click(function(){
-		alert("If you want to use this feature upgrade to Booking calendar Pro");
+		var proText = $(this).closest(".wpdevart-fild-item-container").length ? $(this).closest(".wpdevart-fild-item-container").find(".pro_feature").html() : $(this).closest("#form_field_type").find(".pro_feature").html()
+		alert("If you want to use this feature upgrade to Booking calendar " + proText);
 		$(this).blur();
 		return false;
 	});

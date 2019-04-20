@@ -10,6 +10,10 @@ class wpdevart_bc_Viewforms {
 	
     public function display_forms($error_msg="",$delete=true) {
 		$rows = $this->model_obj->get_forms_rows();
+		$current_user = get_current_user_id();
+		$current_user_info = get_userdata( $current_user ); 
+		$current_user_info = $current_user_info->roles; 
+		$role = isset($current_user_info[0]) ? $current_user_info[0] : "";
 		$items_nav = $this->model_obj->items_nav();
 		$asc_desc = ((isset($_POST['asc_desc']) && $_POST['asc_desc'] == 'asc') ? 'asc' : 'desc');
 		$res_order_by = (isset($_POST['order_by']) ? sanitize_sql_orderby($_POST['order_by']) :  'id');
@@ -18,7 +22,9 @@ class wpdevart_bc_Viewforms {
 			<div id="action-buttons" class="div-for-clear">
 				<div class="div-for-clear">
 					<span class="admin_logo"></span>
-					<h1><?php _e('Forms','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+					<h1><?php _e('Forms','booking-calendar'); ?>
+					<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+					</h1>
 					<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 				</div>
 				<a href="" onclick="wpdevart_set_value('task','add'); wpdevart_form_submit(event, 'forms_form')" class="action-link"><?php _e('Add Form','booking-calendar'); ?></a>
@@ -39,6 +45,9 @@ class wpdevart_bc_Viewforms {
 							<th class="check-column"><input type="checkbox" name="check_all" onclick="check_all_checkboxes(this,'check_for_action');"></th>
 							<th class="small-column"><?php _e('ID','booking-calendar'); ?></th>
 							<th><?php _e('Title','booking-calendar'); ?></th>
+							<?php if($role == "administrator"){ ?>
+								<th><?php _e('User','booking-calendar'); ?></th>
+							<?php } ?>	
 							<th class="action-column"><?php _e('Edit','booking-calendar'); ?></th>
 							<th class="action-column"><?php _e('Delete','booking-calendar'); ?></th>
 						</thead>
@@ -49,6 +58,11 @@ class wpdevart_bc_Viewforms {
 								<td><input type="checkbox" name="check_for_action[]" class="check_for_action" value="<?php echo $row->id; ?>"></td>
 								<td><?php echo $row->id; ?></td>
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'forms_form')" ><?php echo $row->title; ?></a></td>
+								<?php if($role == "administrator"){
+                                     $user = $row->user_id;
+									 $user_info = get_userdata( $user ); ?>
+									<td><a href="<?php echo get_edit_user_link( $user ) ?>"><?php echo ($user_info)? $user_info->user_login : ""; ?></a></td>
+								<?php } ?>	
 								<td><a href="" onclick="wpdevart_set_value('task','edit'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'forms_form')" ><?php _e('Edit','booking-calendar'); ?></a></td>
 								<td><a href="" onclick="wpdevart_set_value('task','delete'); wpdevart_set_value('cur_id','<?php echo $row->id; ?>'); wpdevart_form_submit(event, 'forms_form')" ><?php _e('Delete','booking-calendar'); ?></a></td>
 							<tr>
@@ -115,12 +129,16 @@ class wpdevart_bc_Viewforms {
 			    if($id != 0){ ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Edit Form','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Edit Form','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } else { ?>
 					<div class="div-for-clear">
 						<span class="admin_logo"></span>
-						<h1><?php _e('Add Form','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+						<h1><?php _e('Add Form','booking-calendar'); ?>
+						<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+						</h1>
 					</div>
 				<?php } ?>
 			<form action="?page=wpdevart-forms" method="post">
@@ -138,8 +156,16 @@ class wpdevart_bc_Viewforms {
 							<!--<span id="radio_field">Radio</span>-->
 							<span id="select_field"><?php _e('Drop down','booking-calendar'); ?></span>
 							<span id="countries_field"><?php _e('Drop down(Countries)','booking-calendar'); ?></span>
-							<span class="pro-field"><?php _e('Google ReCapthcha','booking-calendar'); ?><span class="pro-field pro_feature">(Extended)</span></span>
-							<span class="pro-field"><?php _e('File Upload','booking-calendar'); ?><span class="pro-field pro_feature">(Extended)</span></span>
+							<span <?php echo WPDEVART_PRO != "extended" ? 'class="pro-field"' : 'id="recapthcha_field"'; ?>><?php _e('Google ReCapthcha','booking-calendar'); ?>
+							<?php if (WPDEVART_PRO != "extended") : ?>
+								<span class="pro-field pro_feature">(Extended)</span>
+							<?php endif; ?>
+							</span>
+							<span <?php echo WPDEVART_PRO != "extended" ? 'class="pro-field"' : 'id="upload_field"'; ?>><?php _e('File Upload','booking-calendar'); ?>
+							<?php if (WPDEVART_PRO != "extended") : ?>
+								<span class="pro-field pro_feature">(Extended)</span>
+							<?php endif; ?>
+							</span>
 						</div>
 					</div>
 				</div>

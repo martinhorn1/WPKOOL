@@ -1,14 +1,33 @@
 <?php
 class wpdevart_bc_ModelThemes {
+  private $user_id = 1;	
+  private $user_role = "";	
 	
+  public function __construct() {
+	$current_user = get_current_user_id();
+	$current_user_info = get_userdata( $current_user ); 
+	if($current_user_info){
+		$current_user_info = $current_user_info->roles; 
+	}
+	$role = isset($current_user_info[0]) ? $current_user_info[0] : "";
+	$this->user_id = $current_user;
+	$this->user_role = $role;
+  }
+  
   public function get_themes_rows() {
     global $wpdb;
+	
     $limit = (isset($_POST['wpdevart_page']) && $_POST['wpdevart_page'])? (((int) $_POST['wpdevart_page'] - 1) * 20) : 0;
     $order_by = ((isset($_POST['order_by']) && $_POST['order_by'] != "") ? sanitize_sql_orderby($_POST['order_by']) :  'id');
 	$order = ((isset($_POST['asc_desc']) && $_POST['asc_desc'] == 'asc') ? 'asc' : 'desc');
     $order_by = ' ORDER BY `' . $order_by . '` ' . $order;
     $where = ((isset($_POST['search_value']) && (sanitize_text_field($_POST['search_value']) != '')) ? 'WHERE title LIKE "%' . sanitize_text_field($_POST['search_value']) . '%"' : '');
-	
+if($this->user_role != "administrator"){
+		if($where == "")
+			$where = 'WHERE user_id=' . $this->user_id;
+		else
+			$where .= ' AND user_id=' . $this->user_id;
+	}	
     $query = "SELECT * FROM " . $wpdb->prefix . "wpdevart_themes " . $where . " ".$order_by." LIMIT " . $limit . ",20";
     $rows = $wpdb->get_results($query);
    
@@ -27,8 +46,13 @@ class wpdevart_bc_ModelThemes {
   
   public function get_form_rows() {
     global $wpdb;
+	
+	$where = '';
+	if($this->user_role != "administrator"){
+		$where = ' WHERE user_id=' . $this->user_id;
+	}
 	$form_array = array();
-    $rows = $wpdb->get_results('SELECT id,title FROM ' . $wpdb->prefix . 'wpdevart_forms',ARRAY_A);
+    $rows = $wpdb->get_results('SELECT id,title FROM ' . $wpdb->prefix . 'wpdevart_forms ' . $where,ARRAY_A);
     foreach($rows as $row) {
 		$form_array[$row['id']] = $row['title'];
 	}
@@ -53,6 +77,12 @@ class wpdevart_bc_ModelThemes {
   public function items_nav() {
     global $wpdb;
     $where = ((isset($_POST['search_value']) && (sanitize_text_field($_POST['search_value']) != '')) ? 'WHERE title LIKE "%' . sanitize_text_field($_POST['search_value']) . '%"'  : '');
+    	if($this->user_role != "administrator"){
+		if($where == "")
+			$where = 'WHERE user_id=' . $this->user_id;
+		else
+			$where .= ' AND user_id=' . $this->user_id;
+	}
     $total = $wpdb->get_var("SELECT COUNT(*) FROM ".$wpdb->prefix."wpdevart_themes " .$where);
     $items_nav['total'] = $total;
     if (isset($_POST['wpdevart_page']) && $_POST['wpdevart_page']) {

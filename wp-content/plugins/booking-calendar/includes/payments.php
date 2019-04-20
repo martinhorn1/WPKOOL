@@ -17,24 +17,24 @@ class WpdevartPayments{
 		$this->resId = $res["id"];
 		$this->bookingId = $bookingId;
 		$this->calendarId = $calendarId;
-		$payment_method = (isset($_POST["payment_type_".$this->bookingId])) ? $_POST["payment_type_".$this->bookingId] : 'payPal';
+		$payment_method = (isset($_POST["payment_type_".$this->bookingId])) ? $_POST["payment_type_".$this->bookingId] : 'paypal';
 		
-		if ($payment_method == 'payPal'){
-			$this->expresspayPal();
+		if ($payment_method == 'paypal'){
+			$this->expresspaypal();
 		}
 		
 	}
 
-    /*############  ExpresspayPal function ################*/	
+    /*############  Expresspaypal function ################*/	
 	
-	public function expresspayPal(){
+	public function expresspaypal(){
 		$name = (isset($_POST["calendar_name_".$this->bookingId]) && $_POST["calendar_name_".$this->bookingId]) ? $_POST["calendar_name_".$this->bookingId] : "Booking";
         $http = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? "https://" : "http://";		
 		$sandbox = (isset($this->options["payment_mode"]) && $this->options["payment_mode"] == 'live') ? "live" : "sandbox";
-		$_username = (isset($this->options["payPal_username"])) ? $this->options["payPal_username"] : "";
-		$_email = (isset($this->options["payPal_email"])) ? $this->options["payPal_email"] : "";
-		$_password = (isset($this->options["payPal_password"])) ? $this->options["payPal_password"] : "";
-		$_signature = (isset($this->options["payPal_signature"])) ? $this->options["payPal_signature"] : "";
+		$_username = (isset($this->options["paypal_username"])) ? $this->options["paypal_username"] : "";
+		$_email = (isset($this->options["paypal_email"])) ? $this->options["paypal_email"] : "";
+		$_password = (isset($this->options["paypal_password"])) ? $this->options["paypal_password"] : "";
+		$_signature = (isset($this->options["paypal_signature"])) ? $this->options["paypal_signature"] : "";
 		/*$url_cancel = (isset($this->options["redirect_url_failed"])) ? $this->options["redirect_url_failed"] : "";*/
 		$url_return = (isset($this->options["redirect_url_successful"])) ? $this->options["redirect_url_successful"] : "";
 		$currency = (isset($this->options['currency']))? $this->options['currency'] : "";
@@ -59,8 +59,8 @@ class WpdevartPayments{
         $params["notify_url"] = add_query_arg(array("action" => "wpdevart_payment", "task" => "paypal_notify","cal_id"=>$this->calendarId,"res_id"=>$this->resId,"theme_id"=>$this->options["id"], "user_id"=> $user , "payment_method" => "paypal_standart"), admin_url('admin-ajax.php'));
         $params["return"] = ($url_return != "" ? $url_return : ($http . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]));
         $params["cancel_url"] = add_query_arg(array("action" => "wpdevart_payment", "task" => "paypal_cancel", 'cal_id'=>$this->calendarId, 'res_id'=>$this->resId, "theme_id"=>$this->options["id"]), admin_url('admin-ajax.php'));
-
         $str_request = http_build_query($params);
+
         wpdevart_bc_Library::wpdevart_redirect( $url_paypal . $str_request );	
 	
 		

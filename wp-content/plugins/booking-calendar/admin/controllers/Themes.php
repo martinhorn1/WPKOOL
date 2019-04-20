@@ -39,6 +39,7 @@ class wpdevart_bc_ControllerThemes {
 		$textareas = array('custom_css','notify_admin_on_book_content','notify_admin_on_approved_content','notify_admin_paypal_content','notify_user_on_book_content','notify_user_on_approved_content','notify_user_canceled_content','notify_user_deleted_content','notify_user_paypal_content','notify_user_paypal_failed_content');
 		
 		$saved_parametrs = wpdevart_bc_Library::sanitizeAllPost($_POST,$textareas);
+		$user = get_current_user_id();
 		
 		$data_json = json_encode($saved_parametrs);
 		$title = wpdevart_bc_Library::getData($_POST, 'title', 'text', '');
@@ -52,9 +53,11 @@ class wpdevart_bc_ControllerThemes {
 		  $save = $wpdb->insert($wpdb->prefix . 'wpdevart_themes', array(
 			'title' => $title,                       
 			'value' => $data_json,         
+			'user_id' => $user,         
 		  ), array(
 			'%s',
 			'%s',
+			'%d',
 		  ));
 		  $id = $wpdb->get_var('SELECT MAX(id) FROM ' . $wpdb->prefix . 'wpdevart_themes');
 		}

@@ -267,7 +267,12 @@ class wpdevart_bc_BookingCalendar {
 			}
 		}
 		if( $reservation == "") {
-			$booking_calendar .= '</div><div class="wpdevart-hours-container"><div class="wpdevart-hours-overlay"><div class="wpdevart-load-image"><i class="fa fa-spinner fa-spin"></i></div></div><div class="wpdevart-hours"></div></div>';
+			$style = (!is_null($this->res)) ? "style='display:block'" : "";	
+			$booking_calendar .= '</div><div class="wpdevart-hours-container" ' . $style . ' ><div class="wpdevart-hours-overlay"><div class="wpdevart-load-image"><i class="fa fa-spinner fa-spin"></i></div></div><div class="wpdevart-hours">';
+			if(!is_null($this->res)){
+				$booking_calendar .= $this->booking_calendar_hours($this->res["single_day"]);
+			}
+			$booking_calendar .= '</div></div>';
 		} else {
 			$booking_calendar .= '</table>';
 		}
@@ -731,7 +736,7 @@ class wpdevart_bc_BookingCalendar {
 		if (!isset($this->theme_option["auto_fill"])) {
 			$input_atribute = "autocomplete='off'";
 		}
-		$form_html .= '<div class="wpdevart-booking-form"><form method="post" class="div-for-clear"><div class="wpdevart-check-section">';
+		$form_html .= '<div class="wpdevart-booking-form"><form method="post" class="div-for-clear" enctype="multipart/form-data"><div class="wpdevart-check-section">';
 		if (isset($this->theme_option["enable_checkinout"]) && $this->theme_option["enable_checkinout"] == "on" && $this->theme_option["type_days_selection"] == "multiple_days" && !(isset($this->theme_option["hours_enabled"]) && $this->theme_option["hours_enabled"] == "on")) {
 			$form_html .= '<div class="wpdevart-fild-item-container ">
 				  '.$this->form_field_text(array('name'=>'form_checkin'.$this->booking_id,'class'=>'wpdevart_form_checkin','label'=>$this->for_tr["for_check_in"], 'readonly' => 'true',"value"=>((isset($this->res["check_in"]) && $this->res["check_in"] != "")? date($this->theme_option['date_format'],strtotime($this->res["check_in"])) : "") )).'</div>
@@ -812,14 +817,19 @@ class wpdevart_bc_BookingCalendar {
 						if($extras["price_type"] == "percent") {
 							$price_percent = ($this->res["price"] * $extras["price_percent"])/100;
 						}
-						$form_html .= '<div class="wpdevart-extra-info wpdevart-extra-'.$i.' reserv_info_row wpdevart_'.$key.'"><span class="reserv_info_cell">'.$extra_fields[$key]["label"].'</span><span class="reserv_info_cell_value"><span class="option_label">'.$extras["label"].'</span><span class="extra_percent" style="'.($extras["price_type"] == "price"? "display:none;" : "").'">'.($extras["price_type"] == "percent"? $extras["price_percent"].'%': "").'</span><span class="extra_price" data-extraprice="'.($extras["price_percent"]/$this->res["count_item"]).'" data-extraop="'.$extras["operation"].'" style="'.($price_percent != 0 ? "display:inline-block;" : "display:none;").'"><span class="extra_price_value">'. ($price_percent != 0 ? $extras["operation"].$price_percent.$this->currency : "").'</span></span><input type="hidden" class="extra_price_value" value="'.($price_percent != 0 ? $extras["operation"].$price_percent : "").'"></span></div>';
+						$form_html .= '<div class="wpdevart-extra-info wpdevart-extra-'.$i.' reserv_info_row wpdevart_'.$key.'" data-id="' .$key. '"><span class="reserv_info_cell">'.$extra_fields[$key]["label"].'</span><span class="reserv_info_cell_value"><span class="option_label">'.$extras["label"].'</span><span class="extra_percent" style="'.($extras["price_type"] == "price"? "display:none;" : "").'">'.($extras["price_type"] == "percent"? $extras["price_percent"].'%': "").'</span><span class="extra_price" data-extraprice="'.($extras["price_percent"]/$this->res["count_item"]).'" data-extraop="'.$extras["operation"].'" style="'.($price_percent != 0 ? "display:inline-block;" : "display:none;").'"><span class="extra_price_value">'. ($price_percent != 0 ? $extras["operation"].$price_percent.$this->currency : "").'</span></span><input type="hidden" class="extra_price_value" value="'.($price_percent != 0 ? $extras["operation"].$price_percent : "").'"></span></div>';
 						$i++;
 					}
 				}
 				if(isset($this->res["total_price"])){
 					if(isset($this->res["sale_percent"]) && !empty($this->res["sale_percent"])){
-						$sale_percent = ($this->res["total_price"] * 100) / (100 - $this->res["sale_percent"]);
-						$form_html .= '<div class="wpdevart-total-price reserv_info_row"><span class="reserv_info_cell">'.$this->for_tr["for_total"].'</span><span class="reserv_info_cell_value total_price"><span class="start_total_price"><span>'.$sale_percent.'</span>'.$this->currency.'</span><span class="sale_total_price"><span class="sale_percent">-' . $this->res["sale_percent"] . '%</span><span><span>' . $this->res["total_price"] . '</span>'.$this->currency.'</span></span></span></div>';
+						if(isset($this->res["sale_type"]) && $this->res["sale_type"] == "percent"){
+							$sale_percent = $this->res["sale_percent"] == 100 ? $this->res["price"] : ($this->res["total_price"] * 100) / (100 - $this->res["sale_percent"]);
+							$form_html .= '<div class="wpdevart-total-price reserv_info_row"><span class="reserv_info_cell">'.$this->for_tr["for_total"].'</span><span class="reserv_info_cell_value total_price"><span class="start_total_price"><span>'.$sale_percent.'</span>'.$this->currency.'</span><span class="sale_total_price"><span class="sale_percent">-' . $this->res["sale_percent"] . '%</span><span><span>' . $this->res["total_price"] . '</span>'.$this->currency.'</span></span></span></div>';
+						} else {
+							$form_html .= '<div class="wpdevart-total-price reserv_info_row"><span class="reserv_info_cell">'.$this->for_tr["for_total"].'</span><span class="reserv_info_cell_value total_price"><span class="start_total_price"><span>'.($this->res["total_price"] + $this->res["sale_percent"]).'</span>'.$this->currency.'</span><span class="sale_total_price"><span class="sale_percent">-' . $this->res["sale_percent"] .$this->currency.'</span><span><span>' . $this->res["total_price"] . '</span>'.$this->currency.'</span></span></span></div>';
+						}
+						
 					} else {
 						$form_html .= '<div class="wpdevart-total-price reserv_info_row"><span class="reserv_info_cell">'.$this->for_tr["for_total"].'</span><span class="reserv_info_cell_value total_price"><span class="start_total_price"><span>'.$this->res["total_price"].'</span>'.$this->currency.'</span><span class="sale_total_price"></span></span></div>';
 					}
@@ -856,6 +866,7 @@ class wpdevart_bc_BookingCalendar {
 		$form_html .= '<input type="hidden" class="wpdevart_extra_price_value" id="wpdevart_extra_price_value'.$this->booking_id.'" name="wpdevart_extra_price_value'.$this->booking_id.'" value="'.((!is_null($this->res) && $this->res["extras_price"] != "") ? $this->res["extras_price"] : "").'">';
 		$form_html .= '<input type="hidden" class="wpdevart_total_price_value" id="wpdevart_total_price_value'.$this->booking_id.'" name="wpdevart_total_price_value'.$this->booking_id.'" value="'.((!is_null($this->res) && $this->res["total_price"] != "") ? $this->res["total_price"] : "").'">';
 		$form_html .= '<input type="hidden" class="wpdevart_price_value" id="wpdevart_price_value'.$this->booking_id.'" name="wpdevart_price_value'.$this->booking_id.'" value="'.((!is_null($this->res) && $this->res["price"] != "") ? $this->res["price"] : "").'">';
+		$form_html .= '<input type="hidden" class="wpdevart_sale_type" id="wpdevart_sale_type'.$this->booking_id.'" name="wpdevart_sale_type'.$this->booking_id.'" value="'.((!is_null($this->res) && $this->res["sale_type"] != "") ? $this->res["sale_type"] : "").'">';
 		$form_html .= '<input type="hidden" name="id" value="'.$this->booking_id.'">';
 		$form_html .= '<input type="hidden" name="task" value="save">';
 		$payment_infos = array("billing","shipping");
@@ -896,7 +907,6 @@ class wpdevart_bc_BookingCalendar {
 	
 	private function form_field_text($form_field,$input_atribute='',$payment_info = ""){
 		$input_class = array();
-		$field_html = '';
 		$readonly = '';
 		$required = '';
 		if(isset($form_field['required'])) {
@@ -918,7 +928,7 @@ class wpdevart_bc_BookingCalendar {
 		} else {
 			$class = "";
 		}
-		$field_html .= '<div class="wpdevart-fild-item-container">
+		$field_html = '<div class="wpdevart-fild-item-container">
 							<label for="wpdevart_'.$form_field['name'].'" '.$class.'>'.esc_html($form_field['label']).$required. '</label>';
 		$field_html .= '<div class="wpdevart-elem-container div-for-clear" id="wpdevart_wrap_'.$form_field['name'].'">
 				  <input type="text" id="wpdevart_'.$form_field['name'].'" name="wpdevart_'.$payment_info.$form_field['name'].'" '.$input_atribute.' '.$class.' ' .$readonly. ' '.(isset($form_field['value'])? "value='".$form_field['value']."'" : "").'>
@@ -929,8 +939,7 @@ class wpdevart_bc_BookingCalendar {
 	
 	private function form_field_textarea($form_field,$input_atribute='',$payment_info = ""){
 		$input_class = '';
-		$field_html = '';
-		$field_html .= '<div class="wpdevart-fild-item-container">
+		$field_html = '<div class="wpdevart-fild-item-container">
 							<label for="wpdevart_'.$form_field['name'].'">'.esc_html($form_field['label']).'</label>';
 		if(isset($form_field['required'])) {
 			$field_html .= '<span class="wpdevart-required">*</span>';
@@ -1005,8 +1014,7 @@ class wpdevart_bc_BookingCalendar {
 	private function form_field_countries($form_field,$input_atribute='',$payment_info = ""){
 		$select_options = self::get_countries();
 		$input_class = '';
-		$field_html = '';
-		$field_html .= '<div class="wpdevart-fild-item-container">
+		$field_html = '<div class="wpdevart-fild-item-container">
 							<label for="wpdevart_'.$form_field['name'].'">'.esc_html($form_field['label']).'</label>';
 		if(isset($form_field['required'])) {
 			$field_html .= '<span class="wpdevart-required">*</span>';
@@ -1027,11 +1035,9 @@ class wpdevart_bc_BookingCalendar {
 	}
 	
 	private function form_field_recapthcha($form_field,$input_atribute='',$payment_info = ""){
-		$select_options = self::get_countries();
 		$site_key = isset($this->global_settings["recaptcha_public_key"]) ? $this->global_settings["recaptcha_public_key"] : "";
 		$input_class = '';
-		$field_html = '';
-		$field_html .= '<div class="wpdevart-fild-item-container">
+		$field_html = '<div class="wpdevart-fild-item-container">
 							<label for="wpdevart_'.$form_field['name'].'">'.esc_html($form_field['label']).'</label>';
 		if(isset($form_field['required'])) {
 			$field_html .= '<span class="wpdevart-required">*</span>';
@@ -1044,6 +1050,33 @@ class wpdevart_bc_BookingCalendar {
 		$field_html .= '<div class="g-recaptcha" data-sitekey="' . $site_key . '"></div>
 				</div>
 			 </div>';		
+		return $field_html;
+	}
+	
+	private function form_field_upload($form_field,$input_atribute='',$payment_info = ""){
+		$input_class = array("wpdevart-file");
+		$required = '';
+		if(isset($form_field['required'])) {
+			$required = '<span class="wpdevart-required">*</span>';
+			$input_class[] = 'wpdevart-required';
+		}				
+		if(isset($form_field['class']) && $form_field['class'] != "" ) {
+			$input_class[] = $form_field['class'];
+		}	
+		if(count($input_class)) {
+			$input_class = implode(" ",$input_class);
+			$class = "class='".$input_class."'";
+		} else {
+			$class = "";
+		}
+		$type = $form_field['extensions'] ? $form_field['extensions'] : "";
+		$max_size = $form_field['max_size'] ? $form_field['max_size'] : "";
+		$field_html = '<div class="wpdevart-fild-item-container">
+							<label for="wpdevart_'.$form_field['name'].'" '.$class.'>'.esc_html($form_field['label']).$required. '</label>';
+		$field_html .= '<div class="wpdevart-elem-container div-for-clear" id="wpdevart_wrap_'.$form_field['name'].'">
+				  <input type="file" id="wpdevart_'.$form_field['name'].'" name="wpdevart_'.$payment_info.$form_field['name'].'" '.$input_atribute.' '.$class.' '.(isset($form_field['value'])? "value='".$form_field['value']."'" : "").' data-type="'. $type . '" data-size="'. $max_size . '">
+			    </div>
+		     </div>';
 		return $field_html;
 	}
 	
@@ -1164,6 +1197,8 @@ class wpdevart_bc_BookingCalendar {
 		$form = array();
 		$extras = array();
 		$extra_data = array();
+		
+		
 		foreach($data as $key=>$item) {
 			if(strrpos($key,"form_field") !== false) {
 				$form[$key] = sanitize_text_field($item);		
@@ -1180,6 +1215,34 @@ class wpdevart_bc_BookingCalendar {
 				$shipping_form[$key] = sanitize_text_field($item);		
 			}
 		}
+		
+		
+		/*FILE UPLOAD*/
+		$files = array();
+		if(count($_FILES)){
+			foreach($_FILES as $key => $file){
+				//$target_file = WPDEVART_UPLOADS . basename($file["name"]);
+				//$uploadOk = 1;
+                $filename = basename($file["name"]);
+				
+				
+				if (file_exists(WPDEVART_UPLOADS . $filename))
+				{
+					$filename = $file["name"];
+					$file_basename = substr($filename, 0, strripos($filename, '.')); // get file extention
+					$file_ext = substr($filename, strripos($filename, '.')); // get file name
+					//$target_file = WPDEVART_UPLOADS . $file_basename . time() . $file_ext;
+					$filename = $file_basename . time() . $file_ext;
+				}
+				
+				if (move_uploaded_file($file["tmp_name"], WPDEVART_UPLOADS . $filename)) {
+					$form[$key] = WPDEVART_UPLOADS_URL . $filename;
+					$files[] = WPDEVART_UPLOADS . $filename;
+				}
+			}
+		}
+		
+
 		$billing_form = json_encode($billing_form);
 		$shipping_form = json_encode($shipping_form);
 		$currency = (isset($this->currency) ? $this->currency : '');
@@ -1199,6 +1262,7 @@ class wpdevart_bc_BookingCalendar {
 		$count_item = wpdevart_bc_Library::getData($data, 'wpdevart_count_item'.$submit, 'text', 1);
 		$total_price = wpdevart_bc_Library::getData($data, 'wpdevart_total_price_value'.$submit, 'text', '');
 		$sale_percent_value = wpdevart_bc_Library::getData($data, 'sale_percent_value'.$submit, 'text', '');
+		$sale_type = (isset($data['wpdevart_sale_type'.$submit]) ? esc_html(stripslashes( $data['wpdevart_sale_type'.$submit])) : '');
 		$price = wpdevart_bc_Library::getData($data, 'wpdevart_price_value'.$submit, 'text', '');
 		$extras_price = wpdevart_bc_Library::getData($data, 'wpdevart_extra_price_value'.$submit, 'text', '');
 		
@@ -1262,6 +1326,7 @@ class wpdevart_bc_BookingCalendar {
 				$ex_key = str_replace("wpdevart_", "", $key);
 				if(isset($extra_fields[$ex_key]['items'][$extra])) {
 					if($extra_fields[$ex_key]['items'][$extra]["price_type"] == "price") {
+						
 						if(!isset($extra_fields[$ex_key]['independent']) && !isset($extra_fields[$ex_key]['independent_counts'])) {
 							$extra_fields[$ex_key]['items'][$extra]['price_percent'] = $extra_fields[$ex_key]['items'][$extra]['price_percent'] * $item_count * $count_item;
 						}  
@@ -1274,6 +1339,7 @@ class wpdevart_bc_BookingCalendar {
 						else if(isset($extra_fields[$ex_key]['independent_counts'])){
 							$extra_fields[$ex_key]['items'][$extra]['price_percent'] = $extra_fields[$ex_key]['items'][$extra]['price_percent'] * $item_count;
 						}
+						
 					}
 					$extra_data["".$ex_key.""] = $extra_fields[$ex_key]['items'][$extra];
 				}
@@ -1281,6 +1347,7 @@ class wpdevart_bc_BookingCalendar {
 		}
 		$form = json_encode($form);
 		$extra_data = json_encode($extra_data);
+		
 		if(isset($resid) && $resid != 0){	
 			$old_reserv = $wpdb->get_row($wpdb->prepare('SELECT calendar_id, single_day, check_in, check_out, start_hour, 	end_hour, count_item, status FROM ' . $wpdb->prefix . 'wpdevart_reservations WHERE id="%d"', $resid),ARRAY_A);	
 			if((isset($this->theme_option['type_days_selection']) && $this->theme_option['type_days_selection'] == "multiple_days") && (isset($this->theme_option['hours_enabled']) && $this->theme_option['hours_enabled'] == "")){
@@ -1308,7 +1375,8 @@ class wpdevart_bc_BookingCalendar {
 				'address_shipping' => $shipping_form,         
 				'email' => $emails,        
 				'is_new' => 0,                  
-				'sale_percent' => $sale_percent_value                 
+				'sale_percent' => $sale_percent_value,     
+			    'sale_type' => $sale_type    
 			  ), array('id' => $resid));
 		} else {
 			$save_in_db = $wpdb->insert($wpdb->prefix . 'wpdevart_reservations', array(
@@ -1333,7 +1401,8 @@ class wpdevart_bc_BookingCalendar {
 			'payment_status' => '',         
 			'date_created' => date('Y-m-d H:i',time()),        
 			'is_new' => 1,        
-			'sale_percent' => $sale_percent_value        
+			'sale_percent' => $sale_percent_value,     
+			'sale_type' => $sale_type     
 		  ), array(
 			'%d', /*calendar_id*/
 			'%s', /*single_day*/
@@ -1343,10 +1412,10 @@ class wpdevart_bc_BookingCalendar {
 			'%s', /*end_hour*/
 			'%s', /*currency*/
 			'%d', /*count_item*/
-			'%d', /*price*/
-			'%d', /*total_price*/
+			'%s', /*price*/
+			'%s', /*total_price*/
 			'%s', /*extras*/
-			'%d', /*extras_price*/
+			'%s', /*extras_price*/
 			'%s', /*form*/
 			'%s', /*address_billing*/
 			'%s', /*address_shipping*/
@@ -1356,7 +1425,8 @@ class wpdevart_bc_BookingCalendar {
 			'%s', /*payment_status*/
 			'%s', /*date_created*/
 			'%d', /*is_new*/
-			'%s' /*sale_value*/
+			'%s', /*sale_value*/
+			'%s' /*sale_type*/
 		  ));
 		}  
 		
@@ -1374,7 +1444,7 @@ class wpdevart_bc_BookingCalendar {
 					$this->change_date_avail_count($id,true,"insert",array());
 				}
 			}
-			$send_mail = $this->send_mail($emails,$form,$extra_data,$count_item,$price,$currency,$total_price,$extras_price,$check_in,$check_out,$single_day,$start_hour, $end_hour,$sale_percent_value);
+			$send_mail = $this->send_mail($emails,$form,$extra_data,$count_item,$price,$currency,$total_price,$extras_price,$check_in,$check_out,$single_day,$start_hour, $end_hour,$sale_percent_value,$files, $sale_type);
 			$reserv_info = array('reservation_id' => $id,
 				'calendar_id' => $this->id,                       
 				'single_day' => $single_day,                       
@@ -1390,19 +1460,27 @@ class wpdevart_bc_BookingCalendar {
 				'extras_price' => $extras_price,         
 				'form' => $form,         
 				'email' => $emails,
-                'sale_percent' => $sale_percent_value	
+                'sale_percent' => $sale_percent_value,
+				'files' => $files,
+                'sale_type' => $sale_type				
 				);
 		 } 
 		$result = array($save, $send_mail, $reserv_info); 
 		return $result;
 	}
-	private function send_mail($emails,$form_data,$extras_data,$count_item,$price,$currency,$total_price,$extras_price,$check_in,$check_out,$single_day,$start_hour, $end_hour,$sale_percent){
+	private function send_mail($emails,$form_data,$extras_data,$count_item,$price,$currency,$total_price,$extras_price,$check_in,$check_out,$single_day,$start_hour, $end_hour,$sale_percent,$files, $sale_type){
 		
 		require_once ABSPATH . WPINC . '/class-phpmailer.php';
 		$sale_percent_html = "";
+		$cur_pos = (isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? "before" : "after";
 		if(isset($sale_percent) && !empty($sale_percent)){
-			$sale_percent_value = ($total_price * 100) / (100 - $sale_percent);
-			$sale_percent_html = (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? $currency : '') . $sale_percent_value . (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "after") || !isset($this->theme_option['currency_pos'])) ? $currency : '')) . " - " . $sale_percent . "% = ";
+			if($sale_type == "percent"){
+				$sale_percent_value = ($sale_percent != "100") ? (($total_price * 100) / (100 - $sale_percent)) : $price;
+				$sale_percent_html = (($cur_pos == "before" ? $currency : '') . $sale_percent_value . ($cur_pos == "after" ? $currency : '')) . " - " . $sale_percent . "% = ";
+			} else {
+				$sale_percent_value = $total_price + $sale_percent;
+				$sale_percent_html = (($cur_pos == "before" ? $currency : '') . $sale_percent_value . ($cur_pos == "after"  ? $currency : '')) . " - " . ($cur_pos == "before" ? $currency : '') . $sale_percent . ($cur_pos == "after" ? $currency : '') ." = ";
+			}
 		}
 		$countries = self::get_countries();
 		$admin_email_types = array();
@@ -1436,10 +1514,10 @@ class wpdevart_bc_BookingCalendar {
 						<tr><td style='padding: 1px 7px;'>".__('Reservation dates','booking-calendar')."</td><td style='padding: 1px 7px;'>".$res_day."</td></tr>".$hour_html."
 						<tr><td style='padding: 1px 7px;'>".__('Item Count','booking-calendar')."</td><td style='padding: 1px 7px;'>".$count_item."</td></tr>";
 		if($price != "NaN" && !$hide_price){				
-			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? esc_html($currency) : '') . $price . (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "after") || !isset($this->theme_option['currency_pos'])) ? esc_html($currency) : '')."</td></tr>";
+			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".($cur_pos == "before" ? esc_html($currency) : '') . $price . ($cur_pos == "after" ? esc_html($currency) : '')."</td></tr>";
 		}
 		if($total_price != "NaN" && !$hide_price){
-			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Total Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".$sale_percent_html . ((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? esc_html($currency) : '') . $total_price . (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "after") || !isset($this->theme_option['currency_pos'])) ? esc_html($currency) : '')."</td></tr>";
+			$res_info .= "<tr><td style='padding: 1px 7px;'>".__('Total Price','booking-calendar')."</td> <td style='padding: 1px 7px;'>".$sale_percent_html . ($cur_pos == "before" ? esc_html($currency) : '') . $total_price . ($cur_pos == "after" ? esc_html($currency) : '')."</td></tr>";
 		}
 		$res_info .= "</table>";
 		$form = "";
@@ -1465,13 +1543,13 @@ class wpdevart_bc_BookingCalendar {
 				$extras .= "<td style='padding: 1px 7px;'>";
 				if($extra_data["price_type"] == "percent") {
 					$extras .= "<span class='price-percent'>".$extra_data["operation"].$extra_data["price_percent"]."%</span>";
-					$extras .= "<span class='price'>".$extra_data["operation"] . ((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? esc_html($currency) : '') . $extra_data["price"] . (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "after") || !isset($this->theme_option['currency_pos'])) ? esc_html($currency) : '')."</span></td></tr>";
+					$extras .= "<span class='price'>".$extra_data["operation"] . ($cur_pos == "before" ? esc_html($currency) : '') . $extra_data["price"] . ($cur_pos == "after" ? esc_html($currency) : '')."</span></td></tr>";
 				} else {
-					$extras .= "<span class='price'>".$extra_data["operation"] .((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? esc_html($currency) : '') . $extra_data["price"] . (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "after") || !isset($this->theme_option['currency_pos'])) ? esc_html($currency) : '')."</span></td></tr>";
+					$extras .= "<span class='price'>".$extra_data["operation"] .($cur_pos == "before" ? esc_html($currency) : '') . $extra_data["price"] . ($cur_pos == "after" ? esc_html($currency) : '')."</span></td></tr>";
 				}
 				
 			}
-			$extras .= "<tr><td style='padding: 1px 7px;'>" . __('Price change','booking-calendar')."</td><td style='padding: 1px 7px;'>".(($extras_price<0)? "" : "+").((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "before") ? esc_html($currency) : '') . $extras_price . (((isset($this->theme_option['currency_pos']) && $this->theme_option['currency_pos'] == "after") || !isset($this->theme_option['currency_pos'])) ? esc_html($currency) : '')."</td></tr>";
+			$extras .= "<tr><td style='padding: 1px 7px;'>" . __('Price change','booking-calendar')."</td><td style='padding: 1px 7px;'>".(($extras_price<0)? "" : "+").($cur_pos == "before" ? esc_html($currency) : '') . $extras_price . ($cur_pos == "after" ? esc_html($currency) : '')."</td></tr>";
 			$extras .= "</table>";
 		}
 		if(isset($this->theme_option['notify_admin_on_book']) && $this->theme_option['notify_admin_on_book'] == "on") {
@@ -1488,6 +1566,11 @@ class wpdevart_bc_BookingCalendar {
 				$user_email_types[] = 'notify_user_on_approved';
 			}
 		}	
+		
+		
+		/*Attachment*/
+		$attachments = $files;
+		
 			/*Email to admin*/
 		if(count($admin_email_types)) {	
 			foreach($admin_email_types as $admin_email_type) {
@@ -1539,6 +1622,8 @@ class wpdevart_bc_BookingCalendar {
 						}
 					}
 				}
+				
+				
 				if(isset($this->theme_option['use_phpmailer']) && $this->theme_option['use_phpmailer'] == "on"){
 					$mail_to_send = new PHPMailer();
 					$mail_to_send->CharSet  = get_option('blog_charset');
@@ -1548,6 +1633,11 @@ class wpdevart_bc_BookingCalendar {
 					$mail_to_send->Body 	= $mail_content ;
 					if(!$mail_to_send->Body) {	
 						$mail_to_send->Body = $mail_to_send->FromName ." sent you this email";
+					}
+					if(count($attachments)){
+						foreach($attachments as $attachment){
+							$mail_to_send->AddAttachment($attachment);
+						}
 					}
 					$mail_to_send->AltBody = wp_strip_all_tags($content);
 					$mail_to_send->IsHTML(true);
@@ -1562,7 +1652,7 @@ class wpdevart_bc_BookingCalendar {
 					}
 				} else {
 					$headers = "MIME-Version: 1.0\n" . $from . " Content-Type: text/html; charset=\"" . get_option('blog_charset') . "\"\n";
-					$admin_error_types[$admin_email_type] = wp_mail($to, $subject, $mail_content, $headers);
+					$admin_error_types[$admin_email_type] = wp_mail($to, $subject, $mail_content, $headers, $attachments);
 				}
 			}	
 		}	
@@ -1615,6 +1705,11 @@ class wpdevart_bc_BookingCalendar {
 					if(!$mail_to_send->Body) {	
 						$mail_to_send->Body = $mail_to_send->FromName ." sent you this email";
 					}
+					if(count($attachments)){
+						foreach($attachments as $attachment){
+							$mail_to_send->AddAttachment($attachment);
+						}
+					}
 					$mail_to_send->AltBody = wp_strip_all_tags($content);
 					$mail_to_send->IsHTML(true);
 					$to_arr = explode(",", $to);
@@ -1628,7 +1723,7 @@ class wpdevart_bc_BookingCalendar {
 					}
 				} else {
 					$headers = "MIME-Version: 1.0\n" . $from . " Content-Type: text/html; charset=\"" . get_option('blog_charset') . "\"\n";
-					$user_error_types[$user_email_type] = wp_mail($to, $subject, $mail_content, $headers);
+					$user_error_types[$user_email_type] = wp_mail($to, $subject, $mail_content, $headers, $attachments);
 				}
 			}
 		}	
@@ -1636,6 +1731,19 @@ class wpdevart_bc_BookingCalendar {
 		return 	$result;
 	}
 	
+	public function get_styles(){
+		if(isset($this->theme_option)){
+			extract($this->theme_option);
+		}
+		
+		$booking_colors_styles = "<style>";
+		if(isset($custom_css_enabled) && $custom_css_enabled == "on"){
+			$booking_colors_styles .= $custom_css;
+		}   
+		   
+		$booking_colors_styles .= "</style>";
+		return $booking_colors_styles;
+	}
 	
 	private function change_date_avail_count( $id,$approve,$type = "",$old_reserv = array() ){
 		global $wpdb; 	

@@ -2,12 +2,15 @@
 class wpdevart_bc_ControllerPayments {
 	private $model;	
 	private $theme_option;	
+	private $res_edit;
 	  
 	public function __construct() {
 		require_once(WPDEVART_PLUGIN_DIR . "/admin/models/Payment.php");
 		$this->model = new wpdevart_bc_ModelPayments();
 		$theme_id = isset($_GET['theme_id']) ? esc_html(stripslashes($_GET['theme_id'])) : 0;
 		$this->theme_option = $this->model->get_setting_rows($theme_id);
+		require_once(WPDEVART_PLUGIN_DIR . "/admin/controllers/Reservations.php");
+		$this->res_edit = new wpdevart_bc_ControllerReservations();
 	}  	
 	  
 	public function perform() {
@@ -111,6 +114,10 @@ class wpdevart_bc_ControllerPayments {
 		if($save_db)  {
 			if($payment_status == "Completed" || $payment_status == 'Pending'){
 				$this->send_mail($res_id,$cal_id, "completed");
+				if(isset($this->theme_option['enable_psuccess_approval']) && $this->theme_option['enable_psuccess_approval'] == "on") {
+					$change_status = $wpdb->update($wpdb->prefix . 'wpdevart_reservations', array('status' => "approved"), array('id' => $res_id));
+					$this->res_edit->change_date_avail_count( $res_id,true);
+				}
 			}
 			else if($payment_status == 'Failed' || $payment_status == 'Denied' || $payment_status == 'Expired' || $payment_status == 'Voided' || $payment_status == 'Refunded' || $payment_status == 'Processed'){
 				$this->send_mail($res_id,$cal_id, "failed");

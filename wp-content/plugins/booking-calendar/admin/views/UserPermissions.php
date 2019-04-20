@@ -69,7 +69,9 @@ class wpdevart_bc_ViewUserPermissions {
 		<div id="wpdevart_themes" class="wpdevart-list-container user-permissions">
 			<div id="action-buttons" class="div-for-clear">
 				<div class="div-for-clear">
-					<h1><?php _e('User permissions for booking calendar pages','booking-calendar'); ?><a href="http://wpdevart.com/wordpress-booking-calendar-plugin/"><span class="pro_feature"> (Upgrade to Pro Version)</span></a></h1>
+					<h1><?php _e('User permissions for booking calendar pages','booking-calendar'); ?>
+					<?php echo wpdevart_bc_Library::print_pro_message(); ?>
+					</h1>
 					<a target="blank" href="<?php echo wpdevart_booking_support_url; ?>" class="wp_support">Support</a>
 				</div>
 			</div>	

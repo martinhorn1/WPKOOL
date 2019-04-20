@@ -213,6 +213,28 @@ jQuery( document ).ready(function() {
 			$(this).closest("form").submit();
 		});
 		
+		$("body").on( "click",".wpdevart-payment-button:not(.payment_submit)", function(e){
+			e.preventDefault();
+			var payment_id = $(this).attr("id");
+			var id = $(this).data("id");
+			var resid = $(this).data("resid");
+			var themeid = $(this).data("themeid");
+			$(this).closest("form").find("input[name=payment_type_" + id + "]").val($(this).attr("id"));
+			$(this).closest("form").find(".wpdevart_order_wrap").fadeIn();
+			$(this).closest("form").find(".wpdevart_order_content").fadeIn();
+			var order_content = $(this).closest("form").find(".wpdevart_order_content");
+			$.post(wpdevart.ajaxUrl, {
+				action: 'wpdevart_payment_ajax',
+				wpdevart_data: payment_id,
+				wpdevart_resid: resid,
+				wpdevart_id: id,
+				wpdevart_themeid: themeid,
+				wpdevart_nonce: wpdevart.ajaxNonce
+			}, function (data) {
+				$(order_content).replaceWith(data);
+			});
+			e.stopPropagation();
+		});
 		
 		$("body").on( "click",".wpdevart_close_popup", function(e){
 			$(this).closest(".wpdevart_order_content").fadeOut();
@@ -234,7 +256,8 @@ jQuery( document ).ready(function() {
 			extra_price_value = 0;
 		if($("#wpdevart_update_res").length){
 			existtt = true;
-			item_click(false,$(".wpdevart-day.selected").get(0),true);
+			/* 12/23/2017 remove
+			item_click(false,$(".wpdevart-day.selected").get(0),true);*/
 			var check_indateformat = $(".wpdevart-day.selected").eq(0).data("dateformat");
 			var check_outdateformat = $(".wpdevart-day.selected").eq($(".wpdevart-day.selected").length-1).data("dateformat");
 			var check_indate = $(".wpdevart-day.selected").eq(0).data("date");
@@ -558,8 +581,8 @@ jQuery( document ).ready(function() {
 					var diffDays = wpdevartDateDiff(check_indate,check_outdate);
 					if(exist == true) {
 						$(div_container).find(".successfully_text_container,.error_text_container").fadeOut();
-						$(div_container).find(".error_days").fadeIn();
-						$(window).scrollTo( $(div_container).find(".error_days"), 400,{'offset':{'top':-(offset)}});
+						$(div_container).find(".error_text_container").html(wpdevartBooking(id, "error_days")).fadeIn();
+						$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 						$("#booking_calendar_main_container_"+id+" ."+item).each(function(){
 							$(this).removeClass(""+selected);
 						});
@@ -569,8 +592,8 @@ jQuery( document ).ready(function() {
 					/*Price for night*/
 					else if( forNight == 1 && diffDays == 0 && !hours_enabled && !hour == true){
 						$(div_container).find(".successfully_text_container,.error_text_container").fadeOut();
-						$(div_container).find(".error_night").fadeIn();
-						$(window).scrollTo( $(div_container).find(".error_night"), 400,{'offset':{'top':-(offset)}});
+						$(div_container).find(".error_text_container").html(wpdevartBooking(id, "error_night")).fadeIn();
+						$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 						$("#booking_calendar_main_container_"+id+" ."+item).each(function(){
 							$(this).removeClass(""+selected);
 						});
@@ -578,13 +601,11 @@ jQuery( document ).ready(function() {
 						exist = false;
 					}
 					/*Min day/hour count*/
-					else if( diffDays < (min - 1) || (hours_enabled && hour == true && selected_count < min_hour)){
-						var error_class = (hours_enabled && hour == true) ? ".error_min_hour" : ".error_min_day";
-						var min = (hours_enabled && hour == true) ? min_hour : min;
-						var minContent = $(div_container).find(error_class).html().replace("[min]", min);
-						$(div_container).find(".successfully_text_container,.error_text_container").fadeOut();
-						$(div_container).find(error_class).html(minContent).fadeIn();
-						$(window).scrollTo( $(div_container).find(error_class), 400,{'offset':{'top':-(offset)}});
+					else if( (forNight == 1 && diffDays < min) || (forNight == 0 && diffDays < (min - 1)) || (hours_enabled && hour == true && selected_count < min_hour)){
+						var html = (hours_enabled && hour == true) ? wpdevartBooking(id, "error_min_hour") : wpdevartBooking(id, "error_min_day");
+						$(div_container).find(".successfully_text_container").fadeOut();
+						$(div_container).find(".error_text_container").html(html).fadeIn();
+						$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 						$("#booking_calendar_main_container_"+id+" ."+item).each(function(){
 							$(this).removeClass(""+selected);
 						});
@@ -593,12 +614,10 @@ jQuery( document ).ready(function() {
 					}
 					/*Max day/hour count*/
 					else if( diffDays > (max - 1) || (hours_enabled && hour == true && selected_count > max_hour)){
-						var error_class = (hours_enabled && hour == true) ? ".error_max_hour" : ".error_max_day";
-						var max = (hours_enabled && hour == true) ? max_hour : max;
-						var maxContent = $(div_container).find(error_class).html().replace("[max]", max);
-						$(div_container).find(".successfully_text_container,.error_text_container").fadeOut();
-						$(div_container).find(error_class).html(maxContent).fadeIn();
-						$(window).scrollTo( $(div_container).find(error_class), 400,{'offset':{'top':-(offset)}});
+						var html = (hours_enabled && hour == true) ? wpdevartBooking(id, "error_max_hour") : wpdevartBooking(id, "error_max_day");
+						$(div_container).find(".successfully_text_container").fadeOut();
+						var maxContent = $(div_container).find(".error_text_container").html(html).fadeIn();
+						$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 						$("#booking_calendar_main_container_"+id+" ."+item).each(function(){
 							$(this).removeClass(""+selected);
 						});
@@ -643,7 +662,7 @@ jQuery( document ).ready(function() {
 								}, function (data) {
 									date_data = JSON.parse(data);
 									if(date_data == 0){
-										$(div_container).find(".error_text_container").fadeIn();
+										$(div_container).find(".error_text_container").html(wpdevartBooking(id, "error_days")).fadeIn();
 										$(div_container).find(".successfully_text_container,.email_error").fadeOut();
 										$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 										$("#booking_calendar_main_container_"+id+" ."+item).each(function(){
@@ -725,7 +744,7 @@ jQuery( document ).ready(function() {
 								}, function (data) {
 									date_data = JSON.parse(data);
 									if(date_data == 0){
-										$(div_container).find(".error_text_container").fadeIn();
+										$(div_container).find(".error_text_container").html(wpdevartBooking(id, "error_day")).fadeIn();
 										$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 										$(form_container).find(for_hidden_single).val("");
 										exist = false;
@@ -739,7 +758,7 @@ jQuery( document ).ready(function() {
 					}
 				} else {
 					if(edit == false){
-						$(div_container).find(".error_text_container").fadeIn();
+						$(div_container).find(".error_text_container").html(wpdevartBooking(id, "error_day")).fadeIn();
 						$(window).scrollTo( $(div_container).find(".error_text_container"), 400,{'offset':{'top':-(offset)}});
 						$(form_container).find(for_hidden_single).val("");
 					} else {
@@ -796,53 +815,63 @@ function change_count(el,id,pos,currency) {
 		extraprice = 0,
 		old_total = 0,
 		booking_id = jQuery(el).closest(".booking_calendar_main_container").data('booking_id'),
-		form_container = jQuery(el).closest(".wpdevart-booking-form"),
+		form_container = jQuery(el).closest(".wpdevart-booking-form-container"),
 		forNight = wpdevartBooking(booking_id, "night"),
-	    hours_enabled = wpdevartBooking(booking_id, "hours_enabled");
+	    hours_enabled = wpdevartBooking(booking_id, "hours_enabled"),
+	    item_count = jQuery(el).val();
 		
 	if(hours_enabled) {	
 	 	selected_count = jQuery(form_container).prev().find(".wpdevart-hour-available.hour_selected").length;
     } else {
 	 	selected_count = (forNight == 1 && date_data.length > 1) ? (date_data.length - 1) : date_data.length;
 	}
-	if(jQuery(form_container).find(".price").length != 0) {
-		old_price = parseFloat(jQuery(form_container).find(".price").data("price"));
-		price = parseFloat(jQuery(form_container).find(".price span").html());
-		total_price = old_price*(jQuery(el).val());
-		old_total = parseFloat(jQuery(form_container).find(".start_total_price span").html());
-		if(jQuery(form_container).find(".wpdevart-extra-info").length != 0) {
-			jQuery(form_container).find(".wpdevart-extra-info").each(function(){
-				if(jQuery(this).find("span:first-child").html() != "") {
-					if(jQuery(this).find("input.extra_price_value").val() != "") {
-						operation = jQuery(this).find(".extra_price").data("extraop");
-						extraprice = jQuery(this).find(".extra_price").data("extraprice");
-						if( jQuery(this).find(".extra_percent").length != 0 && jQuery(this).find(".extra_percent").is(":visible")) {
-							jQuery(this).find("input.extra_price_value").val(operation+(extraprice*(old_price*(jQuery(el).val()))/100));
-							jQuery(this).find("span.extra_price_value").html(operation+(pos=="before" ? currency : "")+(extraprice*(old_price*(jQuery(el).val()))/100)+(pos=="after" ? currency : ""));
-							extra_price_value += operation + (extraprice*(old_price*(jQuery(el).val()))/100);
-							total_price = (operation == "+")? (total_price + (extraprice*(old_price*(jQuery(el).val()))/100)) : (total_price - (extraprice*(old_price*(jQuery(el).val()))/100));
-						} else {
-							jQuery(this).find("input.extra_price_value").val(operation+(extraprice*jQuery(el).val()));
-							jQuery(this).find("span.extra_price_value").html(operation+(pos=="before" ? currency : "")+(extraprice*jQuery(el).val())+(pos=="after" ? currency : ""));
-							total_price = (operation == "+")? (total_price + extraprice*jQuery(el).val()) : (total_price - extraprice*jQuery(el).val());
-							extra_price_value += operation + (extraprice*jQuery(el).val());
+	
+	
+	old_price = jQuery(form_container).find(".price").length != 0 ? parseFloat(jQuery(form_container).find(".price").data("price")) : 0;
+	price = jQuery(form_container).find(".price").length != 0 ? parseFloat(jQuery(form_container).find(".price span").html()) : 0;
+	total_price = old_price*(jQuery(el).val());
+	old_total = parseFloat(jQuery(form_container).find(".start_total_price span").html());
+	if(jQuery(form_container).find(".wpdevart-extra-info").length != 0) {
+		jQuery(form_container).find(".wpdevart-extra-info").each(function(i, e){
+			var extra = jQuery("#wpdevart_extra_field" + (i + 1));
+			if(jQuery(this).find("span:first-child").html() != "") {
+				if(jQuery(this).find("input.extra_price_value").val() != "") {
+					operation = jQuery(this).find(".extra_price").data("extraop");
+					extraprice = jQuery(this).find(".extra_price").data("extraprice");
+					if( jQuery(this).find(".extra_percent").length != 0 && jQuery(this).find(".extra_percent").is(":visible")) {
+						jQuery(this).find("input.extra_price_value").val(operation+(extraprice*(old_price*(jQuery(el).val()))/100));
+						jQuery(this).find("span.extra_price_value").html(operation+(pos=="before" ? currency : "")+(extraprice*(old_price*(jQuery(el).val()))/100)+(pos=="after" ? currency : ""));
+						extra_price_value += operation + (extraprice*(old_price*(jQuery(el).val()))/100);
+						total_price = (operation == "+")? (total_price + (extraprice*(old_price*(jQuery(el).val()))/100)) : (total_price - (extraprice*(old_price*(jQuery(el).val()))/100));
+					} else {			
+			
+						var indep_count_price = extraprice;
+						if(extra.hasClass("wpdevart-independent")) {
+							var indep_count_price = extraprice * item_count;
 						}
+						
+						jQuery(this).find("input.extra_price_value").val(operation + indep_count_price);
+						jQuery(this).find("span.extra_price_value").html(operation + (pos=="before" ? currency : "") + indep_count_price + (pos=="after" ? currency : ""));
+						total_price = (operation == "+")? (total_price + indep_count_price) : (total_price - indep_count_price);
+						extra_price_value += operation + indep_count_price;
 					}
 				}
-			});
-		} else {
-			total_price = (old_total-price)+(old_price*(jQuery(el).val()));
-		}
-		jQuery(form_container).find(".start_total_price span").html(total_price);
-		jQuery(form_container).find(".price span").html(old_price*(jQuery(el).val()));
-		jQuery(form_container).find(".wpdevart_extra_price_value").val(eval(extra_price_value));
-		if(isNaN(total_price)){
-			total_price = eval(extra_price_value);	
-		}
-		jQuery(form_container).find(".wpdevart_total_price_value").val(total_price);	
-		jQuery(form_container).find(".wpdevart_price_value").val(old_price*(jQuery(el).val()));
-		changeTotalPrice(pos,total_price,selected_count,form_container,currency,booking_id);
+			}
+		});
+	} else {
+		total_price = (old_total-price)+(old_price*(jQuery(el).val()));
 	}
+	jQuery(form_container).find(".start_total_price span").html(total_price);
+	if(jQuery(form_container).find(".price").length != 0)
+		jQuery(form_container).find(".price span").html(old_price*(jQuery(el).val()));
+	jQuery(form_container).find(".wpdevart_extra_price_value").val(eval(extra_price_value));
+	if(isNaN(total_price)){
+		total_price = eval(extra_price_value);	
+	}
+	jQuery(form_container).find(".wpdevart_total_price_value").val(total_price);	
+	jQuery(form_container).find(".wpdevart_price_value").val(old_price*(jQuery(el).val()));
+	changeTotalPrice(pos,total_price,selected_count,form_container,currency,booking_id);
+
 	if(jQuery(form_container).find(".count_item").length != 0) {
 		jQuery(form_container).find(".count_item").html(jQuery(el).val());
 	}
@@ -875,11 +904,19 @@ function change_extra(el,pos,currency) {
 		jQuery(form_container).find("."+id+" .extra_price").data("extraop", thisop);
 		jQuery(form_container).find("."+id+" .option_label").html(label);
 		if(thisprice) {
-			if(jQuery(el).hasClass("wpdevart-independent")) {
-				var indep_price = thisprice * item_count;
-			} else {
+			if(!jQuery(el).hasClass("wpdevart-independent") && !jQuery(el).hasClass("wpdevart-independent_counts")) {
+				var indep_price = thisprice;
+			}  
+			else if(jQuery(el).hasClass("wpdevart-independent") && jQuery(el).hasClass("wpdevart-independent_counts")) {
 				var indep_price = thisprice * selected_count * item_count;
 			} 
+			else if(jQuery(el).hasClass("wpdevart-independent")) {
+				var indep_price = thisprice * item_count;
+			} 
+			else if(jQuery(el).hasClass("wpdevart-independent_counts")){
+				var indep_price = thisprice * selected_count;
+			}
+			
 			if(thistype == "price") {
 				jQuery(form_container).find("."+id+" span.extra_price_value").html(thisop+(pos=="before" ? currency : "")+ indep_price +(pos=="after" ? currency : ""));
 				jQuery(form_container).find("."+id+" input.extra_price_value").val(thisop+indep_price);
@@ -890,6 +927,7 @@ function change_extra(el,pos,currency) {
 				} else {
 					jQuery(form_container).find("."+id+" .extra_price").data("extraprice", (thisprice*selected_count));
 				}
+				
 				total_price = (thisop == "+")? (new_total + indep_price) : (new_total - indep_price);				
 			} else {
 				if(isNaN(price)) {
@@ -941,7 +979,7 @@ function reservation_info(el,price,price_div,total_div,extra_div,currency,id,ext
 		}
 		currency = jQuery(sel_element).data("currency");
 	});
-	} else {
+	} else { 
 		selected_count = (forNight == 1 && date_data.length > 1) ? (date_data.length - 1) : date_data.length;
 		var i = 0;
 		jQuery.each(date_data, function (index, value) {
@@ -980,6 +1018,9 @@ function reservation_info(el,price,price_div,total_div,extra_div,currency,id,ext
 				} else {
 					var indep_price = opt_price * selected_count;
 				}
+				
+				
+			
 			if(type == "price") {
 				if(opt_price != 0 || opt_price != "") {
 					var option_info = "<span class='extra_percent' style='display:none;'></span><span class='extra_price' data-extraprice='"+(indep_price)+"' data-extraop='"+operation+"' style='display:inline-block;'><span class='extra_price_value'>"+operation+((pos == "before") ? currency : "")+(indep_price)+((pos == "after") ? currency : "")+"</span></span><input type='hidden' class='extra_price_value' value='"+operation+(indep_price)+"'>";
@@ -997,7 +1038,7 @@ function reservation_info(el,price,price_div,total_div,extra_div,currency,id,ext
 				total_price = (operation == "+")? (total_price + ((price * opt_price)/100)) : (total_price - ((price * opt_price)/100));
 				extra_price_value += operation+((price * opt_price)/100);
 			}
-			extra_div += "<div class='wpdevart-extra-info wpdevart-extra-"+sel_index+" reserv_info_row "+(jQuery(select).attr("id"))+"'><span class='reserv_info_cell'>"+label+"</span><span class='reserv_info_cell_value'><span class='option_label'>"+option_label+"</span>"+option_info+"</span></div>";
+			extra_div += "<div class='wpdevart-extra-info wpdevart-extra-"+sel_index+" reserv_info_row "+(jQuery(select).attr("id"))+"' data-id='"+(jQuery(select).attr("id"))+"'><span class='reserv_info_cell'>"+label+"</span><span class='reserv_info_cell_value'><span class='option_label'>"+option_label+"</span>"+option_info+"</span></div>";
 			
 		});
 	}
@@ -1005,9 +1046,9 @@ function reservation_info(el,price,price_div,total_div,extra_div,currency,id,ext
 		total_price = eval(extra_price_value);	
 	}
 	if(price != 0) {
-		price_div = (hide_price == 1) ? "" :  "<div class='reserv_info_row'><span class='reserv_info_cell'>"+(jQuery(el).closest(".booking_calendar_main_container").data("price"))+"</span><span class='reserv_info_cell_value price' data-price='"+price+"'>"+((pos == "before") ? currency : "")+"<span>"+price+"</span>"+((pos == "after") ? currency : "")+"</span></div>";
+		price_div = (hide_price == 1) ? "" : "<div class='reserv_info_row'><span class='reserv_info_cell'>"+(jQuery(el).closest(".booking_calendar_main_container").data("price"))+"</span><span class='reserv_info_cell_value price' data-price='"+price+"'>"+((pos == "before") ? currency : "")+"<span>"+price+"</span>"+((pos == "after") ? currency : "")+"</span></div>";
 	}
-	total_div = (hide_price == 1) ? "" :  "<div class='wpdevart-total-price reserv_info_row'><span class='reserv_info_cell'>" + total_tr + "</span><span class='reserv_info_cell_value total_price'><span class='start_total_price'>"+((pos == "before") ? currency : "")+"<span>" + total_price + "</span>"+((pos == "after") ? currency : "")+"</span><span class='sale_total_price'></span></span></div>";
+	total_div = (hide_price == 1) ? "" : "<div class='wpdevart-total-price reserv_info_row'><span class='reserv_info_cell'>" + total_tr + "</span><span class='reserv_info_cell_value total_price'><span class='start_total_price'>"+((pos == "before") ? currency : "")+"<span>" + total_price + "</span>"+((pos == "after") ? currency : "")+"</span><span class='sale_total_price'></span></span></div>";
 	
 	if(single_date === false) {
 		if(hours_enabled) {
@@ -1024,13 +1065,13 @@ function reservation_info(el,price,price_div,total_div,extra_div,currency,id,ext
 	jQuery(form_container).find(".wpdevart_extra_price_value").val(eval(extra_price_value));
     jQuery(form_container).find(".wpdevart_total_price_value").val(total_price);	
 	jQuery(form_container).find(".wpdevart_price_value").val(price);
-	/*changeTotalPrice(pos,total_price,selected_count,form_container,currency,booking_id);*/
+	changeTotalPrice(pos,total_price,selected_count,form_container,currency,booking_id);
 }
 function changeTotalPrice(pos,total_price,day_count,form_container,currency,booking_id){
 	hours_enabled = wpdevartBooking(booking_id, "hours_enabled");
 	conditions = hours_enabled ? wpdevartBooking(booking_id, "hours_conditions") : wpdevartBooking(booking_id, "conditions");
 	conditions = jQuery.parseJSON( conditions );
-	if(conditions !== null){
+    if(conditions !== null && conditions){
 		var ex = 0;
 		var index = 0;
 		jQuery.each( conditions.count, function(i, el){
@@ -1040,8 +1081,16 @@ function changeTotalPrice(pos,total_price,day_count,form_container,currency,book
 			}
 		} );
 		if(ex == 1){
-			var total = total_price - (total_price * conditions.percent[index])/100;
-			jQuery(form_container).find(".sale_total_price").html("<span class='sale_percent'>-" + conditions.percent[index] + "%</span><span>"+((pos == "before") ? currency : "")+"<span>" + total + "</span>"+((pos == "after") ? currency : "")+"</span>");
+			var type = (typeof conditions.type != "undefined") ? conditions.type[index] : "percent";
+			if(type == "percent"){
+				var total = total_price - (total_price * conditions.percent[index])/100;
+				jQuery("#wpdevart_sale_type" + booking_id ).val("percent");
+			} else{
+				var total = total_price - conditions.percent[index];
+				jQuery("#wpdevart_sale_type" + booking_id ).val("price");
+			}
+			var sale = (type == "percent") ? conditions.percent[index] + "%" : (((pos == "before") ? currency : "") + (conditions.percent[index] + ((pos == "after") ? currency : "")));
+			jQuery(form_container).find(".sale_total_price").html("<span class='sale_percent'>-" + sale +"</span><span>"+((pos == "before") ? currency : "")+"<span>" + total + "</span>"+((pos == "after") ? currency : "")+"</span>");
 			jQuery(form_container).find(".wpdevart_total_price_value").val(total);
 			if(!jQuery(form_container).find(".sale_percent_value").length){
 				jQuery(form_container).find("form").append('<input type="hidden" class="sale_percent_value" id="sale_percent_value' + booking_id + '" name="sale_percent_value' + booking_id + '" value="' + conditions.percent[index] + '">');
@@ -1097,6 +1146,10 @@ function wpdevart_required(submit) {
 					if(typeof jQuery(el).attr("checked") == "undefined") {
 						error = true;
 					} 
+				} else if(type == "file"){
+					if(jQuery(el).val().trim() == "") {
+						error = true;
+					}
 				}
 			} else if(tag_name == "SELECT") {
 				if(jQuery(el).find("option:selected").val() == "") {
@@ -1138,6 +1191,8 @@ function validate_email(email) {
 
 function wpdevartec_submit(el,booking_id){
 	var reserv_data = {};
+	var booking_id = jQuery(el).closest(".booking_calendar_main_container").data('booking_id');
+	var offset = wpdevartBooking(booking_id, "offset");
 	el.closest("form").find("input[type=text],button,input[type=hidden],input[type=checkbox],input[type=radio],select,textarea").each(function(index,element){
 		if(jQuery(element).is("input[type=checkbox]")) {
 			if(jQuery(element).is(':checked')) {
@@ -1154,34 +1209,86 @@ function wpdevartec_submit(el,booking_id){
 			reserv_data[jQuery(element).attr("name")] = jQuery(element).val();
 		}
 	});
+	
+	var form_data = new FormData();
+	var k = 0;
+	var error = 0;
+	jQuery.each(el.closest("form").find("input[type=file]"), function() {
+		var input_name = jQuery(this).attr("name");
+		var label = jQuery(this).closest(".wpdevart-fild-item-container").find("label").text();
+		var size = jQuery(this).data("size") * 1000;
+		var type = jQuery(this).data("type");
+		type = type.split(",");
+		jQuery.each(this.files, function(i, file) {
+		    var file_type =  file.name.split('.').pop().toLowerCase();
+			console.log(file,size, file.size);
+			if(size != "" && size < file.size){
+				alert(label + ": " + wpdevart.file_size);
+				error++;
+				return false;
+			}
+			else if(type != "" && type.indexOf(file_type) == -1){
+				alert(label + ": " + wpdevart.file_type);
+				error++;
+				return false;
+			}
+			form_data.append(input_name, file);
+		});
+		k++;
+		if(error > 0){
+			jQuery(this).focus();
+			jQuery(window).scrollTo( jQuery(this), 400,{'offset':{'top':-(offset)}});
+			return false;
+		}
+	});
+	if(error > 0)
+			return false;
+	
+	
 	reserv_json = JSON.stringify(reserv_data);
+	
+	form_data.append("action" , "wpdevart_form_ajax");
+	form_data.append("wpdevart_data" , reserv_json);
+	form_data.append("wpdevart_id" , wpdevartBooking(booking_id,"id"));
+	form_data.append("wpdevart_submit" , el.attr('id').replace("wpdevart-submit", ""));
+	form_data.append("wpdevart_nonce" , wpdevart.ajaxNonce);
 	el.addClass("load");
 	var reserv_form = el.closest("form");
 	var reserv_cont = el.closest(".booking_calendar_main_container");
 	var form_div = el.closest(".wpdevart-booking-form-container");
-	jQuery.post(wpdevart.ajaxUrl, {
-		action: 'wpdevart_form_ajax',
-		wpdevart_data: reserv_json,
-		wpdevart_id: wpdevartBooking(booking_id,"id"),
-		wpdevart_submit: el.attr('id').replace("wpdevart-submit", ""),
-		wpdevart_nonce: wpdevart.ajaxNonce
-	}, function (data) {
-	if(jQuery(form_div).hasClass("hide_form") || jQuery(form_div).hasClass("cal_width_pay")) {
-			jQuery(form_div).hide();
-		}
-		jQuery(reserv_cont).find('div.booking_calendar_main').replaceWith(data);
-		jQuery(reserv_cont).find('div.selected').removeClass("selected");
-		jQuery(reserv_form).find("input[type=text],input[type=hidden],textarea").each(function(index,element){
-			jQuery(element).val("");
-		});
-		jQuery(reserv_form).find("select").each(function(index,element){
-			jQuery(element).find("option:selected").removeAttr("selected");
-		});
-		jQuery(reserv_form).find("input[type=checkbox],input[type=radio]").each(function(index,element){
-			jQuery(element).find(":checked").removeAttr("checked");
-		});
-		jQuery(reserv_form).find(".wpdevart-submit").removeClass("load").hide();
-		jQuery(window).scrollTo( reserv_cont, 400,{'offset':{'top':-(wpdevartBooking(booking_id,"offset"))}});
+	
+	jQuery.ajax( {
+		url: wpdevart.ajaxUrl,
+		type: 'POST',
+		data: form_data,
+		cache: false,
+		//dataType: 'json',
+		processData: false,
+		contentType: false,
+		success: function (data) {
+			if(jQuery(form_div).hasClass("hide_form") || jQuery(form_div).hasClass("cal_width_pay")) {
+				jQuery(form_div).hide();
+			} 
+			jQuery(reserv_cont).find('div.booking_calendar_main').replaceWith(data);
+			jQuery(reserv_cont).find('div.selected').removeClass("selected");
+			jQuery(reserv_form).find("input[type=text],input[type=hidden],textarea").each(function(index,element){
+				jQuery(element).val("");
+			});
+			jQuery(reserv_form).find("select").each(function(index,element){
+				jQuery(element).find("option:selected").removeAttr("selected");
+			});
+			jQuery(reserv_form).find("input[type=checkbox],input[type=radio]").each(function(index,element){
+				jQuery(element).find(":checked").removeAttr("checked");
+			});
+			jQuery(reserv_form).find(".wpdevart-submit").removeClass("load").hide();
+			jQuery(window).scrollTo( reserv_cont, 400,{'offset':{'top':-(wpdevartBooking(booking_id,"offset"))}});
+		}, 
+		error: function (xhr, status) {
+			jQuery(reserv_cont).find('div.booking_calendar_main').replaceWith("Sorry, there was a problem!");
+        },
+        complete: function (xhr, status) {
+            
+        }
 	});
 }
 

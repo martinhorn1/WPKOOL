@@ -44,6 +44,7 @@ class wpdevart_bc_ControllerForms {
 		$saved_parametrs = wpdevart_bc_Library::sanitizeAllPost(array_slice($_POST, 1, -2),$textareas);
 		$data_json = json_encode($saved_parametrs);
 		$title = wpdevart_bc_Library::getData($_POST, 'title', 'text', '');
+		$user = get_current_user_id();
 		if ($id != 0) {
 		  $save = $wpdb->update($wpdb->prefix . 'wpdevart_forms', array(
 			'title' => $title,
@@ -54,9 +55,11 @@ class wpdevart_bc_ControllerForms {
 		  $save = $wpdb->insert($wpdb->prefix . 'wpdevart_forms', array(
 			'title' => $title,                       
 			'data' => $data_json,         
+			'user_id' => $user,         
 		  ), array(
 			'%s',
 			'%s',
+			'%d',
 		  ));
 		  $id = $wpdb->get_var('SELECT MAX(id) FROM ' . $wpdb->prefix . 'wpdevart_forms');
 		} 
